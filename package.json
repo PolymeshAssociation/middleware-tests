@@ -1,0 +1,58 @@
+{
+  "name": "typescript-repo-template",
+  "version": "0.0.0",
+  "description": "Template repository for typescript projects",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "Polymath Studios Inc.",
+  "license": "ISC",
+  "scripts": {
+    "test": "jest --coverage",
+    "build:ts": "ttsc -b",
+    "build:docs": "typedoc src",
+    "commit": "npx git-cz",
+    "semantic-release": "semantic-release",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "format": "cross-env prettier-eslint $PWD\"/src/**/*.{ts,tsx,js,jsx,json,css,md}\" --write"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "13.1.0",
+    "@commitlint/config-conventional": "13.1.0",
+    "@semantic-release/git": "9.0.0",
+    "@types/jest": "26.0.24",
+    "@types/node": "16.4.0",
+    "@typescript-eslint/eslint-plugin": "4.29.0",
+    "@typescript-eslint/parser": "4.29.0",
+    "@zerollup/ts-transform-paths": "1.7.18",
+    "cross-env": "7.0.3", 
+    "eslint": "7.32.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-config-semistandard": "16.0.0",
+    "eslint-config-standard": "16.0.3",
+    "eslint-plugin-import": "2.23.4",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-prettier": "3.3.1",
+    "eslint-plugin-promise": "5.1.0",
+    "eslint-plugin-simple-import-sort": "7.0.0",
+    "eslint-plugin-standard": "5.0.0",
+    "husky": "7.0.1",
+    "jest": "27.0.6",
+    "lint-staged": "11.1.1",
+    "prettier": "2.3.2",
+    "prettier-eslint": "13.0.0",
+    "prettier-eslint-cli": "5.0.1",
+    "semantic-release": "17.4.4",
+    "ts-jest": "27.0.4",
+    "ttypescript": "1.5.12",
+    "typedoc": "0.16.8",
+    "typescript": "4.3.5"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
