@@ -10,11 +10,6 @@ const assetType = 'EquityCommon';
 
 export const aliceDid = '0x01'.padEnd(66, '0');
 
-export const mnemonics = {
-  alice: '//Alice',
-  issuer: 'aware vibrant play ginger sample melt turtle drift brother interest pioneer minor',
-  investor: 'rural together attract maze stem version drill fade vacuum kid fee swallow',
-};
 
 export const assetParams: CreateAssetParams = {
   signer,

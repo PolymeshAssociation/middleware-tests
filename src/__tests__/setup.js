@@ -1,18 +1,19 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const childProcess = require('child_process');
-const { setup, polymeshLocalSettings } = require('../environment');
+const { setup, getPolymeshLocalSettings } = require('../environment');
 
-const chainVersion = '5.0.3';
+const chainVersion = 'latest';
 
 module.exports = async function () {
+  console.log('\n');
   if (setup.disableLocalSetup) {
-    console.log('\nskipping polymesh-local setup since disable flag was truthy');
+    console.log('skipping polymesh-local setup since disable flag was truthy');
     return;
   }
 
-  const { restSigners, restMnemonics } = polymeshLocalSettings;
+  const { restSigners, restMnemonics } = await getPolymeshLocalSettings();
 
-  console.log('\nstarting polymesh-local');
+  console.log('starting polymesh-local with REST API signers: ', restSigners);
 
   childProcess.execSync(
     `yarn run polymesh-local start -v ${chainVersion} -c --restSigners='${restSigners}' --restMnemonics='${restMnemonics}'`

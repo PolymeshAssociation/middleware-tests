@@ -1351,10 +1351,10 @@
     "@babel/runtime" "^7.20.1"
     "@polkadot/x-global" "10.1.12"
 
-"@polymeshassociation/polymesh-local@^5.1.1":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@polymeshassociation/polymesh-local/-/polymesh-local-5.1.1.tgz#9b17144b80082ca42181c7098f300f82502b7fcc"
-  integrity sha512-jf84LbkbcVXW6Iextd6cNxlZRk5l0zTOxUqpxYAeUgrMszqhws7jAAcpHDQwLO3RVM1YHghUHLCxo3Cr8zI1lw==
+"@polymeshassociation/polymesh-local@^5.2.0":
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/@polymeshassociation/polymesh-local/-/polymesh-local-5.2.0.tgz#38afcc58d3e9f05d8eefc19daf47e0f4a5850b39"
+  integrity sha512-Ki9nplbt/XICN1FnPwxCCzVzmWhtTI5hZgMADVn5s/95ZtBRcpTDy0LiE4/QdHg+lRQRFyg5Wb6CzWTjYjsbEg==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"

@@ -12,3 +12,8 @@ export interface Identity {
   did: string;
   primaryAddress: string;
 }
+
+export interface PolymeshLocalSettings {
+  restSigners: string;
+  restMnemonics: string;
+}

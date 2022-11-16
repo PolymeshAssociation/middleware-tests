@@ -1,16 +1,15 @@
 import Keyring from '@polkadot/keyring';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 import {
   assetParams,
   complianceRestrictionParams,
   makeInstructionParams,
-  mnemonics,
   venueParams,
 } from '~/consts';
 import { urls } from '~/environment';
 import { Client } from '~/rest/client';
 import { Identity } from '~/rest/interfaces';
+import { getLocalMnemonics } from '~/util';
 
 const { ticker, assetType, name } = assetParams;
 
@@ -20,7 +19,8 @@ describe(`Create and trade: "${ticker}"`, () => {
   beforeAll(async () => {
     client = new Client(urls.restApi);
 
-    await cryptoWaitReady();
+    const mnemonics = await getLocalMnemonics();
+
     const keyring = new Keyring({ type: 'sr25519' });
     const { address: investorAddress } = keyring.addFromMnemonic(mnemonics.investor);
     investor = await client.createCdd(investorAddress);
@@ -99,7 +99,7 @@ describe(`Create and trade: "${ticker}"`, () => {
     expect(instructionData).toMatchObject({
       transactions: expect.arrayContaining([
         {
-          transactionTag: 'settlement.addAndAffirmInstruction',
+          transactionTag: 'settlement.addAndAffirmInstructionWithMemo',
           type: 'single',
           ...expectTxInfo,
         },

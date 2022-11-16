@@ -1,6 +1,8 @@
 import * as dotenv from 'dotenv';
 
-import { mnemonics } from './consts';
+import { PolymeshLocalSettings } from '~/rest/interfaces';
+
+import { getLocalMnemonics } from './util';
 
 dotenv.config();
 
@@ -15,7 +17,11 @@ export const setup = {
   disableLocalSetup,
 };
 
-export const polymeshLocalSettings = {
-  restSigners: Object.keys(mnemonics).join(','),
-  restMnemonics: Object.values(mnemonics).join(','),
+export const getPolymeshLocalSettings = async (): Promise<PolymeshLocalSettings> => {
+  const mnemonics = await getLocalMnemonics();
+
+  return {
+    restSigners: Object.keys(mnemonics).join(','),
+    restMnemonics: Object.values(mnemonics).join(','),
+  };
 };
