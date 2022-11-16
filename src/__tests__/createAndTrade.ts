@@ -112,7 +112,6 @@ describe(`Create and trade: "${ticker}"`, () => {
       `/identities/${investor.did}/pending-instructions`
     );
 
-    console.log('pending instructions', result);
     const { results: pendingInstructions } = result;
     const pendingId = pendingInstructions[0];
 

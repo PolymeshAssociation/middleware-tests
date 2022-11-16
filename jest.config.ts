@@ -1,5 +1,3 @@
-import { join } from 'path';
-
 export = {
   preset: 'ts-jest',
   testEnvironment: 'node',
