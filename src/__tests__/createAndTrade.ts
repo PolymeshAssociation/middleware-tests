@@ -72,7 +72,7 @@ describe(`Create and trade: "${ticker}"`, () => {
   });
 
   let venueId: string;
-  it('should create a Venue to trade the Asset in', async () => {
+  it('should create a Venue to trade the Asset', async () => {
     const txData = await client.post('/venues/create', venueParams);
 
     expect(txData).toMatchObject({
