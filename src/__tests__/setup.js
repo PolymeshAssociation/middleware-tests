@@ -13,7 +13,7 @@ module.exports = async function () {
 
   const { restSigners, restMnemonics } = await getPolymeshLocalSettings();
 
-  console.log('starting polymesh-local with REST API signers: ', restSigners);
+  console.log('starting polymesh-local with REST API signers:', restSigners);
 
   childProcess.execSync(
     `yarn run polymesh-local start -v ${chainVersion} -c --restSigners='${restSigners}' --restMnemonics='${restMnemonics}'`
