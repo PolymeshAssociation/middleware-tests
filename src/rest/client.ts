@@ -1,14 +1,13 @@
 import { assert } from 'console';
 import fetch from 'cross-fetch';
-import { join } from 'path';
 
 import { CreateAssetParams, Identity } from '~/rest/interfaces';
 
-export class Client {
+export class RestClient {
   constructor(public baseUrl: string) {}
 
   public async get<T = unknown>(path: string): Promise<T> {
-    const url = join(this.baseUrl, path);
+    const url = new URL(path, this.baseUrl).href;
     const method = 'GET';
 
     return this.fetch(url, method) as Promise<T>;
@@ -18,7 +17,7 @@ export class Client {
     return this.post('/assets/create', params);
   }
 
-  public async createCdd(address: string, opts?: { polyx: number }): Promise<Identity> {
+  public async createCdd(address: string, opts: { polyx: number }): Promise<Identity> {
     const { polyx } = opts || { polyx: 100000 };
     const params = {
       address,
@@ -31,10 +30,9 @@ export class Client {
     return response;
   }
 
-  public async post<T = unknown>(path: string, body?: Record<string, unknown>): Promise<T> {
-    const url = join(this.baseUrl, path);
+  public async post<T = unknown>(path: string, body: Record<string, unknown>): Promise<T> {
+    const url = new URL(path, this.baseUrl).href;
     const method = 'POST';
-
     return this.fetch(url, method, body) as Promise<T>;
   }
 
@@ -43,7 +41,7 @@ export class Client {
     method: string,
     reqBody?: Record<string, unknown>
   ): Promise<unknown> {
-    const body = reqBody ? JSON.stringify(reqBody) : undefined;
+    const body = JSON.stringify(reqBody ?? undefined);
 
     const response = await fetch(url, {
       headers: [['Content-Type', 'application/json']],

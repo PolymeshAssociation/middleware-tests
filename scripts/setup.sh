@@ -1,0 +1,16 @@
+#!/bin/bash
+
+parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+cd "$parent_path"
+source ./env.sh
+
+echo 'starting vault'
+docker run -p 8200:8200 --rm -d --name ${VAULT_CONTAINER_NAME} --env VAULT_DEV_ROOT_TOKEN_ID=${VAULT_ROOT_TOKEN} vault
+sleep 3
+echo 'enabling vault transit engine'
+docker exec --env VAULT_ADDR='http://localhost:8200' --env VAULT_TOKEN=${VAULT_ROOT_TOKEN} ${VAULT_CONTAINER_NAME} sh -c 'vault secrets enable transit'
+echo 'creating a default key'
+curl  --header "X-Vault-Token: $VAULT_TOKEN" "http://localhost:8200/v1/transit/keys/first" -d '{"type": "ed25519"}'
+
+echo "PORT: ${VAULT_PORT} TOKEN: ${VAULT_ROOT_TOKEN}"
+yarn run polymesh-local start -v ${CHAIN_VERSION} -c --vaultUrl="http://host.docker.internal:${VAULT_PORT}/v1/transit" --vaultToken=${VAULT_ROOT_TOKEN}

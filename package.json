@@ -7,7 +7,10 @@
   "author": "Polymath Studios Inc.",
   "license": "ISC",
   "scripts": {
-    "test": "jest",
+    "test": "yarn test:setup && jest && yarn test:teardown",
+    "test:setup": "./scripts/setup.sh",
+    "test:teardown": "./scripts/teardown.sh",
+    "test:no-setup": "jest",
     "build:ts": "ttsc -b",
     "build:docs": "typedoc src",
     "commit": "npx git-cz",

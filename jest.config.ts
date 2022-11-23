@@ -7,7 +7,5 @@ export = {
   moduleNameMapper: {
     '~/(.*)': '<rootDir>/src/$1',
   },
-  testTimeout: 45000,
-  globalSetup: './src/__tests__/setup.js',
-  globalTeardown: './src/__tests__/teardown.js',
+  testTimeout: 5 * 60 * 1000,
 };
