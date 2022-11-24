@@ -1,10 +1,12 @@
+import { urls } from '~/environment';
 import { TestFactoryOpts } from '~/helpers/types';
-import { Identity, RestClient } from '~/rest';
-import { randomNonce } from '~/util';
+import { RestClient } from '~/rest';
+import { Identity } from '~/rest/identities';
+import { alphabet, randomNonce } from '~/util';
 import { sleep, VaultClient } from '~/vault';
 
+const nonceLength = 8;
 const startingPolyx = 100000;
-const restUrl = 'http://localhost:3004';
 const vaultUrl = 'http://localhost:8200';
 const vaultToken = 'root';
 const transitPath = 'v1/transit';
@@ -14,6 +16,7 @@ export class TestFactory {
   public restClient: RestClient;
   public vaultClient: VaultClient;
   public handleToIdentity: Record<string, Identity> = {};
+  #alphabetIndex = 0;
 
   public static async create(opts: TestFactoryOpts): Promise<TestFactory> {
     const { handles: signers } = opts;
@@ -31,6 +34,13 @@ export class TestFactory {
     return `${this.nonce}-${value}`;
   }
 
+  public nextTicker(): string {
+    const a = this.#alphabetIndex % alphabet.length;
+    const b = this.#alphabetIndex / alphabet.length;
+    const c = this.#alphabetIndex / alphabet.length ** 2;
+    return this.prefixNonce(`${alphabet[a]}${alphabet[b]}${alphabet[c]}`);
+  }
+
   /**
    * Creates a Vault key and DID for each signer.
    * @note This method must be called before using a signer, alternatively signers can be passed to `TestFactory.create`
@@ -46,7 +56,9 @@ export class TestFactory {
       }
 
       const { address, signer } = await this.vaultClient.createAccount(vaultKeyName);
-      const identity = await this.restClient.createCdd(address, { polyx: startingPolyx });
+      const identity = await this.restClient.identities.createCdd(address, {
+        polyx: startingPolyx,
+      });
       identity.signer = signer;
       this.handleToIdentity[handle] = identity;
 
@@ -71,9 +83,9 @@ export class TestFactory {
   }
 
   private constructor() {
-    const nonce = randomNonce(7);
+    const nonce = randomNonce(nonceLength);
     this.nonce = nonce;
-    this.restClient = new RestClient(restUrl);
+    this.restClient = new RestClient(urls.restApi);
     this.vaultClient = new VaultClient(vaultUrl, transitPath, vaultToken);
   }
 

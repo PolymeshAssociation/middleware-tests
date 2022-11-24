@@ -1,5 +1,7 @@
 import { cryptoWaitReady, mnemonicGenerate } from '@polkadot/util-crypto';
 
+export const alphabet = [...Array(26)].map((val, i) => String.fromCharCode(i + 65));
+
 export const randomNonce = (digits: number): string => {
   let output = '';
   for (let i = 0; i < digits; ++i) {
