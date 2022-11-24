@@ -1,4 +1,3 @@
-import { CreateAssetParams } from '~/rest/assets/interfaces';
 import { TxBase, TxExtras } from '~/rest/common';
 
 const assetType = 'EquityCommon';
@@ -22,11 +21,7 @@ const defaultAssetParams = {
   ],
 };
 
-export const createAssetParams = (
-  ticker: string,
-  base: TxBase,
-  extras: Record<string, unknown> = {}
-): CreateAssetParams =>
+export const createAssetParams = (ticker: string, base: TxBase, extras: TxExtras = {}) =>
   ({
     name: `Test Corp - ${ticker}`,
     ticker,

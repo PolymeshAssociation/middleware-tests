@@ -1,6 +1,5 @@
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
-import { CreateAssetParams } from '~/rest/assets/interfaces';
 import { createAssetParams } from '~/rest/assets/params';
 import { complianceRestrictionParams } from '~/rest/compliance';
 import { Identity } from '~/rest/identities/interfaces';
@@ -13,7 +12,7 @@ describe('Create and trading an Asset', () => {
   let signer: string;
   let issuer: Identity;
   let investor: Identity;
-  let assetParams: CreateAssetParams;
+  let assetParams: ReturnType<typeof createAssetParams>;
   let ticker: string;
 
   beforeAll(async () => {
@@ -63,7 +62,7 @@ describe('Create and trading an Asset', () => {
       ]),
     });
 
-    const requirements = await restClient.get(ticker);
+    const requirements = await restClient.compliance.getRestriction(ticker);
 
     expect(requirements).toMatchObject({
       requirements: expect.arrayContaining([
