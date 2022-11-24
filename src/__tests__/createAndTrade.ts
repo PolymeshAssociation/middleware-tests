@@ -33,7 +33,7 @@ describe(`Create and trade: "${ticker}"`, () => {
       transactions: expect.arrayContaining([
         {
           type: 'batch',
-          transactionTags: ['asset.createAsset', 'asset.issue'],
+          transactionTags: ['asset.createAsset', 'asset.issue', 'asset.addDocuments'],
           ...expectTxInfo,
         },
       ]),

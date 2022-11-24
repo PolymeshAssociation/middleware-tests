@@ -10,7 +10,6 @@ const assetType = 'EquityCommon';
 
 export const aliceDid = '0x01'.padEnd(66, '0');
 
-
 export const assetParams: CreateAssetParams = {
   signer,
   name,
@@ -19,6 +18,18 @@ export const assetParams: CreateAssetParams = {
   initialSupply: '100000',
   isDivisible: false,
   requireInvestorUniqueness: false,
+  securityIdentifiers: [{ type: 'Isin', value: 'US0846707026' }],
+  fundingRound: 'Series A',
+  documents: [
+    {
+      name: 'Test document',
+      uri: 'https://example.com/',
+      contentHash:
+        '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+      type: 'Private Placement Memorandum',
+      filedAt: '2022-05-23T04:00:00.000Z',
+    },
+  ],
 } as const;
 
 export const complianceRestrictionParams = {
