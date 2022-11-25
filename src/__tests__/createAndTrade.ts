@@ -22,7 +22,6 @@ describe('Create and trading an Asset', () => {
     investor = factory.getSignerIdentity(handles[1]);
 
     ticker = factory.nextTicker();
-
     signer = issuer.signer;
 
     assetParams = createAssetParams(ticker, { signer });

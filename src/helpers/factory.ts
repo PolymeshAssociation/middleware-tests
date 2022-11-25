@@ -36,9 +36,10 @@ export class TestFactory {
 
   public nextTicker(): string {
     const a = this.#alphabetIndex % alphabet.length;
-    const b = this.#alphabetIndex / alphabet.length;
-    const c = this.#alphabetIndex / alphabet.length ** 2;
-    return this.prefixNonce(`${alphabet[a]}${alphabet[b]}${alphabet[c]}`);
+    const b = Math.floor((this.#alphabetIndex / alphabet.length) % alphabet.length);
+    const c = Math.floor(this.#alphabetIndex / alphabet.length ** 2);
+    this.#alphabetIndex += 1;
+    return this.prefixNonce(`${alphabet[c]}${alphabet[b]}${alphabet[a]}`);
   }
 
   /**
@@ -48,7 +49,7 @@ export class TestFactory {
   public async initIdentities(handles: string[]): Promise<Identity[]> {
     const signerIdentities: Promise<Identity>[] = [];
 
-    const getIdentity = async (handle: string): Promise<Identity> => {
+    const createKeyAndIdentity = async (handle: string): Promise<Identity> => {
       const vaultKeyName = this.prefixNonce(handle);
       const exitingSigner = this.getCachedSigner(handle);
       if (exitingSigner) {
@@ -66,8 +67,8 @@ export class TestFactory {
     };
 
     for (const handle of handles) {
-      signerIdentities.push(getIdentity(handle));
-      await sleep(18000);
+      signerIdentities.push(createKeyAndIdentity(handle));
+      await sleep(3000); // ensures signer nonce wont repeat
     }
 
     return Promise.all(signerIdentities);
