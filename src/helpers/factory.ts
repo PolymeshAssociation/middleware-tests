@@ -39,7 +39,6 @@ export class TestFactory {
     const b = Math.floor((this.#alphabetIndex / alphabet.length) % alphabet.length);
     const c = Math.floor(this.#alphabetIndex / alphabet.length ** 2);
     this.#alphabetIndex += 1;
-    console.log({ a, b, c }, this.#alphabetIndex);
     return this.prefixNonce(`${alphabet[c]}${alphabet[b]}${alphabet[a]}`);
   }
 
