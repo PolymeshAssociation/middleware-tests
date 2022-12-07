@@ -14,8 +14,4 @@ docker exec --env VAULT_ADDR='http://localhost:8200' --env VAULT_TOKEN=${VAULT_R
 echo 'creating a default key'
 curl  --silent --header "X-Vault-Token: $VAULT_ROOT_TOKEN" "http://localhost:8200/v1/transit/keys/first" -d '{"type": "ed25519"}'
 
-yarn run polymesh-local start -v ${CHAIN_VERSION} -c --vaultUrl="http://10.10.36.122:${VAULT_PORT}/v1/transit" --vaultToken=${VAULT_ROOT_TOKEN}
-
-docker network create vault || true
-docker network connect vault middleware-test-vault
-docker network connect --ip 10.10.36.122 vault local_rest_api_1
+yarn run polymesh-local start -v ${CHAIN_VERSION} -c --vaultUrl="http://host.docker.internal:${VAULT_PORT}/v1/transit" --vaultToken=${VAULT_ROOT_TOKEN}
