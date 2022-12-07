@@ -25,7 +25,8 @@ jobs:
 
   test:
     name: Testing
-    runs-on: self-hosted
+    # runs-on: self-hosted
+    runs-on: ubuntu-latest
     env:
       CI: true
     steps:
