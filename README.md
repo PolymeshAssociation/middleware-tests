@@ -1,22 +1,17 @@
 [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/standard/semistandard)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
-# Polymath Typescript Template Repo
+# Tooling tests
 
-This is a template repository for typescript projects. It includes some initial typescript config and tooling to make our lives easier
+Here is a collection of integration tests to help ensure the various Polymesh services work together correctly.
 
-**NOTE**: This repo uses `yarn` instead of `npm` for dependencies
+The tests primarily make use of the [REST API](https://github.com/PolymeshAssociation/polymesh-rest-api), which in turn imports the [SDK](https://github.com/PolymeshAssociation/polymesh-sdk).
 
-Things included in the repo:
+## Environment Variables
 
-- Typescript (duh)
-- Absolute imports (allows you to `import { foo } from ~/bar;` instead of `import { foo } from ../../../../bar;`. The default character is `~` but it can be changed in `tsconfig.json`)
-- Eslint to enforce code style rules (extending standard JS with enforced semicolons and typescript-eslint)
-- Prettier to format code on save
-- Semantic release for automatic versioning
-- Commitizen
-- Husky to enforce conventional commits and format the code using prettier before committing
-- Github actions for CI (runs linter, tests, build and semantic-release)
+By default `yarn test` will use polymesh-local to setup a docker environment with the latest docker image for each service.
+
+The URLs of the services under test can be set with environment variables. Look at the [environment.ts file](./src/environment.ts) for a complete list
 
 ## Scripts
 
