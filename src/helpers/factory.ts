@@ -68,7 +68,7 @@ export class TestFactory {
 
     for (const handle of handles) {
       signerIdentities.push(createKeyAndIdentity(handle));
-      await sleep(3000); // ensures signer nonce wont repeat
+      await sleep(18000); // ensures signer nonce wont repeat
     }
 
     return Promise.all(signerIdentities);
