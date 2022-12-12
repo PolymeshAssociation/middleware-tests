@@ -34,6 +34,9 @@ export class TestFactory {
     return `${this.nonce}-${value}`;
   }
 
+  /**
+   * returns unique tickers every time its called. e.g. AAA, AAB, AAC...
+   */
   public nextTicker(): string {
     const a = this.#alphabetIndex % alphabet.length;
     const b = Math.floor((this.#alphabetIndex / alphabet.length) % alphabet.length);
