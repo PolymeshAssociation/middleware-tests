@@ -1351,10 +1351,17 @@
     "@babel/runtime" "^7.20.1"
     "@polkadot/x-global" "10.1.12"
 
+<<<<<<< HEAD
 "@polymeshassociation/polymesh-local@^5.4.0":
   version "5.4.0"
   resolved "https://registry.yarnpkg.com/@polymeshassociation/polymesh-local/-/polymesh-local-5.4.0.tgz#3b33e853c06c2a8b809a144c2eebad758c488ad5"
   integrity sha512-CUa1NFP0dctCXUQK2bomdLyBvoDm87HXsyMZ4cktCmuX+ywXZYDAtgwCJIyt6zl+Vn8EXu05ZnhdF6jj0yeNCA==
+=======
+"@polymeshassociation/polymesh-local@^5.2.0":
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/@polymeshassociation/polymesh-local/-/polymesh-local-5.2.0.tgz#38afcc58d3e9f05d8eefc19daf47e0f4a5850b39"
+  integrity sha512-Ki9nplbt/XICN1FnPwxCCzVzmWhtTI5hZgMADVn5s/95ZtBRcpTDy0LiE4/QdHg+lRQRFyg5Wb6CzWTjYjsbEg==
+>>>>>>> 367e1b3 (feat: 🎸 Add createAsset test (#1))
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
