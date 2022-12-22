@@ -74,8 +74,14 @@ describe('Managing metadata', () => {
     expect(result).toEqual(
       expect.objectContaining({
         asset,
+        id: '1',
+        specs: {
+          description: 'Some description',
+          url: 'https://example.com',
+        },
+        type: 'Local',
         value: {
-          value: 'Locked Value',
+          value: 'Set Value',
           lockStatus: 'LockedUntil',
           lockedUntil: '2030-05-23T00:00:00.000Z',
           expiry: null,
