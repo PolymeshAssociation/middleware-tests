@@ -1,5 +1,7 @@
 import { TxBase, TxExtras } from '~/rest/common';
 
+export type MetadataType = 'Local' | 'Global';
+
 const assetType = 'EquityCommon';
 
 const defaultAssetParams = {
@@ -26,6 +28,30 @@ export const createAssetParams = (ticker: string, base: TxBase, extras: TxExtras
     name: `Test Corp - ${ticker}`,
     ticker,
     ...defaultAssetParams,
+    ...extras,
+    ...base,
+  } as const);
+
+export const createMetadataParams = (base: TxBase, extras: TxExtras = {}) =>
+  ({
+    name: 'Metadata',
+    specs: {
+      url: 'https://example.com',
+      description: 'Some description',
+      typedef: 'Some example',
+    },
+    value: 'Some value',
+    ...extras,
+    ...base,
+  } as const);
+
+export const setMetadataParams = (base: TxBase, extras: TxExtras = {}) =>
+  ({
+    value: 'Set Value',
+    details: {
+      lockStatus: 'LockedUntil',
+      lockedUntil: '2030-05-23T00:00:00.000Z',
+    },
     ...extras,
     ...base,
   } as const);
