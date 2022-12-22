@@ -30,7 +30,7 @@ describe('Managing metadata', () => {
     expect(result).toEqual([]);
   });
 
-  it('should be able to set an Assets metadata', async () => {
+  it('should set an Assets metadata', async () => {
     const params = createMetadataParams({ signer });
     const result = await restClient.assets.createMetadata(asset, params);
 
@@ -45,13 +45,13 @@ describe('Managing metadata', () => {
     );
   });
 
-  it('should be able to read an Assets metadata', async () => {
+  it('should get an Assets metadata', async () => {
     const result = await restClient.assets.getMetadata(asset);
 
     expect(result).toEqual({ results: [{ asset: asset, id: '1', type: 'Local' }] });
   });
 
-  it('should be able to edit metadata', async () => {
+  it('should update metadata', async () => {
     const params = setMetadataParams({ signer });
 
     const result = await restClient.assets.setMetadataValue(asset, 'Local', '1', params);
@@ -68,7 +68,7 @@ describe('Managing metadata', () => {
     );
   });
 
-  it('should be able to get metadata by id', async () => {
+  it('should get metadata by id', async () => {
     const result = await restClient.assets.getMetadataById(asset, 'Local', '1');
 
     expect(result).toEqual(
