@@ -1,40 +1,34 @@
 import { assert } from 'console';
 import fetch from 'cross-fetch';
-import { join } from 'path';
 
-import { CreateAssetParams, Identity } from '~/rest/interfaces';
+import { Assets } from '~/rest/assets';
+import { Compliance } from '~/rest/compliance';
+import { Identities } from '~/rest/identities';
+import { Settlements } from '~/rest/settlements';
 
-export class Client {
-  constructor(public baseUrl: string) {}
+export class RestClient {
+  public assets: Assets;
+  public compliance: Compliance;
+  public identities: Identities;
+  public settlements: Settlements;
+
+  constructor(public baseUrl: string) {
+    this.assets = new Assets(this);
+    this.compliance = new Compliance(this);
+    this.identities = new Identities(this);
+    this.settlements = new Settlements(this);
+  }
 
   public async get<T = unknown>(path: string): Promise<T> {
-    const url = join(this.baseUrl, path);
+    const url = new URL(path, this.baseUrl).href;
     const method = 'GET';
 
     return this.fetch(url, method) as Promise<T>;
   }
 
-  public async createAsset(params: CreateAssetParams): Promise<unknown> {
-    return this.post('/assets/create', params);
-  }
-
-  public async createCdd(address: string, opts?: { polyx: number }): Promise<Identity> {
-    const { polyx } = opts || { polyx: 100000 };
-    const params = {
-      address,
-      initialPolyx: polyx,
-    };
-    const response = await this.post<Identity>('/identities/mock-cdd', params);
-
-    assert(!!response && response.did, 'createCdd response should have `did`');
-
-    return response;
-  }
-
-  public async post<T = unknown>(path: string, body?: Record<string, unknown>): Promise<T> {
-    const url = join(this.baseUrl, path);
+  public async post<T = unknown>(path: string, body: Record<string, unknown>): Promise<T> {
+    const url = new URL(path, this.baseUrl).href;
     const method = 'POST';
-
     return this.fetch(url, method, body) as Promise<T>;
   }
 
@@ -43,7 +37,7 @@ export class Client {
     method: string,
     reqBody?: Record<string, unknown>
   ): Promise<unknown> {
-    const body = reqBody ? JSON.stringify(reqBody) : undefined;
+    const body = JSON.stringify(reqBody ?? undefined);
 
     const response = await fetch(url, {
       headers: [['Content-Type', 'application/json']],

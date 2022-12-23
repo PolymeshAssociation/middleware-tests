@@ -1,33 +1,34 @@
-import Keyring from '@polkadot/keyring';
+import { TestFactory } from '~/helpers';
+import { RestClient } from '~/rest';
+import { createAssetParams } from '~/rest/assets/params';
+import { complianceRestrictionParams } from '~/rest/compliance';
+import { Identity } from '~/rest/identities/interfaces';
+import { instructionParams, venueParams } from '~/rest/settlements';
 
-import {
-  assetParams,
-  complianceRestrictionParams,
-  makeInstructionParams,
-  venueParams,
-} from '~/consts';
-import { urls } from '~/environment';
-import { Client } from '~/rest/client';
-import { Identity } from '~/rest/interfaces';
-import { getLocalMnemonics } from '~/util';
+const handles = ['issuer', 'investor'];
 
-const { ticker, assetType, name } = assetParams;
-
-describe(`Create and trade: "${ticker}"`, () => {
-  let client: Client;
+describe('Create and trading an Asset', () => {
+  let restClient: RestClient;
+  let signer: string;
+  let issuer: Identity;
   let investor: Identity;
+  let assetParams: ReturnType<typeof createAssetParams>;
+  let ticker: string;
+
   beforeAll(async () => {
-    client = new Client(urls.restApi);
+    const factory = await TestFactory.create({ handles });
+    ({ restClient } = factory);
+    issuer = factory.getSignerIdentity(handles[0]);
+    investor = factory.getSignerIdentity(handles[1]);
 
-    const mnemonics = await getLocalMnemonics();
+    ticker = factory.nextTicker();
+    signer = issuer.signer;
 
-    const keyring = new Keyring({ type: 'sr25519' });
-    const { address: investorAddress } = keyring.addFromMnemonic(mnemonics.investor);
-    investor = await client.createCdd(investorAddress);
+    assetParams = createAssetParams(ticker, { signer });
   });
 
   it('should create and fetch the Asset', async () => {
-    const txData = await client.createAsset(assetParams);
+    const txData = await restClient.assets.createAsset(assetParams);
 
     expect(txData).toMatchObject({
       transactions: expect.arrayContaining([
@@ -39,18 +40,16 @@ describe(`Create and trade: "${ticker}"`, () => {
       ]),
     });
 
-    const asset = await client.get(`/assets/${ticker}`);
+    const asset = await restClient.assets.getAsset(ticker);
     expect(asset).toMatchObject({
-      name,
-      assetType,
+      name: assetParams.name,
+      assetType: assetParams.assetType,
     });
   });
 
   it('should create compliance rules for the Asset', async () => {
-    const txData = await client.post(
-      `/assets/${ticker}/compliance-requirements/set`,
-      complianceRestrictionParams
-    );
+    const params = complianceRestrictionParams(ticker, { signer });
+    const txData = await restClient.compliance.createRestriction(ticker, params);
 
     expect(txData).toMatchObject({
       transactions: expect.arrayContaining([
@@ -62,18 +61,19 @@ describe(`Create and trade: "${ticker}"`, () => {
       ]),
     });
 
-    const requirements = await client.get(`/assets/${ticker}/compliance-requirements`);
+    const requirements = await restClient.compliance.getRestriction(ticker);
 
     expect(requirements).toMatchObject({
       requirements: expect.arrayContaining([
-        expect.objectContaining({ conditions: complianceRestrictionParams.requirements[0] }),
+        expect.objectContaining({ conditions: params.requirements[0] }),
       ]),
     });
   });
 
   let venueId: string;
   it('should create a Venue to trade the Asset', async () => {
-    const txData = await client.post('/venues/create', venueParams);
+    const params = venueParams({ signer });
+    const txData = await restClient.settlements.createVenue(params);
 
     expect(txData).toMatchObject({
       transactions: expect.arrayContaining([
@@ -90,11 +90,10 @@ describe(`Create and trade: "${ticker}"`, () => {
   });
 
   it('should create an instruction', async () => {
-    const instructionParams = makeInstructionParams(investor.did);
-    const instructionData = await client.post(
-      `/venues/${venueId}/instructions/create`,
-      instructionParams
-    );
+    const sender = issuer.did;
+    const receiver = investor.did;
+    const params = instructionParams(ticker, sender, receiver, { signer });
+    const instructionData = await restClient.settlements.createInstruction(venueId, params);
 
     expect(instructionData).toMatchObject({
       transactions: expect.arrayContaining([
@@ -108,16 +107,16 @@ describe(`Create and trade: "${ticker}"`, () => {
   });
 
   it('should affirm the created settlement', async () => {
-    const result = await client.get<{ results: string[] }>(
-      `/identities/${investor.did}/pending-instructions`
-    );
+    const result = await restClient.identities.getPendingInstructions(investor.did);
 
     const { results: pendingInstructions } = result;
-    const pendingId = pendingInstructions[0];
+    const pendingInstructionId = pendingInstructions[0];
 
-    expect(pendingId).not.toBeUndefined();
+    expect(pendingInstructionId).not.toBeUndefined();
 
-    await client.post(`/instructions/${pendingId}/affirm`, { signer: investor.primaryAddress });
+    await restClient.settlements.affirmInstruction(pendingInstructionId, {
+      signer: investor.signer,
+    });
   });
 });
 
