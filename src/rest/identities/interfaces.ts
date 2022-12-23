@@ -4,7 +4,11 @@ export interface Identity {
    */
   signer: string;
   did: string;
-  primaryAddress: string;
+  primaryAccount: {
+    account: {
+      address: string;
+    };
+  };
 }
 
 export interface PendingInstructions {

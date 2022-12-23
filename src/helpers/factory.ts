@@ -3,7 +3,7 @@ import { TestFactoryOpts } from '~/helpers/types';
 import { RestClient } from '~/rest';
 import { Identity } from '~/rest/identities';
 import { alphabet, randomNonce } from '~/util';
-import { sleep, VaultClient } from '~/vault';
+import { VaultClient } from '~/vault';
 
 const nonceLength = 8;
 const startingPolyx = 100000;
@@ -70,8 +70,7 @@ export class TestFactory {
     };
 
     for (const handle of handles) {
-      signerIdentities.push(createKeyAndIdentity(handle));
-      await sleep(18000); // ensures signer nonce wont repeat
+      await createKeyAndIdentity(handle);
     }
 
     return Promise.all(signerIdentities);
