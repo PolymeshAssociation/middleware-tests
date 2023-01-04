@@ -12,7 +12,9 @@ export class VaultClient {
   constructor(public baseUrl: string, public enginePath: string, private vaultToken: string) {}
 
   public async createAccount(name: string): Promise<VaultKey> {
-    await this.post(`/keys/${name}`, { type: 'ed25519' });
+    await this.post(`/keys/${name}`, { type: 'ed25519' }).catch((err) =>
+      console.info('could not create vault key: ', err)
+    );
     return await this.getAddress(name);
   }
 
@@ -56,6 +58,7 @@ export class VaultClient {
       method,
       body,
     });
+
     this.assertOk(response, { method, url });
 
     const res = await response.text();

@@ -1,4 +1,6 @@
-import { urls } from '~/environment';
+import { readFileSync } from 'fs';
+
+import { adminFilePath, urls } from '~/environment';
 import { TestFactoryOpts } from '~/helpers/types';
 import { RestClient } from '~/rest';
 import { Identity } from '~/rest/identities';
@@ -7,9 +9,9 @@ import { VaultClient } from '~/vault';
 
 const nonceLength = 8;
 const startingPolyx = 100000;
-const vaultUrl = 'http://localhost:8200';
-const vaultToken = 'root';
-const transitPath = 'v1/transit';
+const vaultUrl = urls.vaultApi;
+const vaultToken = urls.vaultToken;
+const transitPath = urls.vaultTransitPath;
 
 export class TestFactory {
   public nonce: string;
@@ -17,6 +19,7 @@ export class TestFactory {
   public vaultClient: VaultClient;
   public handleToIdentity: Record<string, Identity> = {};
   #alphabetIndex = 0;
+  #adminSigner = '';
 
   public static async create(opts: TestFactoryOpts): Promise<TestFactory> {
     const { handles: signers } = opts;
@@ -50,30 +53,29 @@ export class TestFactory {
    * @note This method must be called before using a signer, alternatively signers can be passed to `TestFactory.create`
    */
   public async initIdentities(handles: string[]): Promise<Identity[]> {
-    const signerIdentities: Promise<Identity>[] = [];
-
-    const createKeyAndIdentity = async (handle: string): Promise<Identity> => {
-      const vaultKeyName = this.prefixNonce(handle);
-      const exitingSigner = this.getCachedSigner(handle);
-      if (exitingSigner) {
-        return exitingSigner;
-      }
-
-      const { address, signer } = await this.vaultClient.createAccount(vaultKeyName);
-      const identity = await this.restClient.identities.createCdd(address, {
-        polyx: startingPolyx,
-      });
-      identity.signer = signer;
-      this.handleToIdentity[handle] = identity;
-
-      return identity;
-    };
+    const accounts = [];
+    const signers: string[] = [];
 
     for (const handle of handles) {
-      await createKeyAndIdentity(handle);
+      const vaultKeyName = this.prefixNonce(handle);
+      const { address, signer } = await this.vaultClient.createAccount(vaultKeyName);
+      accounts.push({ address, initialPolyx: startingPolyx });
+      signers.push(signer);
     }
 
-    return Promise.all(signerIdentities);
+    const createdResults = await this.restClient.identities.createCdd(
+      accounts,
+      this.readAdminSigner()
+    );
+
+    createdResults.forEach((identity, index) => {
+      const signer = signers[index];
+      const handle = handles[index];
+      identity.signer = signer;
+      this.setCachedSigner(handle, identity);
+    });
+
+    return handles.map((handle) => this.getSignerIdentity(handle));
   }
 
   public getSignerIdentity(handle: string): Identity {
@@ -85,14 +87,24 @@ export class TestFactory {
     return identity;
   }
 
+  private setCachedSigner(signer: string, identity: Identity) {
+    this.handleToIdentity[signer] = identity;
+  }
+
+  private readAdminSigner(): string {
+    if (this.#adminSigner === '') {
+      const admins = readFileSync(adminFilePath).toString().split(',');
+      const workerId = Number(process.env.JEST_WORKER_ID) - 1;
+      this.#adminSigner = admins[workerId];
+    }
+
+    return this.#adminSigner;
+  }
+
   private constructor() {
     const nonce = randomNonce(nonceLength);
     this.nonce = nonce;
     this.restClient = new RestClient(urls.restApi);
     this.vaultClient = new VaultClient(vaultUrl, transitPath, vaultToken);
-  }
-
-  private getCachedSigner(signer: string): Identity | undefined {
-    return this.handleToIdentity[signer];
   }
 }

@@ -1,5 +1,3 @@
-import assert from 'assert';
-
 import { RestClient } from '~/rest/client';
 import { TxBase } from '~/rest/common';
 import { Identity, PendingInstructions } from '~/rest/identities/interfaces';
@@ -15,16 +13,24 @@ export class Identities {
     return this.client.post(`/authorizations/${id}/accept`, { ...params });
   }
 
-  public async createCdd(address: string, opts: { polyx: number }): Promise<Identity> {
-    const { polyx } = opts || { polyx: 100000 };
+  public async createCdd(
+    accounts: { initialPolyx: number; address?: string }[],
+    signer: string
+  ): Promise<Identity[]> {
     const params = {
-      address,
-      initialPolyx: polyx,
+      accounts,
+      signer,
     };
-    const response = await this.client.post<Identity>('/identities/mock-cdd', params);
 
-    assert(!!response && response.did, 'createCdd response should have `did`');
+    const response = await this.client.post<Identity[]>(
+      '/developer-testing/create-identity-batch',
+      params
+    );
 
     return response;
+  }
+
+  public async createAdmins(addresses: string[]): Promise<Identity[]> {
+    return this.client.post<Identity[]>('developer-testing/create-admins', { addresses });
   }
 }
