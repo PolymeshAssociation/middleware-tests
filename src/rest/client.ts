@@ -5,18 +5,21 @@ import { Assets } from '~/rest/assets';
 import { Compliance } from '~/rest/compliance';
 import { Identities } from '~/rest/identities';
 import { Settlements } from '~/rest/settlements';
+import { TickerReservations } from '~/rest/tickerReservations';
 
 export class RestClient {
   public assets: Assets;
   public compliance: Compliance;
   public identities: Identities;
   public settlements: Settlements;
+  public tickerReservations: TickerReservations;
 
   constructor(public baseUrl: string) {
     this.assets = new Assets(this);
     this.compliance = new Compliance(this);
     this.identities = new Identities(this);
     this.settlements = new Settlements(this);
+    this.tickerReservations = new TickerReservations(this);
   }
 
   public async get<T = unknown>(path: string): Promise<T> {
