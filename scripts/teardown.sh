@@ -6,7 +6,7 @@ cd "$parent_path"
 source ./env.sh
 
 
-echo "stopping: $VAULT_CONTAINER_NAME"
+echo "Stopping: $VAULT_CONTAINER_NAME"
 docker stop $VAULT_CONTAINER_NAME
 
 yarn run polymesh-local stop --clean
