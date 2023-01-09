@@ -59,7 +59,7 @@ describe('Ticker Reservations', () => {
 
     expect(result.authorizationRequest).toEqual(
       expect.objectContaining({
-        id: expect.any(String),
+        id: expect.stringMatching(/\d+/),
         issuer: issuer.did,
         data: { type: 'TransferTicker', value: ticker },
       })
@@ -67,7 +67,6 @@ describe('Ticker Reservations', () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transferAuthId = (result.authorizationRequest as any).id;
-    expect(transferAuthId).toEqual(expect.stringMatching(/\d+/));
 
     expect(result).toEqual(assertTagPresent(expect, 'identity.addAuthorization'));
   });

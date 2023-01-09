@@ -5,6 +5,7 @@ import { Assets } from '~/rest/assets';
 import { Compliance } from '~/rest/compliance';
 import { Identities } from '~/rest/identities';
 import { Settlements } from '~/rest/settlements';
+import { Subsidy } from '~/rest/subsidy';
 import { TickerReservations } from '~/rest/tickerReservations';
 
 export class RestClient {
@@ -12,6 +13,7 @@ export class RestClient {
   public compliance: Compliance;
   public identities: Identities;
   public settlements: Settlements;
+  public subsidy: Subsidy;
   public tickerReservations: TickerReservations;
 
   constructor(public baseUrl: string) {
@@ -19,6 +21,7 @@ export class RestClient {
     this.compliance = new Compliance(this);
     this.identities = new Identities(this);
     this.settlements = new Settlements(this);
+    this.subsidy = new Subsidy(this);
     this.tickerReservations = new TickerReservations(this);
   }
 
