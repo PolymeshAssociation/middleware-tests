@@ -58,7 +58,6 @@ export class VaultClient {
       method,
       body,
     });
-
     this.assertOk(response, { method, url });
 
     const res = await response.text();
