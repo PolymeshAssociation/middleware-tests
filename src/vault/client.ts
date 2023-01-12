@@ -11,8 +11,10 @@ export const sleep = (ms: number): Promise<void> =>
 export class VaultClient {
   constructor(public baseUrl: string, public enginePath: string, private vaultToken: string) {}
 
-  public async createAccount(name: string): Promise<VaultKey> {
-    await this.post(`/keys/${name}`, { type: 'ed25519' });
+  public async createKey(name: string): Promise<VaultKey> {
+    await this.post(`/keys/${name}`, { type: 'ed25519' }).catch((err) =>
+      console.info('could not create vault key: ', err)
+    );
     return await this.getAddress(name);
   }
 
