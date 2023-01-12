@@ -5,7 +5,7 @@ import { Identity } from '~/rest/identities/interfaces';
 
 const handles = ['issuer'];
 
-describe('Managing metadata', () => {
+describe('Metadata', () => {
   let restClient: RestClient;
   let signer: string;
   let issuer: Identity;

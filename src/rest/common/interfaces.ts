@@ -8,3 +8,5 @@ export interface TxBase {
 export interface TxExtras {
   [key: string]: unknown;
 }
+
+export type TxResponse = Record<string, unknown>;
