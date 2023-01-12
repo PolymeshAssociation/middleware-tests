@@ -10,7 +10,7 @@ const maxWorkersSupported = 8;
 const initialPolyx = 100000000;
 
 export default async (): Promise<void> => {
-  const vaultClient = new VaultClient(urls.vaultApi, urls.vaultTransitPath, urls.vaultToken);
+  const vaultClient = new VaultClient(urls.vaultUrl, urls.vaultTransitPath, urls.vaultToken);
   const restClient = new RestClient(urls.restApi);
 
   const adminSigners = [...Array(maxWorkersSupported)].map((_, index) => `${index + 1}-admin`);

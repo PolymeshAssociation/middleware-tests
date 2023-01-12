@@ -1,9 +1,10 @@
 import type { Config } from '@jest/types';
 
 const config: Config.InitialOptions = {
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/js-with-babel',
   testEnvironment: 'node',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  transformIgnorePatterns: ['/node_modules/(?![@polymeshassociation/src]).+\\.js$'],
   testMatch: ['**/__tests__/**/*.(ts|tsx)'],
   testPathIgnorePatterns: ['dist'],
   moduleNameMapper: {

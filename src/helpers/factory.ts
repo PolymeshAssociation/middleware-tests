@@ -1,3 +1,6 @@
+import { HashicorpVaultSigningManager } from '@polymeshassociation/hashicorp-vault-signing-manager';
+import { Polymesh } from '@polymeshassociation/polymesh-sdk';
+
 import { urls } from '~/environment';
 import { TestFactoryOpts } from '~/helpers/types';
 import { RestClient } from '~/rest';
@@ -7,7 +10,7 @@ import { VaultClient } from '~/vault';
 
 const nonceLength = 8;
 const startingPolyx = 100000;
-const vaultUrl = urls.vaultApi;
+const { nodeUrl, vaultUrl: vaultApi } = urls;
 const vaultToken = urls.vaultToken;
 const transitPath = urls.vaultTransitPath;
 
@@ -15,6 +18,7 @@ export class TestFactory {
   public nonce: string;
   public restClient: RestClient;
   public vaultClient: VaultClient;
+
   public handleToIdentity: Record<string, Identity> = {};
   #alphabetIndex = 0;
   #adminSigner = '';
@@ -22,11 +26,21 @@ export class TestFactory {
   public static async create(opts: TestFactoryOpts): Promise<TestFactory> {
     const { handles: signers } = opts;
 
-    const factory = new TestFactory();
+    const signingManager = new HashicorpVaultSigningManager({
+      url: urls.vaultUrl,
+      token: urls.vaultToken,
+    });
+    const polymesh = await Polymesh.connect({ nodeUrl, signingManager });
+
+    const factory = new TestFactory(polymesh);
 
     if (signers) {
       await factory.initIdentities(signers);
     }
+
+    // default to signing with the admin account for the SDK
+    const adminAddress = await factory.adminAddress();
+    await polymesh.setSigningAccount(adminAddress);
 
     return factory;
   }
@@ -98,10 +112,17 @@ export class TestFactory {
     return this.#adminSigner;
   }
 
-  private constructor() {
+  private async adminAddress(): Promise<string> {
+    const adminName = this.readAdminSigner().replace(/-\d+/, ''); // remove "version"
+    const { address } = await this.vaultClient.getAddress(adminName);
+
+    return address;
+  }
+
+  private constructor(public readonly polymeshSdk: Polymesh) {
     const nonce = randomNonce(nonceLength);
     this.nonce = nonce;
     this.restClient = new RestClient(urls.restApi);
-    this.vaultClient = new VaultClient(vaultUrl, transitPath, vaultToken);
+    this.vaultClient = new VaultClient(vaultApi, transitPath, vaultToken);
   }
 }
