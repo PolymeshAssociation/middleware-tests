@@ -1,26 +1,25 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { Asset } from '@polymeshassociation/polymesh-sdk/internal';
-import {
-  GenericPolymeshTransaction,
-  TransactionStatus,
-} from '@polymeshassociation/polymesh-sdk/types';
+import { TransactionStatus } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'assert';
 
 /*
   This script showcases how to issue tokens for an Asset.
+
+  Note, for this script to work an Asset with the ticker must be made, and the signer has permission to issue tokens for it
 */
 export const issueTokens = async (
   sdk: Polymesh,
   ticker: string,
   amount: BigNumber
-): Promise<GenericPolymeshTransaction<Asset, Asset>> => {
-  const identity = await sdk.getSigningIdentity();
-  assert(identity, 'The SDK should have a signing identity to issue a token');
-
+): Promise<void> => {
   const asset = await sdk.assets.getAsset({ ticker });
 
+  // Sign with the owner of the Asset. This assumes `signingAccount` is present in the SDK's SigningManager
+  const { owner } = await asset.details();
+  const { account: signingAccount } = await owner.getPrimaryAccount();
+
   // Prepare and execute Asset issuance
-  const issueTokensProcedure = await asset.issuance.issue({ amount });
+  const issueTokensProcedure = await asset.issuance.issue({ amount }, { signingAccount });
 
   await issueTokensProcedure.run();
 
@@ -28,6 +27,4 @@ export const issueTokens = async (
     issueTokensProcedure.status === TransactionStatus.Succeeded,
     'Asset issuance transaction should have succeeded'
   );
-
-  return issueTokensProcedure;
 };

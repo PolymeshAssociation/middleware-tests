@@ -12,7 +12,7 @@ const toolingGqlUrl = process.env.TOOLING_GQL_URL || 'http://localhost:3007/grap
 export const urls = {
   nodeUrl,
   restApi,
-  vaultUrl: `${vaultUrl}${vaultTransitPath}`,
+  vaultUrl,
   vaultToken,
   vaultTransitPath,
   toolingGqlUrl,

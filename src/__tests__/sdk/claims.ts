@@ -22,6 +22,6 @@ describe('manageClaims', () => {
   });
 
   it('should execute manageClaims without errors', async () => {
-    await manageClaims(sdk, targetIdentity.did);
+    await expect(manageClaims(sdk, targetIdentity.did)).resolves.not.toThrow();
   });
 });

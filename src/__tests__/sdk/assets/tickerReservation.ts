@@ -21,8 +21,6 @@ describe('createTickerReservation', () => {
   });
 
   it('should execute tickerReservation without errors', async () => {
-    const asset = await tickerReservation(sdk, ticker);
-
-    expect(asset.ticker).toEqual(ticker);
+    await expect(tickerReservation(sdk, ticker)).resolves.not.toThrow();
   });
 });

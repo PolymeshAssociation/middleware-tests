@@ -6,13 +6,11 @@ import { TestFactoryOpts } from '~/helpers/types';
 import { RestClient } from '~/rest';
 import { Identity } from '~/rest/identities';
 import { alphabet, randomNonce } from '~/util';
-import { VaultClient } from '~/vault';
+import { sleep, VaultClient } from '~/vault';
 
 const nonceLength = 8;
 const startingPolyx = 100000;
-const { nodeUrl, vaultUrl: vaultApi } = urls;
-const vaultToken = urls.vaultToken;
-const transitPath = urls.vaultTransitPath;
+const { nodeUrl, vaultUrl, vaultToken, vaultTransitPath } = urls;
 
 export class TestFactory {
   public nonce: string;
@@ -26,27 +24,20 @@ export class TestFactory {
   public static async create(opts: TestFactoryOpts): Promise<TestFactory> {
     const { handles: signers } = opts;
 
-    const signingManager = new HashicorpVaultSigningManager({
-      url: urls.vaultUrl,
-      token: urls.vaultToken,
-    });
-
     const middleware = {
       link: urls.toolingGqlUrl,
       key: '',
     };
 
-    const polymesh = await Polymesh.connect({ nodeUrl, signingManager, middleware });
+    const polymesh = await Polymesh.connect({ nodeUrl, middleware });
 
     const factory = new TestFactory(polymesh);
+
+    await factory.setUpSdkSigningManager();
 
     if (signers) {
       await factory.initIdentities(signers);
     }
-
-    // default to signing with the admin account for the SDK
-    const adminAddress = await factory.adminAddress();
-    await polymesh.setSigningAccount(adminAddress);
 
     return factory;
   }
@@ -106,6 +97,7 @@ export class TestFactory {
   }
 
   public async close(): Promise<void> {
+    await sleep(3000);
     await this.polymeshSdk.disconnect();
   }
 
@@ -129,10 +121,21 @@ export class TestFactory {
     return address;
   }
 
+  private async setUpSdkSigningManager(): Promise<void> {
+    const signingManager = new HashicorpVaultSigningManager({
+      url: this.vaultClient.vaultUrl,
+      token: urls.vaultToken,
+    });
+    this.polymeshSdk.setSigningManager(signingManager);
+    // default to signing with the admin account for the SDK
+    const adminAddress = await this.adminAddress();
+    await this.polymeshSdk.setSigningAccount(adminAddress);
+  }
+
   private constructor(public readonly polymeshSdk: Polymesh) {
     const nonce = randomNonce(nonceLength);
     this.nonce = nonce;
     this.restClient = new RestClient(urls.restApi);
-    this.vaultClient = new VaultClient(vaultApi, transitPath, vaultToken);
+    this.vaultClient = new VaultClient(vaultUrl, vaultTransitPath, vaultToken);
   }
 }
