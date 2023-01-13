@@ -5,8 +5,9 @@ import { createAsset } from '~/sdk/assets/createAsset';
 import { getAssetHolders } from '~/sdk/assets/getAssetHolders';
 import { issueTokens } from '~/sdk/assets/issueTokens';
 
+let factory: TestFactory;
+
 describe('issueTokens', () => {
-  let factory: TestFactory;
   let ticker: string;
   let sdk: Polymesh;
 
@@ -17,6 +18,10 @@ describe('issueTokens', () => {
     ticker = factory.nextTicker();
 
     await createAsset(sdk, { ticker });
+  });
+
+  afterAll(async () => {
+    await factory.close();
   });
 
   it('should execute issueTokens without errors', async () => {

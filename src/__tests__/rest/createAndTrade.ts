@@ -6,6 +6,7 @@ import { Identity } from '~/rest/identities/interfaces';
 import { instructionParams, venueParams } from '~/rest/settlements';
 
 const handles = ['issuer', 'investor'];
+let factory: TestFactory;
 
 describe('Create and trading an Asset', () => {
   let restClient: RestClient;
@@ -16,7 +17,7 @@ describe('Create and trading an Asset', () => {
   let ticker: string;
 
   beforeAll(async () => {
-    const factory = await TestFactory.create({ handles });
+    factory = await TestFactory.create({ handles });
     ({ restClient } = factory);
     issuer = factory.getSignerIdentity(handles[0]);
     investor = factory.getSignerIdentity(handles[1]);
@@ -25,6 +26,10 @@ describe('Create and trading an Asset', () => {
     signer = issuer.signer;
 
     assetParams = createAssetParams(ticker, { signer });
+  });
+
+  afterAll(async () => {
+    await factory.close();
   });
 
   it('should create and fetch the Asset', async () => {

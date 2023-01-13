@@ -7,6 +7,7 @@ const restApi = process.env.REST_API_URL || 'http://localhost:3004';
 const vaultUrl = process.env.VAULT_API_URL || 'http://localhost:8200';
 const vaultTransitPath = process.env.VAULT_TRANSIT_PATH || '/v1/transit';
 const vaultToken = process.env.VAULT_TOKEN || 'root';
+const toolingGqlUrl = process.env.TOOLING_GQL_URL || 'http://localhost:3007/graphql';
 
 export const urls = {
   nodeUrl,
@@ -14,4 +15,5 @@ export const urls = {
   vaultUrl: `${vaultUrl}${vaultTransitPath}`,
   vaultToken,
   vaultTransitPath,
+  toolingGqlUrl,
 };

@@ -6,8 +6,9 @@ import { KnownAssetType } from '@polymeshassociation/polymesh-sdk/types';
 import { TestFactory } from '~/helpers';
 import { createAsset } from '~/sdk/assets/createAsset';
 
+let factory: TestFactory;
+
 describe('createAsset', () => {
-  let factory: TestFactory;
   let ticker: string;
   let sdk: Polymesh;
 
@@ -19,6 +20,10 @@ describe('createAsset', () => {
     sdk = factory.polymeshSdk;
 
     ticker = factory.nextTicker();
+  });
+
+  afterAll(async () => {
+    await factory.close();
   });
 
   it('should execute createAsset without errors', async () => {

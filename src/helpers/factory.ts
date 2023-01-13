@@ -30,7 +30,13 @@ export class TestFactory {
       url: urls.vaultUrl,
       token: urls.vaultToken,
     });
-    const polymesh = await Polymesh.connect({ nodeUrl, signingManager });
+
+    const middleware = {
+      link: urls.toolingGqlUrl,
+      key: '',
+    };
+
+    const polymesh = await Polymesh.connect({ nodeUrl, signingManager, middleware });
 
     const factory = new TestFactory(polymesh);
 
@@ -97,6 +103,10 @@ export class TestFactory {
     }
 
     return identity;
+  }
+
+  public async close(): Promise<void> {
+    await this.polymeshSdk.disconnect();
   }
 
   private setCachedSigner(signer: string, identity: Identity) {
