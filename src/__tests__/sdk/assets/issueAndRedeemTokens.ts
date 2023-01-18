@@ -4,10 +4,11 @@ import { TestFactory } from '~/helpers';
 import { createAsset } from '~/sdk/assets/createAsset';
 import { getAssetHolders } from '~/sdk/assets/getAssetHolders';
 import { issueTokens } from '~/sdk/assets/issueTokens';
+import { redeemTokens } from '~/sdk/assets/redeemTokens';
 
 let factory: TestFactory;
 
-describe('issueTokens', () => {
+describe('issueAndRedeemTokens', () => {
   let ticker: string;
   let sdk: Polymesh;
 
@@ -30,5 +31,9 @@ describe('issueTokens', () => {
 
   it('should get asset holders', async () => {
     await expect(getAssetHolders(sdk, ticker)).resolves.not.toThrow();
+  });
+
+  it('should execute redeemTokens without errors', async () => {
+    await expect(redeemTokens(sdk, ticker, new BigNumber(5))).resolves.not.toThrow();
   });
 });
