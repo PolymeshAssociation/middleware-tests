@@ -1,6 +1,4 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { Asset } from '@polymeshassociation/polymesh-sdk/types';
-import assert from 'node:assert';
 
 import { TestFactory } from '~/helpers';
 import { createAsset } from '~/sdk/assets/createAsset';

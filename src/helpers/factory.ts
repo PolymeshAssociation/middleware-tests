@@ -1,7 +1,7 @@
 import { HashicorpVaultSigningManager } from '@polymeshassociation/hashicorp-vault-signing-manager';
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 
-import { urls } from '~/environment';
+import { env } from '~/environment';
 import { TestFactoryOpts } from '~/helpers/types';
 import { RestClient } from '~/rest';
 import { Identity } from '~/rest/identities';
@@ -10,7 +10,7 @@ import { sleep, VaultClient } from '~/vault';
 
 const nonceLength = 8;
 const startingPolyx = 100000;
-const { nodeUrl, vaultUrl, vaultToken, vaultTransitPath } = urls;
+const { nodeUrl, vaultUrl, vaultToken, vaultTransitPath } = env;
 
 export class TestFactory {
   public nonce: string;
@@ -25,7 +25,7 @@ export class TestFactory {
     const { handles: signers } = opts;
 
     const middleware = {
-      link: urls.toolingGqlUrl,
+      link: env.toolingGqlUrl,
       key: '',
     };
 
@@ -97,8 +97,8 @@ export class TestFactory {
   }
 
   public async close(): Promise<void> {
-    await sleep(3000);
-    await this.polymeshSdk.disconnect();
+    await sleep(1000);
+    await Promise.all([this.cleanupIdentities(), this.polymeshSdk.disconnect()]);
   }
 
   private setCachedSigner(signer: string, identity: Identity) {
@@ -124,7 +124,7 @@ export class TestFactory {
   private async setUpSdkSigningManager(): Promise<void> {
     const signingManager = new HashicorpVaultSigningManager({
       url: this.vaultClient.vaultUrl,
-      token: urls.vaultToken,
+      token: env.vaultToken,
     });
     this.polymeshSdk.setSigningManager(signingManager);
     // default to signing with the admin account for the SDK
@@ -132,10 +132,25 @@ export class TestFactory {
     await this.polymeshSdk.setSigningAccount(adminAddress);
   }
 
+  private async cleanupIdentities(): Promise<void> {
+    if (env.preserveKeys) {
+      return;
+    }
+
+    await Promise.all(
+      Object.keys(this.handleToIdentity).map(async (handle) => {
+        const keyName = this.prefixNonce(handle);
+
+        await this.vaultClient.updateKey(keyName, true);
+        await this.vaultClient.deleteKey(keyName);
+      })
+    );
+  }
+
   private constructor(public readonly polymeshSdk: Polymesh) {
     const nonce = randomNonce(nonceLength);
     this.nonce = nonce;
-    this.restClient = new RestClient(urls.restApi);
+    this.restClient = new RestClient(env.restApi);
     this.vaultClient = new VaultClient(vaultUrl, vaultTransitPath, vaultToken);
   }
 }

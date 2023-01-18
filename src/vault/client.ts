@@ -13,9 +13,22 @@ export class VaultClient {
 
   public async createKey(name: string): Promise<VaultKey> {
     await this.post(`/keys/${name}`, { type: 'ed25519' }).catch((err) =>
-      console.info('could not create vault key: ', err)
+      console.info('could not create vault key: ', name, err)
     );
     return await this.getAddress(name);
+  }
+
+  public async updateKey(name: string, deletable: boolean): Promise<void> {
+    await this.post(`/keys/${name}/config`, { deletion_allowed: deletable }).catch((err) =>
+      console.info('could not update vault key', name, err)
+    );
+  }
+
+  /**
+   * @note key must first be marked as deletable with `updateKey`
+   */
+  public async deleteKey(name: string): Promise<void> {
+    await this.delete(`/keys/${name}`);
   }
 
   public async getAddress(name: string): Promise<VaultKey> {
@@ -42,6 +55,13 @@ export class VaultClient {
     const method = 'POST';
 
     return this.fetch(url, method, body) as Promise<T>;
+  }
+
+  public async delete<T = unknown>(path: string): Promise<T> {
+    const url = new URL(join(this.transitPath, path), this.baseUrl).href;
+    const method = 'DELETE';
+
+    return this.fetch(url, method) as Promise<T>;
   }
 
   public get vaultUrl(): string {

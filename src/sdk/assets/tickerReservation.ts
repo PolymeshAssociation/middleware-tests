@@ -26,7 +26,7 @@ export const tickerReservation = async (sdk: Polymesh, ticker: string): Promise<
 
   assert(
     owner?.did === identity.did,
-    'The owner of the Reservation should be the signer of the transaction'
+    `The owner of the Reservation should be the signer of the transaction. Compared owner: ${owner?.did} to identity: ${identity.did}`
   );
   assert(
     expiryDate && expiryDate > new Date(),
