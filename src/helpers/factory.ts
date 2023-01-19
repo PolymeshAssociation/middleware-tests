@@ -1,4 +1,4 @@
-import { HashicorpVaultSigningManager } from '@polymeshassociation/hashicorp-vault-signing-manager';
+import { LocalSigningManager } from '@polymeshassociation/local-signing-manager';
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 
 import { env } from '~/environment';
@@ -6,7 +6,7 @@ import { TestFactoryOpts } from '~/helpers/types';
 import { RestClient } from '~/rest';
 import { Identity } from '~/rest/identities';
 import { alphabet, randomNonce } from '~/util';
-import { sleep, VaultClient } from '~/vault';
+import { VaultClient } from '~/vault';
 
 const nonceLength = 8;
 const startingPolyx = 100000;
@@ -113,22 +113,18 @@ export class TestFactory {
     return this.#adminSigner;
   }
 
-  private async adminAddress(): Promise<string> {
-    const adminName = this.readAdminSigner().replace(/-\d+/, ''); // remove "version"
-    const { address } = await this.vaultClient.getAddress(adminName);
-
-    return address;
-  }
-
   private async setUpSdkSigningManager(): Promise<void> {
-    const signingManager = new HashicorpVaultSigningManager({
-      url: this.vaultClient.vaultUrl,
-      token: env.vaultToken,
-    });
-    this.polymeshSdk.setSigningManager(signingManager);
-    // default to signing with the admin account for the SDK
-    const adminAddress = await this.adminAddress();
-    await this.polymeshSdk.setSigningAccount(adminAddress);
+    const mnemonic = LocalSigningManager.generateAccount();
+    const signingManager = await LocalSigningManager.create({ accounts: [{ mnemonic }] });
+
+    await this.polymeshSdk.setSigningManager(signingManager);
+
+    const addresses = await signingManager.getAccounts();
+
+    const accounts = addresses.map((address) => ({ address, initialPolyx: startingPolyx }));
+
+    // note this is inefficient and should be batched with given identities to be made
+    await this.restClient.identities.createTestAccounts(accounts, this.readAdminSigner());
   }
 
   private async cleanupIdentities(): Promise<void> {
