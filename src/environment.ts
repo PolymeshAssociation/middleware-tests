@@ -9,9 +9,9 @@ const vaultTransitPath = process.env.VAULT_TRANSIT_PATH || '/v1/transit';
 const vaultToken = process.env.VAULT_TOKEN || 'root';
 const toolingGqlUrl = process.env.TOOLING_GQL_URL || 'http://localhost:3007/graphql';
 /**
- * Set to a truthy value to preserve Vault keys. Performance may suffer when too many keys are present
+ * Set to a truthy value to remove used Vault keys
  */
-const preserveKeys = !!process.env.PRESERVE_KEYS || false;
+const deleteUsedKeys = !!process.env.DELETE_USED_KEYS || false;
 
 export const env = {
   nodeUrl,
@@ -20,5 +20,5 @@ export const env = {
   vaultToken,
   vaultTransitPath,
   toolingGqlUrl,
-  preserveKeys,
+  deleteUsedKeys,
 };
