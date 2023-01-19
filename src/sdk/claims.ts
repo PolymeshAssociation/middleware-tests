@@ -5,6 +5,7 @@ import assert from 'node:assert';
 /*
   This function showcases Claim related functionality. It:
     - Add a claim
+    - Waits for middleware to sync
     - Revoke a claim
     - Get CDD claims
     - Get investor uniqueness claims
@@ -35,14 +36,23 @@ export const manageClaims = async (sdk: Polymesh, targetDid: string): Promise<vo
     },
     { signingAccount }
   );
+
+  const middlewareSynced = () =>
+    new Promise((resolve) => addClaimTx.onProcessedByMiddleware(resolve));
+
   await addClaimTx.run();
   assert(addClaimTx.status === TransactionStatus.Succeeded, 'Adding a Claim should have succeeded');
 
-  // Revoke a claim
-  const issuedClaims = await sdk.claims.getIssuedClaims({ target: identity.did });
+  await middlewareSynced();
 
+  // Get issued claims
+  const issuedClaims = await sdk.claims.getIssuedClaims({
+    target: identity.did,
+    includeExpired: false,
+  });
   assert(issuedClaims.data.length, 'The default signer should have at least one issued claim');
 
+  // select the first one to revoke
   const claimToRevoke = issuedClaims.data[0];
 
   // Prepare and run the revoke claim transaction
