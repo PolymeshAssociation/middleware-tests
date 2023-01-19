@@ -15,34 +15,43 @@ export const manageClaims = async (sdk: Polymesh, targetDid: string): Promise<vo
   const identity = await sdk.getSigningIdentity();
   assert(identity, 'The SDK should have a signing Identity in order to manage claims');
 
+  const { account: signingAccount } = await identity.getPrimaryAccount();
+
   // Prepare and run the add claim transaction
-  const addClaimTx = await sdk.claims.addClaims({
-    claims: [
-      {
-        target: targetDid,
-        claim: {
-          type: ClaimType.Accredited,
-          scope: {
-            type: ScopeType.Ticker,
-            value: 'TICKER',
+  const addClaimTx = await sdk.claims.addClaims(
+    {
+      claims: [
+        {
+          target: targetDid,
+          claim: {
+            type: ClaimType.Accredited,
+            scope: {
+              type: ScopeType.Ticker,
+              value: 'TICKER',
+            },
           },
         },
-      },
-    ],
-  });
+      ],
+    },
+    { signingAccount }
+  );
   await addClaimTx.run();
   assert(addClaimTx.status === TransactionStatus.Succeeded, 'Adding a Claim should have succeeded');
 
   // Revoke a claim
-  const issuedClaims = await sdk.claims.getIssuedClaims();
+  const issuedClaims = await sdk.claims.getIssuedClaims({ target: identity.did });
+
   assert(issuedClaims.data.length, 'The default signer should have at least one issued claim');
 
   const claimToRevoke = issuedClaims.data[0];
 
   // Prepare and run the revoke claim transaction
-  const revokeQ = await sdk.claims.revokeClaims({
-    claims: [claimToRevoke],
-  });
+  const revokeQ = await sdk.claims.revokeClaims(
+    {
+      claims: [claimToRevoke],
+    },
+    { signingAccount }
+  );
   await revokeQ.run();
 
   // This following portion demonstrates different ways to fetch claims
