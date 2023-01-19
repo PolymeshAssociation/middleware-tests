@@ -22,7 +22,6 @@ export const issueTokens = async (
   const issueTokensProcedure = await asset.issuance.issue({ amount }, { signingAccount });
 
   await issueTokensProcedure.run();
-
   assert(
     issueTokensProcedure.status === TransactionStatus.Succeeded,
     'Asset issuance transaction should have succeeded'

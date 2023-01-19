@@ -27,7 +27,6 @@ export const manageAssetDocuments = async (sdk: Polymesh, asset: Asset): Promise
 
   // Note - the result is paginated in case there are many documents
   const addedDocs = await asset.documents.get();
-
   assert(
     documents.length === addedDocs.data.length,
     'The documents should be the same length as the params'
@@ -38,7 +37,6 @@ export const manageAssetDocuments = async (sdk: Polymesh, asset: Asset): Promise
   await setDocumentsTx.run();
 
   const updatedDocs = await asset.documents.get();
-
   assert(
     updatedDocs.data.length - addedDocs.data.length === 1,
     'A document should have been removed'

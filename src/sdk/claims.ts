@@ -15,7 +15,7 @@ export const manageClaims = async (sdk: Polymesh, targetDid: string): Promise<vo
   const identity = await sdk.getSigningIdentity();
   assert(identity, 'The SDK should have a signing Identity in order to manage claims');
 
-  // Prepare and execute the add claim transaction
+  // Prepare and run the add claim transaction
   const addClaimTx = await sdk.claims.addClaims({
     claims: [
       {
@@ -33,9 +33,19 @@ export const manageClaims = async (sdk: Polymesh, targetDid: string): Promise<vo
   await addClaimTx.run();
   assert(addClaimTx.status === TransactionStatus.Succeeded, 'Adding a Claim should have succeeded');
 
-  // TODO add revoke claim example
+  // Revoke a claim
+  const issuedClaims = await sdk.claims.getIssuedClaims();
+  assert(issuedClaims.data.length, 'The default signer should have at least one issued claim');
 
-  // This portion demonstrates different ways to fetch claims
+  const claimToRevoke = issuedClaims.data[0];
+
+  // Prepare and run the revoke claim transaction
+  const revokeQ = await sdk.claims.revokeClaims({
+    claims: [claimToRevoke],
+  });
+  await revokeQ.run();
+
+  // This following portion demonstrates different ways to fetch claims
 
   // Note, without specifying `target` the signingIdentity claims will be fetched
   const signerCddClaims = await sdk.claims.getCddClaims();
@@ -50,11 +60,11 @@ export const manageClaims = async (sdk: Polymesh, targetDid: string): Promise<vo
     '`getInvestorUniquenessClaims` should return an Array'
   );
 
-  // Note, with `target` specified Claims for different Identities can be found
+  // `target` can specify which Identity to fetch Claims for
   const targetingClaims = await sdk.claims.getTargetingClaims({ target: targetDid });
   assert(Array.isArray(targetingClaims.data), 'Data should be an Array for `getTargetingClaims`');
 
-  // Get any claims the target might have issued
-  const issuedClaims = await sdk.claims.getIssuedClaims({ target: targetDid });
-  assert(Array.isArray(issuedClaims.data), 'Data should be an Array for `getIssuedClaims`');
+  // `target` here refers to the issuer of the claim
+  const claimsIssuedByTarget = await sdk.claims.getIssuedClaims({ target: targetDid });
+  assert(Array.isArray(claimsIssuedByTarget.data), 'Data should be an Array for `getIssuedClaims`');
 };

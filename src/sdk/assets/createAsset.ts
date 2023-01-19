@@ -28,7 +28,6 @@ export const createAsset = async (
 
   // The `Asset` entity will be returned after the transaction is finalized
   const asset = await createAssetTx.run();
-
   assert(asset.ticker === params.ticker, 'The Asset should have the same ticker as the params');
 
   return asset;

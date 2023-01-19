@@ -1,5 +1,5 @@
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { Asset, KnownAssetType } from '@polymeshassociation/polymesh-sdk/types';
+import { KnownAssetType } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'assert';
 
 /*
@@ -8,9 +8,8 @@ import assert from 'assert';
     - Fetches its details
     - Creates the Asset
 */
-export const tickerReservation = async (sdk: Polymesh, ticker: string): Promise<Asset> => {
+export const tickerReservation = async (sdk: Polymesh, ticker: string): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
-
   assert(identity, 'The SDK should have a signing account to reserve a ticker');
 
   // Prepare the reservation transaction. Note, this call will validate the ticker is available
@@ -23,7 +22,6 @@ export const tickerReservation = async (sdk: Polymesh, ticker: string): Promise<
 
   // the Reservation has methods to get its details, or to finish creating the Asset
   const { expiryDate, owner } = await reservation.details();
-
   assert(
     owner?.did === identity.did,
     `The owner of the Reservation should be the signer of the transaction. Compared owner: ${owner?.did} to identity: ${identity.did}`
@@ -33,20 +31,16 @@ export const tickerReservation = async (sdk: Polymesh, ticker: string): Promise<
     'The expiry date should be a defined date in the future'
   );
 
-  // Prepare the Asset creation transaction
-  const createTx = await reservation.createAsset({
+  // Prepare and run the create Asset transaction
+  const createAssetTx = await reservation.createAsset({
     name: 'Reservation Demo',
     isDivisible: true,
     assetType: KnownAssetType.EquityCommon,
     requireInvestorUniqueness: false,
   });
+  await createAssetTx.run();
 
-  // Create the Asset
-  const asset = await createTx.run();
-
+  // Fetch the Reservation details after the Asset has been created
   const { expiryDate: expiryAfterCreate } = await reservation.details();
-
   assert(!expiryAfterCreate, 'The expiry after Asset creation should be null');
-
-  return asset;
 };
