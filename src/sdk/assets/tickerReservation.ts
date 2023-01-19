@@ -12,10 +12,15 @@ export const tickerReservation = async (sdk: Polymesh, ticker: string): Promise<
   const identity = await sdk.getSigningIdentity();
   assert(identity, 'The SDK should have a signing account to reserve a ticker');
 
+  const { account: signingAccount } = await identity.getPrimaryAccount();
+
   // Prepare the reservation transaction. Note, this call will validate the ticker is available
-  const reserveTx = await sdk.assets.reserveTicker({
-    ticker,
-  });
+  const reserveTx = await sdk.assets.reserveTicker(
+    {
+      ticker,
+    },
+    { signingAccount }
+  );
 
   // Reserve the ticker
   const reservation = await reserveTx.run();
@@ -24,7 +29,7 @@ export const tickerReservation = async (sdk: Polymesh, ticker: string): Promise<
   const { expiryDate, owner } = await reservation.details();
   assert(
     owner?.did === identity.did,
-    `The owner of the Reservation should be the signer of the transaction. Compared owner: ${owner?.did} to identity: ${identity.did}`
+    `The owner of the Reservation for ${ticker} should be the signer of the transaction. Compared owner: ${owner?.did} to identity: ${identity.did}`
   );
   assert(
     expiryDate && expiryDate > new Date(),
@@ -32,12 +37,15 @@ export const tickerReservation = async (sdk: Polymesh, ticker: string): Promise<
   );
 
   // Prepare and run the create Asset transaction
-  const createAssetTx = await reservation.createAsset({
-    name: 'Reservation Demo',
-    isDivisible: true,
-    assetType: KnownAssetType.EquityCommon,
-    requireInvestorUniqueness: false,
-  });
+  const createAssetTx = await reservation.createAsset(
+    {
+      name: 'Reservation Demo',
+      isDivisible: true,
+      assetType: KnownAssetType.EquityCommon,
+      requireInvestorUniqueness: false,
+    },
+    { signingAccount }
+  );
   await createAssetTx.run();
 
   // Fetch the Reservation details after the Asset has been created
