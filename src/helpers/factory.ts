@@ -97,7 +97,6 @@ export class TestFactory {
   }
 
   public async close(): Promise<void> {
-    await sleep(1000);
     await Promise.all([this.cleanupIdentities(), this.polymeshSdk.disconnect()]);
   }
 
