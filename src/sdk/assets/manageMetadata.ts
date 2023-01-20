@@ -1,5 +1,5 @@
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { MetadataEntry, MetadataLockStatus } from '@polymeshassociation/polymesh-sdk/types';
+import { MetadataLockStatus, MetadataType } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 /*
@@ -23,59 +23,40 @@ export const manageMetadata = async (sdk: Polymesh, ticker: string): Promise<voi
 
   const asset = await sdk.assets.getAsset({ ticker });
 
-  /**
-   * Sets metadata value and details about the metadata value
-   *
-   * Demonstrates wrapping
-   */
-  const setMetadataValueAndDetails = async (metadata: MetadataEntry): Promise<void> => {
-    const value = 'Example Metadata';
-    const setMetadataTx = await metadata.set({
-      value,
-    });
-    await setMetadataTx.run();
-
-    const expiry = new Date();
-    expiry.setFullYear(expiry.getFullYear() + 1);
-
-    const lockedUntil = new Date(new Date().getTime() + 30 * 24 * 60 * 60);
-
-    const setDetailsTx = await metadata.set({
-      details: {
-        expiry,
-        lockStatus: MetadataLockStatus.LockedUntil,
-        lockedUntil,
-      },
-    });
-    await setDetailsTx.run();
-  };
-
   // register a new metadata key for the asset
   const registerTx = await asset.metadata.register({
     name: 'LOCAL-METADATA',
     specs: { description: 'This is a local asset metadata', url: 'https://www.example.com' },
   });
-  const localMetadata = await registerTx.run();
+  const metadata = await registerTx.run();
 
   // Now set values for the metadata
-  await setMetadataValueAndDetails(localMetadata);
+  const value = 'Example Metadata';
+  const expiry = new Date();
+  expiry.setFullYear(expiry.getFullYear() + 1);
+  const lockedUntil = new Date(new Date().getTime() + 30 * 24 * 60 * 60);
 
-  // register another metadata key and set values for it
-  const registerAndSetTx = await asset.metadata.register({
-    name: 'LOCAL-METADATA-2',
-    specs: { description: 'This is a local asset metadata 2', url: 'https://www.example.com/2' },
-    value: 'Metadata Value',
+  const setDetailsTx = await metadata.set({
+    value,
     details: {
-      expiry: null,
-      lockStatus: MetadataLockStatus.Locked,
+      expiry,
+      lockStatus: MetadataLockStatus.LockedUntil,
+      lockedUntil,
     },
   });
-  await registerAndSetTx.run();
-
-  // Fetch all metadata
-  const allMetadata = await asset.metadata.get();
-  allMetadata.forEach((metadata) => console.log(metadata.toHuman()));
+  await setDetailsTx.run();
 
   // Fetch global metadata keys
-  await sdk.assets.getGlobalMetadataKeys();
+  const globalKeys = await sdk.assets.getGlobalMetadataKeys();
+
+  if (globalKeys.length) {
+    // Global metadata functions like local metadata, except the keys are set by the governance council
+    const globalMetadata = await asset.metadata.getOne({
+      type: MetadataType.Global,
+      id: globalKeys[0].id,
+    });
+
+    const globalSetTx = await globalMetadata.set({ value });
+    globalSetTx.run();
+  }
 };

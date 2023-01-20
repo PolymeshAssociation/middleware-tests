@@ -2,7 +2,7 @@ import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 
 import { TestFactory } from '~/helpers';
 import { Identity } from '~/rest/identities';
-import { manageClaims } from '~/sdk/claims';
+import { manageClaims } from '~/sdk/identities/claims';
 
 let factory: TestFactory;
 const handles = ['claimTarget'];
