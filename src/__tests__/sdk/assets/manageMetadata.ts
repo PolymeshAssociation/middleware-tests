@@ -1,27 +1,28 @@
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 
 import { TestFactory } from '~/helpers';
-import { batchTransactions } from '~/sdk/batchTransactions';
+import { createAsset } from '~/sdk/assets/createAsset';
+import { manageMetadata } from '~/sdk/assets/manageMetadata';
 
 let factory: TestFactory;
-const handles = ['batch-tester'];
 
-describe('batchTransactions', () => {
+describe('createAsset', () => {
   let ticker: string;
   let sdk: Polymesh;
 
   beforeAll(async () => {
-    factory = await TestFactory.create({ handles });
+    factory = await TestFactory.create({});
     sdk = factory.polymeshSdk;
 
     ticker = factory.nextTicker();
+    await createAsset(sdk, { ticker });
   });
 
   afterAll(async () => {
     await factory.close();
   });
 
-  it('should execute batchTransactions without errors', async () => {
-    await expect(batchTransactions(sdk, ticker)).resolves.not.toThrow();
+  it('should execute manageMetadata without errors', async () => {
+    await manageMetadata(sdk, ticker);
   });
 });

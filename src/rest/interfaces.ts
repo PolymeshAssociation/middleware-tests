@@ -17,3 +17,7 @@ export interface PolymeshLocalSettings {
   restSigners: string;
   restMnemonics: string;
 }
+
+export interface ResultSet<T> {
+  results: T[];
+}

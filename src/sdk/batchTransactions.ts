@@ -7,18 +7,11 @@ import { assert } from 'console';
  * This script showcases bundling transactions into a batch,
  * and splitting an existing batch into separate transactions
  */
-export const batchTransactions = async (
-  sdk: Polymesh,
-  ticker: string,
-  signingAccount: string
-): Promise<void> => {
+export const batchTransactions = async (sdk: Polymesh, ticker: string): Promise<void> => {
   // Batching 3 different transactions
-  const reserveTickerTx = await sdk.assets.reserveTicker({ ticker }, { signingAccount });
-  const createPortfolioTx = await sdk.identities.createPortfolio(
-    { name: `${ticker}-PORTFOLIO` },
-    { signingAccount }
-  );
-  const freezeTx = await sdk.accountManagement.freezeSecondaryAccounts({ signingAccount });
+  const reserveTickerTx = await sdk.assets.reserveTicker({ ticker });
+  const createPortfolioTx = await sdk.identities.createPortfolio({ name: `${ticker}-PORTFOLIO` });
+  const freezeTx = await sdk.accountManagement.freezeSecondaryAccounts();
 
   const batchTx1 = await sdk.createTransactionBatch({
     // `as const` is necessary so that the array is identified as a tuple
