@@ -61,10 +61,9 @@ export const portfolioCustody = async (sdk: Polymesh, custodianDid: string): Pro
   // The custodian can get all non owned portfolios where they are the custodian - note there are pagination options
   const custodiedPortfolios = await custodian.portfolios.getCustodiedPortfolios();
 
-  // Quit being a custodian
+  // Quit being a custodian of a Portfolio
   const [portfolioToQuit] = custodiedPortfolios.data;
 
-  // TODO, quit custody has a bug where non default account cannot leave the default signer portfolios
-  // const quitCustodyTx = await portfolioToQuit.quitCustody({ signingAccount: custodianAccount });
-  // await quitCustodyTx.run();
+  const quitCustodyTx = await portfolioToQuit.quitCustody({ signingAccount: custodianAccount });
+  await quitCustodyTx.run();
 };
