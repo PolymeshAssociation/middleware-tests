@@ -6,7 +6,7 @@ import { manageMetadata } from '~/sdk/assets/manageMetadata';
 
 let factory: TestFactory;
 
-describe('createAsset', () => {
+describe('manageMetadata', () => {
   let ticker: string;
   let sdk: Polymesh;
 

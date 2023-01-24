@@ -7,7 +7,7 @@ import { createAsset } from '~/sdk/assets/createAsset';
 
 let factory: TestFactory;
 
-describe('createAsset', () => {
+describe('addAssetAgent', () => {
   let ticker: string;
   let targetDid: string;
   let sdk: Polymesh;
@@ -19,7 +19,9 @@ describe('createAsset', () => {
     const targetMnemonic = LocalSigningManager.generateAccount();
     const targetAddress = factory.signingManager.addAccount({ mnemonic: targetMnemonic });
 
-    ({ results: [{ did: targetDid }] } = await factory.createIdentityForAddresses([targetAddress]));
+    ({
+      results: [{ did: targetDid }],
+    } = await factory.createIdentityForAddresses([targetAddress]));
 
     ticker = factory.nextTicker();
     await createAsset(sdk, { ticker });

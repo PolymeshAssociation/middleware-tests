@@ -14,7 +14,7 @@ describe('portfolioCustody', () => {
     factory = await TestFactory.create({});
 
     const mnemonic = LocalSigningManager.generateAccount();
-    const custodianAddress = await factory.signingManager.addAccount({ mnemonic });
+    const custodianAddress = factory.signingManager.addAccount({ mnemonic });
     sdk = factory.polymeshSdk;
 
     ({

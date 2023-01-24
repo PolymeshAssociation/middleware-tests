@@ -5,7 +5,7 @@ import { tickerReservation } from '~/sdk/assets/tickerReservation';
 
 let factory: TestFactory;
 
-describe('createTickerReservation', () => {
+describe('tickerReservation', () => {
   let ticker: string;
   let sdk: Polymesh;
 
