@@ -8,7 +8,6 @@ import { wellKnown } from '~/consts';
   This script showcases Dividend Distribution related functionality. It:
     - Creates a Dividend Distribution
     - Modifies its Checkpoint
-    - Fetches the new Checkpoint
     - Fetches the Distribution details
     - Fetches all the Distribution participants
     - Pushes dividend payments
