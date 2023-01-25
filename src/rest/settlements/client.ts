@@ -1,5 +1,6 @@
 import { RestClient } from '~/rest/client';
 import { TxBase } from '~/rest/common';
+import { RestResult } from '~/rest/interfaces';
 import { instructionParams, venueParams } from '~/rest/settlements/params';
 
 export class Settlements {
@@ -12,11 +13,11 @@ export class Settlements {
   public async createInstruction(
     venueId: string,
     params: ReturnType<typeof instructionParams>
-  ): Promise<unknown> {
+  ): Promise<RestResult> {
     return this.client.post(`/venues/${venueId}/instructions/create`, params);
   }
 
-  public async affirmInstruction(instructionId: string, txBase: TxBase): Promise<unknown> {
+  public async affirmInstruction(instructionId: string, txBase: TxBase): Promise<RestResult> {
     return this.client.post(`/instructions/${instructionId}/affirm`, { ...txBase });
   }
 }

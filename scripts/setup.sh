@@ -11,7 +11,4 @@ sleep 3
 echo 'enabling vault transit engine'
 docker exec --env VAULT_ADDR='http://localhost:8200' --env VAULT_TOKEN=$VAULT_ROOT_TOKEN $VAULT_CONTAINER_NAME sh -c 'vault secrets enable transit'
 
-echo 'creating a default key'
-curl  --silent --header "X-Vault-Token: $VAULT_ROOT_TOKEN" "http://localhost:8200/v1/transit/keys/first" -d '{"type": "ed25519"}'
-
 yarn run polymesh-local start -v $CHAIN_VERSION -c --vaultUrl="http://host.docker.internal:$VAULT_PORT/v1/transit" --vaultToken=$VAULT_ROOT_TOKEN

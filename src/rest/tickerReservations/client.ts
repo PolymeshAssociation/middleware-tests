@@ -1,5 +1,6 @@
 import { RestClient } from '~/rest/client';
 import { TxBase } from '~/rest/common';
+import { RestResult } from '~/rest/interfaces';
 import {
   reserveTickerParams,
   transferTickerReservationParams,
@@ -8,15 +9,15 @@ import {
 export class TickerReservations {
   constructor(private client: RestClient) {}
 
-  public async reserve(params: ReturnType<typeof reserveTickerParams>): Promise<unknown> {
+  public async reserve(params: ReturnType<typeof reserveTickerParams>): Promise<RestResult> {
     return this.client.post('/ticker-reservations/reserve-ticker', params);
   }
 
-  public async getReservation(ticker: string): Promise<unknown> {
+  public async getReservation(ticker: string): Promise<RestResult> {
     return this.client.get(`/ticker-reservations/${ticker}`);
   }
 
-  public async extend(ticker: string, params: TxBase): Promise<unknown> {
+  public async extend(ticker: string, params: TxBase): Promise<RestResult> {
     return this.client.post(`/ticker-reservations/${ticker}/extend`, { ...params });
   }
 
@@ -27,7 +28,7 @@ export class TickerReservations {
     return this.client.post(`/ticker-reservations/${ticker}/transfer-ownership`, params);
   }
 
-  public async getIdentityReservations(did: string): Promise<unknown> {
+  public async getIdentityReservations(did: string): Promise<RestResult> {
     return this.client.get(`/identities/${did}/ticker-reservations`);
   }
 }

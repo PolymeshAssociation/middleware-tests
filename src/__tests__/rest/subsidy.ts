@@ -5,6 +5,7 @@ import { Identity } from '~/rest/identities/interfaces';
 import { createSubsidyParams, quitSubsidyParams, setSubsidyAllowanceParams } from '~/rest/subsidy';
 
 const handles = ['subsidizer', 'beneficiary'];
+let factory: TestFactory;
 
 describe('Subsidy', () => {
   const setAllowanceAmount = 777;
@@ -18,7 +19,7 @@ describe('Subsidy', () => {
   let authId: string;
 
   beforeAll(async () => {
-    const factory = await TestFactory.create({ handles });
+    factory = await TestFactory.create({ handles });
     ({ restClient } = factory);
     subsidizer = factory.getSignerIdentity(handles[0]);
     subsidizerAddress = subsidizer.primaryAccount.account.address;
@@ -26,6 +27,10 @@ describe('Subsidy', () => {
     beneficiaryAddress = beneficiary.primaryAccount.account.address;
 
     signer = subsidizer.signer;
+  });
+
+  afterAll(async () => {
+    await factory.close();
   });
 
   it('should subsidize an account', async () => {

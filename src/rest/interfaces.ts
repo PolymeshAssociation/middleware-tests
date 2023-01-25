@@ -17,3 +17,29 @@ export interface PolymeshLocalSettings {
   restSigners: string;
   restMnemonics: string;
 }
+
+interface SingleResult {
+  type: 'single';
+  blockHash: string;
+  transactionHash: string;
+  blockNumber: string;
+  transactionTag: string;
+}
+interface BatchResult {
+  type: 'batch';
+  blockHash: string;
+  transactionHash: string;
+  blockNumber: string;
+  transactionTags: string[];
+}
+
+export interface RestSuccessResult {
+  transactions: SingleResult[] | BatchResult[];
+}
+export interface RestErrorResult {
+  error: string;
+  message: string;
+  statusCode: number;
+}
+
+export type RestResult = RestSuccessResult | RestErrorResult;

@@ -1,4 +1,7 @@
-import { urls } from '~/environment';
+import { LocalSigningManager } from '@polymeshassociation/local-signing-manager';
+import { Polymesh } from '@polymeshassociation/polymesh-sdk';
+
+import { env } from '~/environment';
 import { TestFactoryOpts } from '~/helpers/types';
 import { RestClient } from '~/rest';
 import { Identity } from '~/rest/identities';
@@ -7,14 +10,13 @@ import { VaultClient } from '~/vault';
 
 const nonceLength = 8;
 const startingPolyx = 100000;
-const vaultUrl = urls.vaultApi;
-const vaultToken = urls.vaultToken;
-const transitPath = urls.vaultTransitPath;
+const { nodeUrl, vaultUrl, vaultToken, vaultTransitPath } = env;
 
 export class TestFactory {
   public nonce: string;
   public restClient: RestClient;
   public vaultClient: VaultClient;
+
   public handleToIdentity: Record<string, Identity> = {};
   #alphabetIndex = 0;
   #adminSigner = '';
@@ -22,7 +24,16 @@ export class TestFactory {
   public static async create(opts: TestFactoryOpts): Promise<TestFactory> {
     const { handles: signers } = opts;
 
-    const factory = new TestFactory();
+    const middleware = {
+      link: env.toolingGqlUrl,
+      key: '',
+    };
+
+    const polymesh = await Polymesh.connect({ nodeUrl, middleware });
+
+    const factory = new TestFactory(polymesh);
+
+    await factory.setupSdk();
 
     if (signers) {
       await factory.initIdentities(signers);
@@ -85,6 +96,10 @@ export class TestFactory {
     return identity;
   }
 
+  public async close(): Promise<void> {
+    await Promise.all([this.cleanupIdentities(), this.polymeshSdk.disconnect()]);
+  }
+
   private setCachedSigner(signer: string, identity: Identity) {
     this.handleToIdentity[signer] = identity;
   }
@@ -98,10 +113,36 @@ export class TestFactory {
     return this.#adminSigner;
   }
 
-  private constructor() {
-    const nonce = randomNonce(nonceLength);
-    this.nonce = nonce;
-    this.restClient = new RestClient(urls.restApi);
-    this.vaultClient = new VaultClient(vaultUrl, transitPath, vaultToken);
+  private async setupSdk(): Promise<void> {
+    const mnemonic = LocalSigningManager.generateAccount();
+    const signingManager = await LocalSigningManager.create({ accounts: [{ mnemonic }] });
+
+    await this.polymeshSdk.setSigningManager(signingManager);
+
+    const addresses = await signingManager.getAccounts();
+
+    const accounts = addresses.map((address) => ({ address, initialPolyx: startingPolyx }));
+
+    // note this is inefficient and should be batched with given identities to be made
+    await this.restClient.identities.createTestAccounts(accounts, this.readAdminSigner());
+  }
+
+  private async cleanupIdentities(): Promise<void> {
+    if (env.deleteUsedKeys) {
+      await Promise.all(
+        Object.keys(this.handleToIdentity).map(async (handle) => {
+          const keyName = this.prefixNonce(handle);
+
+          await this.vaultClient.updateKey(keyName, true);
+          await this.vaultClient.deleteKey(keyName);
+        })
+      );
+    }
+  }
+
+  private constructor(public readonly polymeshSdk: Polymesh) {
+    this.nonce = randomNonce(nonceLength);
+    this.restClient = new RestClient(env.restApi);
+    this.vaultClient = new VaultClient(vaultUrl, vaultTransitPath, vaultToken);
   }
 }

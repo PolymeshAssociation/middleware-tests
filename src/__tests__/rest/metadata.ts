@@ -4,6 +4,7 @@ import { createAssetParams, createMetadataParams, setMetadataParams } from '~/re
 import { Identity } from '~/rest/identities/interfaces';
 
 const handles = ['issuer'];
+let factory: TestFactory;
 
 describe('Metadata', () => {
   let restClient: RestClient;
@@ -13,7 +14,7 @@ describe('Metadata', () => {
   let asset: string;
 
   beforeAll(async () => {
-    const factory = await TestFactory.create({ handles });
+    factory = await TestFactory.create({ handles });
     ({ restClient } = factory);
     issuer = factory.getSignerIdentity(handles[0]);
 
@@ -22,6 +23,10 @@ describe('Metadata', () => {
 
     assetParams = createAssetParams(asset, { signer });
     await restClient.assets.createAsset(assetParams);
+  });
+
+  afterAll(async () => {
+    await factory.close();
   });
 
   it('should list the global metadata', async () => {
