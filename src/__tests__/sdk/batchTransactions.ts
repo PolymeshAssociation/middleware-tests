@@ -1,16 +1,17 @@
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 
 import { TestFactory } from '~/helpers';
-import { tickerReservation } from '~/sdk/assets/tickerReservation';
+import { batchTransactions } from '~/sdk/batchTransactions';
 
 let factory: TestFactory;
+const handles = ['batch-tester'];
 
-describe('tickerReservation', () => {
+describe('batchTransactions', () => {
   let ticker: string;
   let sdk: Polymesh;
 
   beforeAll(async () => {
-    factory = await TestFactory.create({});
+    factory = await TestFactory.create({ handles });
     sdk = factory.polymeshSdk;
 
     ticker = factory.nextTicker();
@@ -20,7 +21,7 @@ describe('tickerReservation', () => {
     await factory.close();
   });
 
-  it('should execute tickerReservation without errors', async () => {
-    await expect(tickerReservation(sdk, ticker)).resolves.not.toThrow();
+  it('should execute batchTransactions without errors', async () => {
+    await expect(batchTransactions(sdk, ticker)).resolves.not.toThrow();
   });
 });

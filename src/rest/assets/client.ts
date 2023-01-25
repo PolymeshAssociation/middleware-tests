@@ -5,12 +5,12 @@ import {
   setMetadataParams,
 } from '~/rest/assets/params';
 import { RestClient } from '~/rest/client';
-import { RestResult } from '~/rest/interfaces';
+import { PostResult } from '~/rest/interfaces';
 
 export class Assets {
   constructor(private client: RestClient) {}
 
-  public async createAsset(params: ReturnType<typeof createAssetParams>): Promise<RestResult> {
+  public async createAsset(params: ReturnType<typeof createAssetParams>): Promise<PostResult> {
     return this.client.post('/assets/create', params);
   }
 
@@ -33,7 +33,7 @@ export class Assets {
   public async createMetadata(
     ticker: string,
     params: ReturnType<typeof createMetadataParams>
-  ): Promise<RestResult> {
+  ): Promise<PostResult> {
     return this.client.post(`/assets/${ticker}/metadata/create`, params);
   }
 
@@ -42,7 +42,7 @@ export class Assets {
     type: MetadataType,
     id: string,
     params: ReturnType<typeof setMetadataParams>
-  ): Promise<RestResult> {
+  ): Promise<PostResult> {
     return this.client.post(`/assets/${ticker}/metadata/${type}/${id}/set`, params);
   }
 }

@@ -5,6 +5,7 @@ import { env } from '~/environment';
 import { TestFactoryOpts } from '~/helpers/types';
 import { RestClient } from '~/rest';
 import { Identity } from '~/rest/identities';
+import { ResultSet } from '~/rest/interfaces';
 import { alphabet, randomNonce } from '~/util';
 import { VaultClient } from '~/vault';
 
@@ -16,6 +17,7 @@ export class TestFactory {
   public nonce: string;
   public restClient: RestClient;
   public vaultClient: VaultClient;
+  #signingManager?: LocalSigningManager;
 
   public handleToIdentity: Record<string, Identity> = {};
   #alphabetIndex = 0;
@@ -62,15 +64,17 @@ export class TestFactory {
    * @note This method must be called before using a signer, alternatively signers can be passed to `TestFactory.create`
    */
   public async initIdentities(handles: string[]): Promise<Identity[]> {
-    const accounts = [];
+    const addresses: string[] = [];
     const signers: string[] = [];
 
     for (const handle of handles) {
       const vaultKeyName = this.prefixNonce(handle);
       const { address, signer } = await this.vaultClient.createKey(vaultKeyName);
-      accounts.push({ address, initialPolyx: startingPolyx });
+      addresses.push(address);
       signers.push(signer);
     }
+
+    const accounts = addresses.map((address) => ({ address, initialPolyx: startingPolyx }));
 
     const { results } = await this.restClient.identities.createTestAccounts(
       accounts,
@@ -85,6 +89,12 @@ export class TestFactory {
     });
 
     return handles.map((handle) => this.getSignerIdentity(handle));
+  }
+
+  public async createIdentityForAddresses(addresses: string[]): Promise<ResultSet<Identity>> {
+    const accounts = addresses.map((address) => ({ address, initialPolyx: startingPolyx }));
+
+    return this.restClient.identities.createTestAccounts(accounts, this.readAdminSigner());
   }
 
   public getSignerIdentity(handle: string): Identity {
@@ -113,13 +123,18 @@ export class TestFactory {
     return this.#adminSigner;
   }
 
+  public get signingManager(): LocalSigningManager {
+    if (!this.#signingManager) throw new Error('factory signing manager was not set');
+    return this.#signingManager;
+  }
+
   private async setupSdk(): Promise<void> {
     const mnemonic = LocalSigningManager.generateAccount();
-    const signingManager = await LocalSigningManager.create({ accounts: [{ mnemonic }] });
+    this.#signingManager = await LocalSigningManager.create({ accounts: [{ mnemonic }] });
 
-    await this.polymeshSdk.setSigningManager(signingManager);
+    await this.polymeshSdk.setSigningManager(this.signingManager);
 
-    const addresses = await signingManager.getAccounts();
+    const addresses = await this.signingManager.getAccounts();
 
     const accounts = addresses.map((address) => ({ address, initialPolyx: startingPolyx }));
 

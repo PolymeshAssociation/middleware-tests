@@ -18,6 +18,9 @@ export interface PolymeshLocalSettings {
   restMnemonics: string;
 }
 
+export interface ResultSet<T> {
+  results: T[];
+}
 interface SingleResult {
   type: 'single';
   blockHash: string;
@@ -42,4 +45,4 @@ export interface RestErrorResult {
   statusCode: number;
 }
 
-export type RestResult = RestSuccessResult | RestErrorResult;
+export type PostResult = RestSuccessResult | RestErrorResult;

@@ -1597,10 +1597,10 @@
     tar "^6.1.11"
     tslib "^1"
 
-"@polymeshassociation/polymesh-sdk@19.0.0-alpha.12":
-  version "19.0.0-alpha.12"
-  resolved "https://registry.yarnpkg.com/@polymeshassociation/polymesh-sdk/-/polymesh-sdk-19.0.0-alpha.12.tgz#237446c4b8b0ac2b0f736842df22f31cdf74704f"
-  integrity sha512-0nUTvLC0gMPWSJYZ988iGa5NAz6HethxLWhfCTMTjjFA6+qFlMpIOAXQEM0GoypHxpbgjVfEEsoayN5g1yhyfA==
+"@polymeshassociation/polymesh-sdk@19.0.0-alpha.14":
+  version "19.0.0-alpha.14"
+  resolved "https://registry.yarnpkg.com/@polymeshassociation/polymesh-sdk/-/polymesh-sdk-19.0.0-alpha.14.tgz#ac8e9bd00046b1e5f92f703cf7e57a28c466fdda"
+  integrity sha512-J/wsj+5zzNoAbezfpKckXOSCprbs7nJFH69Q06GJPpvJpo43JiECqVY8+XjKjHeExYOlBTN6qiRvB1oSQ46wyA==
   dependencies:
     "@polkadot/api" "8.9.1"
     "@polkadot/util" "9.5.1"

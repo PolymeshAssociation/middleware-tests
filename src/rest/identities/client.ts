@@ -1,15 +1,13 @@
 import { RestClient } from '~/rest/client';
 import { TxBase } from '~/rest/common';
 import { Identity, PendingInstructions } from '~/rest/identities/interfaces';
+import { ResultSet } from '~/rest/interfaces';
 
 interface CreateTestAccountParams {
   address: string;
   initialPolyx: number;
 }
 
-interface ResultSet<T> {
-  results: T[];
-}
 export class Identities {
   constructor(private client: RestClient) {}
 

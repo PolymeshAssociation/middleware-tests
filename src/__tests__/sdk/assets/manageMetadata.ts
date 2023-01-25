@@ -1,11 +1,12 @@
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 
 import { TestFactory } from '~/helpers';
-import { tickerReservation } from '~/sdk/assets/tickerReservation';
+import { createAsset } from '~/sdk/assets/createAsset';
+import { manageMetadata } from '~/sdk/assets/manageMetadata';
 
 let factory: TestFactory;
 
-describe('tickerReservation', () => {
+describe('manageMetadata', () => {
   let ticker: string;
   let sdk: Polymesh;
 
@@ -14,13 +15,14 @@ describe('tickerReservation', () => {
     sdk = factory.polymeshSdk;
 
     ticker = factory.nextTicker();
+    await createAsset(sdk, { ticker });
   });
 
   afterAll(async () => {
     await factory.close();
   });
 
-  it('should execute tickerReservation without errors', async () => {
-    await expect(tickerReservation(sdk, ticker)).resolves.not.toThrow();
+  it('should execute manageMetadata without errors', async () => {
+    await manageMetadata(sdk, ticker);
   });
 });

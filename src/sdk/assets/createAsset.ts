@@ -6,10 +6,14 @@ import {
 } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'assert';
 
+/**
+ * This function showcases creating an Asset in single transaction
+ */
 export const createAsset = async (
   sdk: Polymesh,
   args: Partial<CreateAssetWithTickerParams>
 ): Promise<Asset> => {
+  // Note, optional params include `initialSupply`, `initialStatistics` and `documents` among others
   const requiredParams = {
     name: 'Asset Name',
     ticker: 'TICKER',
