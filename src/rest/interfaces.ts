@@ -33,7 +33,7 @@ interface BatchResult {
   transactionTags: string[];
 }
 
-export interface RestSuccessResult<T> {
+export interface RestSuccessResult {
   transactions: SingleResult[] | BatchResult[];
 }
 export interface RestErrorResult {
@@ -42,4 +42,4 @@ export interface RestErrorResult {
   statusCode: number;
 }
 
-export type RestResult<T = unknown> = RestSuccessResult<T> | RestErrorResult;
+export type RestResult = RestSuccessResult | RestErrorResult;
