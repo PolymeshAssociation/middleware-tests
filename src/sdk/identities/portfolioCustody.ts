@@ -37,6 +37,9 @@ export const portfolioCustody = async (sdk: Polymesh, custodianDid: string): Pro
   // The auth request can be retrieved with `custodian.authorizations.getReceived()`
   const authRequest = await setCustodianTx.run();
 
+  // `.getReceived` can be called and inspected instead
+  custodian.authorizations.getOne({ id: authRequest.authId });
+
   // The custodian needs to accept the created authorization
   const acceptTx = await authRequest.accept({ signingAccount: custodianAccount });
 
