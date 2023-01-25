@@ -65,7 +65,7 @@ export const manageDistributions = async (
       // (optional) Individual holders can be targeted with a different rate
       taxWithholdings: [
         {
-          identity: wellKnown.alice.did,
+          identity: signingIdentity,
           percentage: new BigNumber(25),
         },
       ],
