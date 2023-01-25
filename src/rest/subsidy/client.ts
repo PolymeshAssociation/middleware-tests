@@ -1,5 +1,5 @@
 import { RestClient } from '~/rest/client';
-import { TxResponse } from '~/rest/common';
+import { PostResult } from '~/rest/interfaces';
 import {
   createSubsidyParams,
   quitSubsidyParams,
@@ -21,11 +21,11 @@ export class Subsidy {
 
   public async setSubsidyAllowance(
     params: ReturnType<typeof setSubsidyAllowanceParams>
-  ): Promise<TxResponse> {
+  ): Promise<PostResult> {
     return this.client.post('/accounts/subsidy/allowance/set', params);
   }
 
-  public async quitSubsidy(params: ReturnType<typeof quitSubsidyParams>): Promise<TxResponse> {
+  public async quitSubsidy(params: ReturnType<typeof quitSubsidyParams>): Promise<PostResult> {
     return this.client.post('/accounts/subsidy/quit', params);
   }
 }

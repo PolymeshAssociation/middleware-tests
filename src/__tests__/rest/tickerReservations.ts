@@ -2,6 +2,7 @@ import { assertTagPresent } from '~/assertions';
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
 import { Identity } from '~/rest/identities/interfaces';
+import { RestErrorResult } from '~/rest/interfaces';
 import { reserveTickerParams, transferTickerReservationParams } from '~/rest/tickerReservations';
 
 const handles = ['issuer', 'receiver'];
@@ -94,5 +95,13 @@ describe('Ticker Reservations', () => {
     const reservations = await restClient.tickerReservations.getIdentityReservations(receiver.did);
 
     expect(reservations).toEqual({ results: [ticker] });
+  });
+
+  it('should not be able to reserve an already reserved ticker', async () => {
+    const params = reserveTickerParams(ticker, { signer });
+
+    const result = (await restClient.tickerReservations.reserve(params)) as RestErrorResult;
+
+    expect(result.statusCode).toEqual(422);
   });
 });

@@ -1,5 +1,6 @@
 import { RestClient } from '~/rest/client';
 import { complianceRestrictionParams } from '~/rest/compliance/params';
+import { PostResult } from '~/rest/interfaces';
 
 export class Compliance {
   constructor(private client: RestClient) {}
@@ -7,7 +8,7 @@ export class Compliance {
   public async createRestriction(
     ticker: string,
     params: ReturnType<typeof complianceRestrictionParams>
-  ): Promise<unknown> {
+  ): Promise<PostResult> {
     return this.client.post(`/assets/${ticker}/compliance-requirements/set`, params);
   }
 

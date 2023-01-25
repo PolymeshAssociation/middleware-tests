@@ -21,3 +21,28 @@ export interface PolymeshLocalSettings {
 export interface ResultSet<T> {
   results: T[];
 }
+interface SingleResult {
+  type: 'single';
+  blockHash: string;
+  transactionHash: string;
+  blockNumber: string;
+  transactionTag: string;
+}
+interface BatchResult {
+  type: 'batch';
+  blockHash: string;
+  transactionHash: string;
+  blockNumber: string;
+  transactionTags: string[];
+}
+
+export interface RestSuccessResult {
+  transactions: SingleResult[] | BatchResult[];
+}
+export interface RestErrorResult {
+  error: string;
+  message: string;
+  statusCode: number;
+}
+
+export type PostResult = RestSuccessResult | RestErrorResult;
