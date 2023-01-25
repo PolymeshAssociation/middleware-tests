@@ -1,4 +1,3 @@
-import { LocalSigningManager } from '@polymeshassociation/local-signing-manager';
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
 import { KnownAssetType } from '@polymeshassociation/polymesh-sdk/types';
 
