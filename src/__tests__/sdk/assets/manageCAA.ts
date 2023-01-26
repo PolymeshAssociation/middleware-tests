@@ -3,11 +3,11 @@ import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 
 import { TestFactory } from '~/helpers';
 import { createAsset } from '~/sdk/assets/createAsset';
-import { tradeAsset } from '~/sdk/settlements/trade';
+import { manageCAA } from '~/sdk/assets/manageCAA';
 
 let factory: TestFactory;
 
-describe('addAssetAgent', () => {
+describe('manageCAA', () => {
   let ticker: string;
   let targetDid: string;
   let sdk: Polymesh;
@@ -31,7 +31,7 @@ describe('addAssetAgent', () => {
     await factory.close();
   });
 
-  it('should execute addAssetAgent without errors', async () => {
-    await tradeAsset(sdk, targetDid, ticker);
+  it('should execute without errors', async () => {
+    await manageCAA(sdk, targetDid, ticker);
   });
 });

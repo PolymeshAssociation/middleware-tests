@@ -3,6 +3,7 @@ import {
   Asset,
   CreateAssetWithTickerParams,
   KnownAssetType,
+  ProcedureOpts,
 } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'assert';
 
@@ -11,7 +12,8 @@ import assert from 'assert';
  */
 export const createAsset = async (
   sdk: Polymesh,
-  args: Partial<CreateAssetWithTickerParams>
+  args: Partial<CreateAssetWithTickerParams>,
+  opts?: ProcedureOpts
 ): Promise<Asset> => {
   // Note, optional params include `initialSupply`, `initialStatistics` and `documents` among others
   const requiredParams = {
@@ -28,7 +30,7 @@ export const createAsset = async (
   };
 
   // Validates arguments (e.g. ticker is not taken) and returns a Transaction to be ran.
-  const createAssetTx = await sdk.assets.createAsset(params);
+  const createAssetTx = await sdk.assets.createAsset(params, opts);
 
   // The `Asset` entity will be returned after the transaction is finalized
   const asset = await createAssetTx.run();
