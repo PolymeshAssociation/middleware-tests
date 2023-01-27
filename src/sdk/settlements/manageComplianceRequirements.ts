@@ -16,10 +16,6 @@ import assert from 'node:assert';
     - Unpausing Compliance rules
     - Adding new requirements to existing Compliance rules
     - Removing a Compliance rule
-    - Setting trusted Claim issuers
-    - Getting existing trusted Claim issuers
-    - Adding a new Claim issuer
-    - Removing a Claim issuer
 */
 export const manageComplianceRequirements = async (
   sdk: Polymesh,

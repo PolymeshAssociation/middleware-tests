@@ -125,6 +125,7 @@ export const createSto = async (
   const freezeTx = await offering.freeze();
   await freezeTx.run();
   assert(freezeTx.isSuccess);
+
   // Unfreeze
   const unfreezeTx = await offering.unfreeze();
   await unfreezeTx.run();

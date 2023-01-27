@@ -4,9 +4,9 @@ import assert from 'node:assert';
 
 /*
   This script demonstrates Asset Corporate Action Agent (CAA) functionality. It:
-    - Queries the current CAA
     - Assigns a new CAA
     - Find and Accept the authorization to become CAA
+    - Queries the current CAA
 */
 export const manageCAA = async (
   sdk: Polymesh,

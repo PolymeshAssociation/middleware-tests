@@ -10,7 +10,7 @@ let factory: TestFactory;
 describe('tradeAssets', () => {
   let askTicker: string;
   let bidTicker: string;
-  let counterDid: string;
+  let counterPartyDid: string;
   let sdk: Polymesh;
 
   beforeAll(async () => {
@@ -18,18 +18,22 @@ describe('tradeAssets', () => {
     sdk = factory.polymeshSdk;
 
     const targetMnemonic = LocalSigningManager.generateAccount();
-    const counterAddress = factory.signingManager.addAccount({ mnemonic: targetMnemonic });
+    const counterPartyAddress = factory.signingManager.addAccount({ mnemonic: targetMnemonic });
 
     ({
-      results: [{ did: counterDid }],
-    } = await factory.createIdentityForAddresses([counterAddress]));
+      results: [{ did: counterPartyDid }],
+    } = await factory.createIdentityForAddresses([counterPartyAddress]));
 
     askTicker = factory.nextTicker();
     bidTicker = factory.nextTicker();
     const initialSupply = new BigNumber(100);
     await Promise.all([
       createAsset(sdk, { ticker: bidTicker, initialSupply }),
-      createAsset(sdk, { ticker: askTicker, initialSupply }, { signingAccount: counterAddress }),
+      createAsset(
+        sdk,
+        { ticker: askTicker, initialSupply },
+        { signingAccount: counterPartyAddress }
+      ),
     ]);
   });
 
@@ -41,6 +45,6 @@ describe('tradeAssets', () => {
     const bid = { ticker: bidTicker, amount: new BigNumber(10) };
     const ask = { ticker: askTicker, amount: new BigNumber(20) };
 
-    await tradeAssets(sdk, counterDid, bid, ask);
+    await tradeAssets(sdk, counterPartyDid, bid, ask);
   });
 });
