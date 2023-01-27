@@ -1,3 +1,4 @@
+import { blake2AsHex } from '@polkadot/util-crypto';
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 import { Asset } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'assert';
@@ -12,12 +13,12 @@ export const manageAssetDocuments = async (sdk: Polymesh, asset: Asset): Promise
   const doc1 = {
     name: 'Document One',
     uri: 'https://example.com/one',
-    contentHash: '0x01',
+    contentHash: blake2AsHex('Example 1'),
   };
   const doc2 = {
     name: 'Document Two',
     uri: 'https://example.com/two',
-    contentHash: '0x02',
+    contentHash: blake2AsHex('Example 2'),
   };
   const documents = [doc1, doc2];
 

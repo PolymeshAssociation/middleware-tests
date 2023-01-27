@@ -14,7 +14,7 @@ export const batchTransactions = async (sdk: Polymesh, ticker: string): Promise<
   const freezeTx = await sdk.accountManagement.freezeSecondaryAccounts();
 
   const batchTx1 = await sdk.createTransactionBatch({
-    // `as const` is necessary so that the array is identified as a tuple
+    // `as const` is necessary for the `.run()` to return a tuple of distinctly typed elements
     transactions: [reserveTickerTx, createPortfolioTx, freezeTx] as const,
   });
 

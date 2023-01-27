@@ -55,13 +55,13 @@ export const manageDistributions = async (
       description: 'A sample distribution',
       // set the default tax rate to withhold
       defaultTaxWithholding: new BigNumber(10),
-      // (optional) Individuals can be excluded from distributions
+      // (optional) individuals can be excluded from distributions
       targets: {
-        // identities can also be specified with an Identity object or  DID as a hex string
+        // identities can be specified with an Identity object or DID string
         identities: [alice, '0x0200000000000000000000000000000000000000000000000000000000000000'],
         treatment: TargetTreatment.Exclude,
       },
-      // (optional) Individual holders can be targeted with a different rate
+      // (optional) individual holders can be targeted with a different rate
       taxWithholdings: [
         {
           identity: signingIdentity,
@@ -95,7 +95,7 @@ export const manageDistributions = async (
   // Once the payment date has been reached these actions can be taken
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const afterPaymentDataActions = async () => {
+  const afterPaymentDateActions = async () => {
     // claim Dividend payment for the signing Identity
     const claimTx = await distribution.claim();
     await claimTx.run();
