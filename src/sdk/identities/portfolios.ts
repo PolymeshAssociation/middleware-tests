@@ -15,7 +15,7 @@ import { randomNonce } from '~/util';
 */
 export const managePortfolios = async (sdk: Polymesh, ticker: string): Promise<void> => {
   const signingIdentity = await sdk.getSigningIdentity();
-  assert(signingIdentity, 'The SDK should have a signing Identity to manage portfolios');
+  assert(signingIdentity);
 
   const asset = await sdk.assets.getAsset({ ticker });
 
@@ -25,6 +25,7 @@ export const managePortfolios = async (sdk: Polymesh, ticker: string): Promise<v
 
   const renameTx = await portfolio.modifyName({ name: `RENAME-${nonce}` });
   await renameTx.run();
+  assert(renameTx.isSuccess);
 
   // Get the portfolios of the Identity. First element is always the default Portfolio
   const [defaultPortfolio, examplePortfolio] = await signingIdentity.portfolios.getPortfolios();
@@ -42,6 +43,7 @@ export const managePortfolios = async (sdk: Polymesh, ticker: string): Promise<v
     items: [{ asset: ticker, amount }],
   });
   await transferTx.run();
+  assert(transferTx.isSuccess);
 
   const customPortfolioBalanceAfter = await examplePortfolio.getAssetBalances({
     assets: [ticker, 'TOKEN_2', 'TOKEN_3'],
@@ -55,8 +57,10 @@ export const managePortfolios = async (sdk: Polymesh, ticker: string): Promise<v
     from: examplePortfolio.id,
   });
   await redeemTx.run();
+  assert(redeemTx.isSuccess);
 
   // Will throw an error if the Portfolio has any assets
   const deleteTx = await signingIdentity.portfolios.delete({ portfolio: examplePortfolio });
   await deleteTx.run();
+  assert(deleteTx.isSuccess);
 };

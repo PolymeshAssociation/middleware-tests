@@ -3,7 +3,6 @@ import {
   OfferingBalanceStatus,
   OfferingSaleStatus,
   OfferingTimingStatus,
-  TransactionStatus,
   VenueType,
 } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
@@ -33,7 +32,7 @@ export const createSto = async (
     sdk.assets.getAsset({ ticker: offeringTicker }),
     sdk.assets.getAsset({ ticker: raisingTicker }),
   ]);
-  assert(identity, 'the SDK should have a signing identity to manage STOs');
+  assert(identity);
 
   // Get the investors portfolio and primary account
   const [investorPortfolio, { account: investorAccount }] = await Promise.all([
@@ -59,10 +58,7 @@ export const createSto = async (
     transactions: [createVenueTx, createPortfolioTx] as const,
   });
   const [venue, raisingPortfolio] = await batchTx.run();
-  assert(
-    batchTx.status === TransactionStatus.Succeeded,
-    'create portfolio and venue batch should succeed'
-  );
+  assert(batchTx.isSuccess);
 
   // Provide equity from the identities default Portfolio
   const offeringPortfolio = await identity.portfolios.getPortfolio();
@@ -97,6 +93,7 @@ export const createSto = async (
     end: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000),
   });
   await modifySaleTimeTx.run();
+  assert(modifySaleTimeTx.isSuccess);
 
   // Fetch offering details
   const offeringDetails = await offering.details();
@@ -122,18 +119,21 @@ export const createSto = async (
     { signingAccount: investorAccount }
   );
   await investTx.run();
+  assert(investTx.isSuccess);
 
   // Freeze the offering
   const freezeTx = await offering.freeze();
   await freezeTx.run();
-
+  assert(freezeTx.isSuccess);
   // Unfreeze
   const unfreezeTx = await offering.unfreeze();
   await unfreezeTx.run();
+  assert(unfreezeTx.isSuccess);
 
   // Close
   const closeTx = await offering.close();
   await closeTx.run();
+  assert(closeTx.isSuccess);
 
   // Fetch investments from the offering
   const { data: investments } = await offering.getInvestments();

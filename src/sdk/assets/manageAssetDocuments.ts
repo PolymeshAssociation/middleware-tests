@@ -25,6 +25,7 @@ export const manageAssetDocuments = async (sdk: Polymesh, asset: Asset): Promise
   // Prepare and execute a set documents transaction
   let setDocumentsTx = await asset.documents.set({ documents });
   await setDocumentsTx.run();
+  assert(setDocumentsTx.isSuccess);
 
   // Note - the result is paginated in case there are many documents
   const addedDocs = await asset.documents.get();
@@ -36,6 +37,7 @@ export const manageAssetDocuments = async (sdk: Polymesh, asset: Asset): Promise
   // Remove a document by calling `.set` without including it
   setDocumentsTx = await asset.documents.set({ documents: [doc2] });
   await setDocumentsTx.run();
+  assert(setDocumentsTx.isSuccess);
 
   const updatedDocs = await asset.documents.get();
   assert(

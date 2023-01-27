@@ -1,5 +1,5 @@
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { ClaimType, ScopeType, TransactionStatus } from '@polymeshassociation/polymesh-sdk/types';
+import { ClaimType, ScopeType } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 /*
@@ -14,7 +14,7 @@ import assert from 'node:assert';
 */
 export const manageClaims = async (sdk: Polymesh, targetDid: string): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
-  assert(identity, 'The SDK should have a signing Identity in order to manage claims');
+  assert(identity);
 
   const { account: signingAccount } = await identity.getPrimaryAccount();
 
@@ -41,7 +41,7 @@ export const manageClaims = async (sdk: Polymesh, targetDid: string): Promise<vo
     new Promise((resolve) => addClaimTx.onProcessedByMiddleware(resolve));
 
   await addClaimTx.run();
-  assert(addClaimTx.status === TransactionStatus.Succeeded, 'Adding a Claim should have succeeded');
+  assert(addClaimTx.isSuccess);
 
   await middlewareSynced();
 
@@ -56,13 +56,14 @@ export const manageClaims = async (sdk: Polymesh, targetDid: string): Promise<vo
   const claimToRevoke = issuedClaims.data[0];
 
   // Prepare and run the revoke claim transaction
-  const revokeQ = await sdk.claims.revokeClaims(
+  const revokeClaimTx = await sdk.claims.revokeClaims(
     {
       claims: [claimToRevoke],
     },
     { signingAccount }
   );
-  await revokeQ.run();
+  await revokeClaimTx.run();
+  assert(revokeClaimTx.isSuccess);
 
   // This following portion demonstrates different ways to fetch claims
 

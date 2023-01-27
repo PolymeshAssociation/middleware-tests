@@ -38,7 +38,7 @@ export const tradeAssets = async (
     sdk.assets.getAsset({ ticker: bid.ticker }),
     sdk.assets.getAsset({ ticker: ask.ticker }),
   ]);
-  assert(identity, 'the SDK should have a signing identity to trade Assets');
+  assert(identity);
 
   const { account: counterPartyAccount } = await counterParty.getPrimaryAccount();
 
@@ -53,7 +53,7 @@ export const tradeAssets = async (
     type: VenueType.Exchange,
   });
   const venue = await venueTx.run();
-  assert(venueTx.status === TransactionStatus.Succeeded, 'create venue should succeed');
+  assert(venueTx.isSuccess);
 
   const venueDetails = await venue.details();
   assert(venueDetails.owner.did === identity.did, 'default signer should own the Venue');
@@ -115,5 +115,5 @@ export const tradeAssets = async (
   */
   const affirmTx = await counterInstruction.affirm({ signingAccount: counterPartyAccount });
   await affirmTx.run();
-  assert(affirmTx.status === TransactionStatus.Succeeded, 'affirm instruction should succeed');
+  assert(affirmTx.isSuccess);
 };

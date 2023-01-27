@@ -13,7 +13,7 @@ export const addAssetAgent = async (
   ticker: string
 ): Promise<void> => {
   const signingIdentity = await sdk.getSigningIdentity();
-  assert(signingIdentity, 'The SDK should have a signing Identity to add an agent');
+  assert(signingIdentity);
 
   const target = await sdk.identities.getIdentity({
     did: targetDid,
@@ -37,8 +37,10 @@ export const addAssetAgent = async (
     permissions: fullPermissions,
   });
   const authRequest = await invitingFullAgentTx.run();
+  assert(invitingFullAgentTx.isSuccess);
 
   // prepare and accept becoming an agent
   const acceptAgentTx = await authRequest.accept({ signingAccount: targetAccount });
   await acceptAgentTx.run();
+  assert(acceptAgentTx.isSuccess);
 };

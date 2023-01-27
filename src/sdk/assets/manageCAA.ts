@@ -1,9 +1,5 @@
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
-import {
-  ModuleName,
-  PermissionType,
-  TransactionStatus,
-} from '@polymeshassociation/polymesh-sdk/types';
+import { ModuleName, PermissionType } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 /*
@@ -21,7 +17,7 @@ export const manageCAA = async (
     sdk.getSigningIdentity(),
     sdk.identities.getIdentity({ did: targetDid }),
   ]);
-  assert(identity, 'the SDK should have a signing identity to manage CAA');
+  assert(identity);
 
   const asset = await sdk.assets.getAsset({ ticker });
 
@@ -40,10 +36,7 @@ export const manageCAA = async (
   });
 
   const authRequest = await setCorporateActionsAgentTx.run();
-  assert(
-    setCorporateActionsAgentTx.status === TransactionStatus.Succeeded,
-    'set CAA should succeed'
-  );
+  assert(setCorporateActionsAgentTx.isSuccess);
 
   const pendingAuthorizations = await target.authorizations.getReceived({ includeExpired: false });
   const becomeCAAAuth = pendingAuthorizations.find(({ authId }) => authId.eq(authRequest.authId));
@@ -53,7 +46,7 @@ export const manageCAA = async (
 
   const becomeCAATx = await becomeCAAAuth.accept({ signingAccount: targetAccount });
   await becomeCAATx.run();
-  assert(becomeCAATx.status === TransactionStatus.Succeeded, 'becoming CAA should succeed');
+  assert(becomeCAATx.isSuccess);
 
   // fetch an assets CAAs
   const corporateActionAgents = await asset.corporateActions.getAgents();

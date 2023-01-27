@@ -15,7 +15,7 @@ import assert from 'node:assert';
 */
 export const manageCheckpoints = async (sdk: Polymesh, ticker: string): Promise<void> => {
   const signingIdentity = await sdk.getSigningIdentity();
-  assert(signingIdentity, 'The SDK should have a default signer to manage Checkpoints');
+  assert(signingIdentity);
 
   // The signing identity should be an agent of the Asset and have appropriate permission
   const asset = await sdk.assets.getAsset({ ticker });
@@ -61,6 +61,7 @@ export const manageCheckpoints = async (sdk: Polymesh, ticker: string): Promise<
     repetitions: new BigNumber(12),
   });
   const newSchedule = await createScheduleTx.run();
+  assert(createCheckpointTx.isSuccess);
 
   // fetch schedule details
   const { nextCheckpointDate, remainingCheckpoints } = await newSchedule.details();
@@ -80,4 +81,5 @@ export const manageCheckpoints = async (sdk: Polymesh, ticker: string): Promise<
     schedule: newSchedule,
   });
   await removeScheduleTx.run();
+  assert(removeScheduleTx.isSuccess);
 };

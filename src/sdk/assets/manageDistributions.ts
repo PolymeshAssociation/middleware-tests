@@ -1,5 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { TargetTreatment, TransactionStatus } from '@polymeshassociation/polymesh-sdk/types';
+import { TargetTreatment } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 import { wellKnown } from '~/consts';
@@ -21,7 +21,7 @@ export const manageDistributions = async (
   distributionTicker: string
 ): Promise<void> => {
   const signingIdentity = await sdk.getSigningIdentity();
-  assert(signingIdentity, 'The SDK should have a signer to manage dividends');
+  assert(signingIdentity);
 
   const alice = await sdk.identities.getIdentity({ did: wellKnown.alice.did });
 
@@ -38,7 +38,7 @@ export const manageDistributions = async (
   // create a checkpoint, the recipients will be calculated by their balance at this checkpoint
   const checkpointTx = await asset.checkpoints.create();
   const checkpoint = await checkpointTx.run();
-  assert(checkpointTx.status === TransactionStatus.Succeeded, 'create checkpoint should succeed');
+  assert(checkpointTx.isSuccess);
 
   const declarationDate = new Date();
   declarationDate.setDate(declarationDate.getDate() - 1);
@@ -70,10 +70,7 @@ export const manageDistributions = async (
       ],
     });
   const distribution = await createDistributionTx.run();
-  assert(
-    createDistributionTx.status === TransactionStatus.Succeeded,
-    'create distribution should succeed'
-  );
+  assert(createDistributionTx.isSuccess);
 
   // get all participants, their owed amount and whether they have been paid or not. This can be slow with a large number of holders
   const participants = await distribution.getParticipants();
@@ -82,10 +79,7 @@ export const manageDistributions = async (
   // the Checkpoint can be modified before the payment date
   const modifyCheckpointTx = await distribution.modifyCheckpoint({ checkpoint });
   await modifyCheckpointTx.run();
-  assert(
-    modifyCheckpointTx.status === TransactionStatus.Succeeded,
-    'modify checkpoint should succeed'
-  );
+  assert(modifyCheckpointTx.isSuccess);
 
   // fetch distribution details (whether funds have been reclaimed and the amount of remaining funds)
   const { remainingFunds, fundsReclaimed } = await distribution.details();

@@ -19,7 +19,7 @@ import assert from 'node:assert';
 */
 export const manageMetadata = async (sdk: Polymesh, ticker: string): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
-  assert(identity, 'The SDK should have a signing Identity to manage Metadata');
+  assert(identity);
 
   const asset = await sdk.assets.getAsset({ ticker });
 
@@ -29,6 +29,7 @@ export const manageMetadata = async (sdk: Polymesh, ticker: string): Promise<voi
     specs: { description: 'This is a local asset metadata', url: 'https://www.example.com' },
   });
   const metadata = await registerTx.run();
+  assert(registerTx.isSuccess);
 
   // Now set values for the metadata
   const value = 'Example Metadata';
@@ -45,6 +46,7 @@ export const manageMetadata = async (sdk: Polymesh, ticker: string): Promise<voi
     },
   });
   await setDetailsTx.run();
+  assert(setDetailsTx.isSuccess);
 
   // Fetch global metadata keys
   const globalKeys = await sdk.assets.getGlobalMetadataKeys();
@@ -58,5 +60,6 @@ export const manageMetadata = async (sdk: Polymesh, ticker: string): Promise<voi
 
     const globalSetTx = await globalMetadata.set({ value });
     globalSetTx.run();
+    assert(globalSetTx.isSuccess);
   }
 };

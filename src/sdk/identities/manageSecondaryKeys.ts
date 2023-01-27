@@ -11,7 +11,7 @@ import assert from 'node:assert';
 */
 export const manageSecondaryKeys = async (sdk: Polymesh, targetAddress: string): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
-  assert(identity, 'SDK should have a signer to manage secondary keys');
+  assert(identity);
 
   // Account to invite to join the signing Identity
   const targetAccount = await sdk.accountManagement.getAccount({
@@ -29,6 +29,7 @@ export const manageSecondaryKeys = async (sdk: Polymesh, targetAddress: string):
   });
 
   const authRequest = await inviteAccountTx.run();
+  assert(inviteAccountTx.isSuccess);
 
   // `targetAccount.authorizations.getReceived()` can be called without an ID
   const joinAuth = await targetAccount.authorizations.getOne({ id: authRequest.authId });
@@ -36,6 +37,7 @@ export const manageSecondaryKeys = async (sdk: Polymesh, targetAddress: string):
   // assumes the SDK has the address loaded into its Signing Manager
   const joinTx = await joinAuth.accept({ signingAccount: targetAddress });
   await joinTx.run();
+  assert(joinTx.isSuccess);
 
   const { data: secondaryAccounts } = await identity.getSecondaryAccounts();
   assert(secondaryAccounts.length > 0, 'The identity should have at least one secondary account');
@@ -52,10 +54,12 @@ export const manageSecondaryKeys = async (sdk: Polymesh, targetAddress: string):
     ],
   });
   await modifyPermissionsTx.run();
+  assert(modifyPermissionsTx.isSuccess);
 
   // remove a secondary key
   const removeKeysTx = await sdk.accountManagement.removeSecondaryAccounts({
     accounts: [targetAccount],
   });
   await removeKeysTx.run();
+  assert(removeKeysTx.isSuccess);
 };
