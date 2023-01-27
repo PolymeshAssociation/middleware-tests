@@ -5,11 +5,11 @@ import { wellKnown } from '~/consts';
 
 /*
   This script showcases Transfer Restriction related functionality. It:
-    - Adds a count restriction to a Asset
     - Adds a percentage restriction to the Asset
     - Sets (deletes existing and adds new) percentage restrictions on the Asset
-    - Removes all count restrictions from the Asset
     - Fetches all percentage restrictions on the Asset
+    - Adds a count restriction to a Asset
+    - Removes all count restrictions from the Asset
 
   If an Identity is in violation of a newly created Transfer Restriction they will only be able to trade the Asset
   in the direction that makes them more compliant. e.g. a majority holder able to sell but not buy
@@ -50,11 +50,13 @@ export const transferRestrictions = async (sdk: Polymesh, ticker: string): Promi
   await setPercentageRestrictionsTx.run();
   assert(setPercentageRestrictionsTx.isSuccess);
 
+  const { restrictions } = await asset.transferRestrictions.percentage.get();
+  assert(restrictions.length > 0, 'there should be a percentage restriction');
+
   // All restrictions of a certain type can be removed
-  const removePercentageRestrictionsTx =
-    await asset.transferRestrictions.percentage.removeRestrictions();
-  await removePercentageRestrictionsTx.run();
-  assert(removePercentageRestrictionsTx.isSuccess);
+  const removeRestrictionsTx = await asset.transferRestrictions.percentage.removeRestrictions();
+  await removeRestrictionsTx.run();
+  assert(removeRestrictionsTx.isSuccess);
 
   // Statistics should be disabled if no Transfer Restriction is using them
   const disablePercentageStatTx = await asset.transferRestrictions.percentage.disableStat();

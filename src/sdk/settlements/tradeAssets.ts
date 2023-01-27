@@ -1,5 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { TransactionStatus, VenueType } from '@polymeshassociation/polymesh-sdk/types';
+import { VenueType } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 import { addIsNotBlocked } from '~/sdk/settlements/util';
@@ -42,7 +42,7 @@ export const tradeAssets = async (
 
   const { account: counterPartyAccount } = await counterParty.getPrimaryAccount();
 
-  // Assets need non default compliance requirements to be moved
+  // Assets need non compliance requirements set before they can be traded
   await Promise.all([
     addIsNotBlocked(bidAsset),
     addIsNotBlocked(askAsset, counterPartyAccount.address),
@@ -89,7 +89,7 @@ export const tradeAssets = async (
   });
 
   const instruction = await addInstructionTx.run();
-  assert(addInstructionTx.status === TransactionStatus.Succeeded, 'add instruction should succeed');
+  assert(addInstructionTx.isSuccess, 'add instruction should succeed');
 
   const details = await instruction.details();
   assert(details.memo, 'the instruction should have a memo');
