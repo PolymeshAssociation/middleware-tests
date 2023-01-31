@@ -1,4 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { assert } from 'console';
 
 /*
   This script showcases how to redeem tokens for an Asset.
@@ -16,9 +17,7 @@ export const redeemTokens = async (
 
   const { account: signingAccount } = await identity.getPrimaryAccount();
 
-  const redeemTokensProcedure = await asset.redeem(
-    { amount: new BigNumber(amount) },
-    { signingAccount }
-  );
-  await redeemTokensProcedure.run();
+  const redeemTokensTx = await asset.redeem({ amount: new BigNumber(amount) }, { signingAccount });
+  await redeemTokensTx.run();
+  assert(redeemTokensTx.isSuccess);
 };

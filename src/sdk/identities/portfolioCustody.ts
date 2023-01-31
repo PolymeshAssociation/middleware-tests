@@ -17,10 +17,11 @@ export const portfolioCustody = async (sdk: Polymesh, custodianDid: string): Pro
   const { account: custodianAccount } = await custodian.getPrimaryAccount();
 
   const identity = await sdk.getSigningIdentity();
-  assert(identity, 'The SDK should have a signing account to custody portfolios');
+  assert(identity);
 
   const createPortfolioTx = await sdk.identities.createPortfolio({ name: 'CUSTODY_PORTFOLIO' });
   const portfolio = await createPortfolioTx.run();
+  assert(createPortfolioTx.isSuccess);
 
   // Here is how to check ownership and custody of a Portfolio
   const [portfolioCustodian, isOwnedByIdentity, isCustodiedByIdentity] = await Promise.all([
@@ -34,8 +35,9 @@ export const portfolioCustody = async (sdk: Polymesh, custodianDid: string): Pro
 
   const setCustodianTx = await portfolio.setCustodian({ targetIdentity: custodian });
 
-  // The auth request can be retrieved with `custodian.authorizations.getReceived()`
+  // The auth request can also be retrieved with `custodian.authorizations.getReceived()`
   const authRequest = await setCustodianTx.run();
+  assert(setCustodianTx.isSuccess);
 
   // `.getReceived` can be called and inspected instead
   custodian.authorizations.getOne({ id: authRequest.authId });
@@ -47,6 +49,7 @@ export const portfolioCustody = async (sdk: Polymesh, custodianDid: string): Pro
     new Promise((resolve) => acceptTx.onProcessedByMiddleware(resolve));
 
   await acceptTx.run();
+  assert(acceptTx.isSuccess);
 
   const [newCustodian, isCustodiedByOwner] = await Promise.all([
     portfolio.getCustodian(),
@@ -69,4 +72,5 @@ export const portfolioCustody = async (sdk: Polymesh, custodianDid: string): Pro
 
   const quitCustodyTx = await portfolioToQuit.quitCustody({ signingAccount: custodianAccount });
   await quitCustodyTx.run();
+  assert(quitCustodyTx.isSuccess);
 };

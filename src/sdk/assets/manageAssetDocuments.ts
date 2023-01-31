@@ -1,3 +1,4 @@
+import { blake2AsHex } from '@polkadot/util-crypto';
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 import { Asset } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'assert';
@@ -12,18 +13,19 @@ export const manageAssetDocuments = async (sdk: Polymesh, asset: Asset): Promise
   const doc1 = {
     name: 'Document One',
     uri: 'https://example.com/one',
-    contentHash: '0x01',
+    contentHash: blake2AsHex('Example 1'),
   };
   const doc2 = {
     name: 'Document Two',
     uri: 'https://example.com/two',
-    contentHash: '0x02',
+    contentHash: blake2AsHex('Example 2'),
   };
   const documents = [doc1, doc2];
 
   // Prepare and execute a set documents transaction
   let setDocumentsTx = await asset.documents.set({ documents });
   await setDocumentsTx.run();
+  assert(setDocumentsTx.isSuccess);
 
   // Note - the result is paginated in case there are many documents
   const addedDocs = await asset.documents.get();
@@ -35,6 +37,7 @@ export const manageAssetDocuments = async (sdk: Polymesh, asset: Asset): Promise
   // Remove a document by calling `.set` without including it
   setDocumentsTx = await asset.documents.set({ documents: [doc2] });
   await setDocumentsTx.run();
+  assert(setDocumentsTx.isSuccess);
 
   const updatedDocs = await asset.documents.get();
   assert(

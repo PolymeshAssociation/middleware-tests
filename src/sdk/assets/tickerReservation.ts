@@ -10,7 +10,7 @@ import assert from 'assert';
 */
 export const tickerReservation = async (sdk: Polymesh, ticker: string): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
-  assert(identity, 'The SDK should have a signing account to reserve a ticker');
+  assert(identity);
 
   const { account: signingAccount } = await identity.getPrimaryAccount();
 
@@ -24,6 +24,7 @@ export const tickerReservation = async (sdk: Polymesh, ticker: string): Promise<
 
   // Reserve the ticker
   const reservation = await reserveTx.run();
+  assert(reserveTx.isSuccess);
 
   // the Reservation has methods to get its details, or to finish creating the Asset
   const { expiryDate, owner } = await reservation.details();
@@ -47,6 +48,7 @@ export const tickerReservation = async (sdk: Polymesh, ticker: string): Promise<
     { signingAccount }
   );
   await createAssetTx.run();
+  assert(createAssetTx.isSuccess);
 
   // Fetch the Reservation details after the Asset has been created
   const { expiryDate: expiryAfterCreate } = await reservation.details();

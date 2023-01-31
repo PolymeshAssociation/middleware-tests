@@ -14,12 +14,13 @@ export const batchTransactions = async (sdk: Polymesh, ticker: string): Promise<
   const freezeTx = await sdk.accountManagement.freezeSecondaryAccounts();
 
   const batchTx1 = await sdk.createTransactionBatch({
-    // `as const` is necessary so that the array is identified as a tuple
+    // `as const` is necessary for the `.run()` to return a tuple of distinctly typed elements
     transactions: [reserveTickerTx, createPortfolioTx, freezeTx] as const,
   });
 
   // the third value is ignored because `freezeSecondaryAccounts` doesn't return anything
   const [reservation, portfolio] = await batchTx1.run();
+  assert(batchTx1.isSuccess);
 
   assert(reservation.ticker === ticker, 'The reservation should have the given ticker');
   assert(portfolio.id.toFormat(), 'The portfolio should have an ID');
@@ -47,6 +48,7 @@ export const batchTransactions = async (sdk: Polymesh, ticker: string): Promise<
     // Transactions MUST be run in strict order, waiting for one to finalize before running the next.
     for (const tx of transactions) {
       await tx.run();
+      assert(tx.isSuccess);
     }
   } else {
     assert(false, 'createAsset was not a batch transaction');

@@ -1,5 +1,4 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { TransactionStatus } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'assert';
 
 /*
@@ -19,11 +18,8 @@ export const issueTokens = async (
   const { account: signingAccount } = await owner.getPrimaryAccount();
 
   // Prepare and execute Asset issuance
-  const issueTokensProcedure = await asset.issuance.issue({ amount }, { signingAccount });
+  const issueTokensTx = await asset.issuance.issue({ amount }, { signingAccount });
 
-  await issueTokensProcedure.run();
-  assert(
-    issueTokensProcedure.status === TransactionStatus.Succeeded,
-    'Asset issuance transaction should have succeeded'
-  );
+  await issueTokensTx.run();
+  assert(issueTokensTx.isSuccess);
 };
