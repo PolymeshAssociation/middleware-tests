@@ -9,7 +9,7 @@ import { ResultSet } from '~/rest/interfaces';
 import { alphabet, randomNonce } from '~/util';
 import { VaultClient } from '~/vault';
 
-const nonceLength = 8;
+const nonceLength = 9;
 const startingPolyx = 100000;
 const { nodeUrl, vaultUrl, vaultToken, vaultTransitPath } = env;
 
@@ -45,7 +45,7 @@ export class TestFactory {
   }
 
   public prefixNonce(value: string): string {
-    return `${this.nonce}-${value}`;
+    return `${this.nonce}${value}`;
   }
 
   /**
