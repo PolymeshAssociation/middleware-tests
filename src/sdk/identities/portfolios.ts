@@ -64,3 +64,31 @@ export const managePortfolios = async (sdk: Polymesh, ticker: string): Promise<v
   await deleteTx.run();
   assert(deleteTx.isSuccess);
 };
+
+export const renamePortfolioToExisting = async (sdk: Polymesh): Promise<void>  => {
+  const signingIdentity = await sdk.getSigningIdentity();
+  assert(signingIdentity);
+
+  const nonce = randomNonce(12);
+  const newPortfolioTx = await sdk.identities.createPortfolio({ name: `NEW-${nonce}` });
+  const existingPortfolioTx = await sdk.identities.createPortfolio({ name: `EXISTING-${nonce}` });
+
+  const newPortfolio = await newPortfolioTx.run();
+  await existingPortfolioTx.run();
+
+  const renameTx =  await newPortfolio.modifyName({ name: `EXISTING-${nonce}` });
+  await renameTx.run();
+}
+
+export const renamePortfolioToSameName = async (sdk: Polymesh): Promise<void>  => {
+  const signingIdentity = await sdk.getSigningIdentity();
+  assert(signingIdentity);
+
+  const nonce = randomNonce(12);
+  const portfolioTx = await sdk.identities.createPortfolio({ name: `SAME-${nonce}` });
+
+  const portfolio = await portfolioTx.run();
+
+  const renameTx =  await portfolio.modifyName({ name: `SAME-${nonce}` });
+  await renameTx.run();
+}
