@@ -1,4 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { PolymeshError } from '@polymeshassociation/polymesh-sdk/internal';
 import assert from 'node:assert';
 
 import { randomNonce } from '~/util';
@@ -65,7 +66,7 @@ export const managePortfolios = async (sdk: Polymesh, ticker: string): Promise<v
   assert(deleteTx.isSuccess);
 };
 
-export const renamePortfolioToExisting = async (sdk: Polymesh): Promise<void>  => {
+export const renamePortfolioToExisting = async (sdk: Polymesh): Promise<any> => {
   const signingIdentity = await sdk.getSigningIdentity();
   assert(signingIdentity);
 
@@ -73,14 +74,20 @@ export const renamePortfolioToExisting = async (sdk: Polymesh): Promise<void>  =
   const newPortfolioTx = await sdk.identities.createPortfolio({ name: `NEW-${nonce}` });
   const existingPortfolioTx = await sdk.identities.createPortfolio({ name: `EXISTING-${nonce}` });
 
-  const newPortfolio = await newPortfolioTx.run();
-  await existingPortfolioTx.run();
+  const [newPortfolio] = await Promise.all([newPortfolioTx.run(), existingPortfolioTx.run()]);
 
-  const renameTx =  await newPortfolio.modifyName({ name: `EXISTING-${nonce}` });
-  await renameTx.run();
-}
+  return newPortfolio
+    .modifyName({ name: `EXISTING-${nonce}` })
+    .catch((e) => {
+      if(e instanceof PolymeshError) {
+        return { executed: false, code: e.code }
+      }
 
-export const renamePortfolioToSameName = async (sdk: Polymesh): Promise<void>  => {
+      return { executed: false }})
+    .then((v) => v);
+};
+
+export const renamePortfolioToSameName = async (sdk: Polymesh): Promise<any> => {
   const signingIdentity = await sdk.getSigningIdentity();
   assert(signingIdentity);
 
@@ -89,6 +96,13 @@ export const renamePortfolioToSameName = async (sdk: Polymesh): Promise<void>  =
 
   const portfolio = await portfolioTx.run();
 
-  const renameTx =  await portfolio.modifyName({ name: `SAME-${nonce}` });
-  await renameTx.run();
-}
+  return portfolio
+    .modifyName({ name: `SAME-${nonce}` })
+    .catch((e) => {
+      if(e instanceof PolymeshError) {
+        return { executed: false, code: e.code }
+      }
+      
+      return { executed: false }})
+    .then((v) => v);
+};
