@@ -1,5 +1,4 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { PolymeshError } from '@polymeshassociation/polymesh-sdk/internal';
 import assert from 'node:assert';
 
 import { randomNonce } from '~/util';
@@ -64,45 +63,4 @@ export const managePortfolios = async (sdk: Polymesh, ticker: string): Promise<v
   const deleteTx = await signingIdentity.portfolios.delete({ portfolio: examplePortfolio });
   await deleteTx.run();
   assert(deleteTx.isSuccess);
-};
-
-export const renamePortfolioToExisting = async (sdk: Polymesh): Promise<any> => {
-  const signingIdentity = await sdk.getSigningIdentity();
-  assert(signingIdentity);
-
-  const nonce = randomNonce(12);
-  const newPortfolioTx = await sdk.identities.createPortfolio({ name: `NEW-${nonce}` });
-  const existingPortfolioTx = await sdk.identities.createPortfolio({ name: `EXISTING-${nonce}` });
-
-  const [newPortfolio] = await Promise.all([newPortfolioTx.run(), existingPortfolioTx.run()]);
-
-  return newPortfolio
-    .modifyName({ name: `EXISTING-${nonce}` })
-    .catch((e) => {
-      if(e instanceof PolymeshError) {
-        return { executed: false, code: e.code }
-      }
-
-      return { executed: false }})
-    .then((v) => v);
-};
-
-export const renamePortfolioToSameName = async (sdk: Polymesh): Promise<any> => {
-  const signingIdentity = await sdk.getSigningIdentity();
-  assert(signingIdentity);
-
-  const nonce = randomNonce(12);
-  const portfolioTx = await sdk.identities.createPortfolio({ name: `SAME-${nonce}` });
-
-  const portfolio = await portfolioTx.run();
-
-  return portfolio
-    .modifyName({ name: `SAME-${nonce}` })
-    .catch((e) => {
-      if(e instanceof PolymeshError) {
-        return { executed: false, code: e.code }
-      }
-      
-      return { executed: false }})
-    .then((v) => v);
 };
