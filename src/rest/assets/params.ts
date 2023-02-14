@@ -55,3 +55,29 @@ export const setMetadataParams = (base: TxBase, extras: TxExtras = {}) =>
     ...extras,
     ...base,
   } as const);
+
+export const setAssetDocumentParams = (base: TxBase, extras: TxExtras = {}) =>
+  ({
+    documents: [
+      {
+        name: 'Document 1',
+        uri: 'https://example.com/document.pdf',
+        type: 'PDF',
+      },
+      {
+        name: 'Document 2',
+        uri: 'https://example.com/document2.pdf',
+        type: 'PDF',
+      },
+    ],
+    ...extras,
+    ...base,
+  } as const);
+
+export const redeemTokenParams = (from: string, base: TxBase, extras: TxExtras = {}) =>
+  ({
+    amount: '100',
+    from,
+    ...extras,
+    ...base,
+  } as const);

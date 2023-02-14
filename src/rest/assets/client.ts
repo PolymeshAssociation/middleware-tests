@@ -2,6 +2,8 @@ import {
   createAssetParams,
   createMetadataParams,
   MetadataType,
+  redeemTokenParams,
+  setAssetDocumentParams,
   setMetadataParams,
 } from '~/rest/assets/params';
 import { RestClient } from '~/rest/client';
@@ -44,5 +46,23 @@ export class Assets {
     params: ReturnType<typeof setMetadataParams>
   ): Promise<PostResult> {
     return this.client.post(`/assets/${ticker}/metadata/${type}/${id}/set`, params);
+  }
+
+  public async getDocuments(ticker: string): Promise<unknown> {
+    return this.client.get(`assets/${ticker}/documents`);
+  }
+
+  public async setDocuments(
+    ticker: string,
+    params: ReturnType<typeof setAssetDocumentParams>
+  ): Promise<PostResult> {
+    return this.client.post(`assets/${ticker}/documents/set`, params);
+  }
+
+  public async redeem(
+    ticker: string,
+    params: ReturnType<typeof redeemTokenParams>
+  ): Promise<PostResult> {
+    return this.client.post(`assets/${ticker}/redeem`, params);
   }
 }

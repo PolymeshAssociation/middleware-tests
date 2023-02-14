@@ -1579,10 +1579,10 @@
   dependencies:
     "@polymeshassociation/signing-manager-types" "^1.2.1"
 
-"@polymeshassociation/polymesh-local@^5.4.2":
-  version "5.4.2"
-  resolved "https://registry.yarnpkg.com/@polymeshassociation/polymesh-local/-/polymesh-local-5.4.2.tgz#8a1f1e786ee14c0ac4f08320d018d313b59a3f48"
-  integrity sha512-kq13DHeqrpfWFAPMBlD1hXMMlv1DYrUdYFHuOIDxqMoUN0tBS19zAVKr0DOt43ASBmq1vilJ8TY8IFr731vVbQ==
+"@polymeshassociation/polymesh-local@^5.6.0":
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/@polymeshassociation/polymesh-local/-/polymesh-local-5.6.0.tgz#b124dedb8ccb62f21d5a69383ef6637c81c7174c"
+  integrity sha512-T2VlcTXa7svf7sdxtyoWaI4atPvN/pBWTyfgN+GTuCNln+08nVhHrjE+8OD0wP/f7Er0if+SPbicRrfQMmRPTw==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
@@ -1597,10 +1597,10 @@
     tar "^6.1.11"
     tslib "^1"
 
-"@polymeshassociation/polymesh-sdk@19.0.0-alpha.14":
-  version "19.0.0-alpha.14"
-  resolved "https://registry.yarnpkg.com/@polymeshassociation/polymesh-sdk/-/polymesh-sdk-19.0.0-alpha.14.tgz#ac8e9bd00046b1e5f92f703cf7e57a28c466fdda"
-  integrity sha512-J/wsj+5zzNoAbezfpKckXOSCprbs7nJFH69Q06GJPpvJpo43JiECqVY8+XjKjHeExYOlBTN6qiRvB1oSQ46wyA==
+"@polymeshassociation/polymesh-sdk@19.0.0":
+  version "19.0.0"
+  resolved "https://registry.yarnpkg.com/@polymeshassociation/polymesh-sdk/-/polymesh-sdk-19.0.0.tgz#30b2f0e7893286fc7bc9719305273cc0ce6fd169"
+  integrity sha512-ElicoXRyyKzKs1evKZq+hHsZGL4iRkYSuDRcNidOpvnxAc9DuF0Jl3KP0B2huyaBkQ+lirm7OGP5nHX+Z7ddFQ==
   dependencies:
     "@polkadot/api" "8.9.1"
     "@polkadot/util" "9.5.1"

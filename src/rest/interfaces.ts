@@ -39,6 +39,7 @@ interface BatchResult {
 export interface RestSuccessResult {
   transactions: SingleResult[] | BatchResult[];
 }
+
 export interface RestErrorResult {
   error: string;
   message: string;

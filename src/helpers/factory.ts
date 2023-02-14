@@ -22,6 +22,7 @@ export class TestFactory {
   public handleToIdentity: Record<string, Identity> = {};
   #alphabetIndex = 0;
   #adminSigner = '';
+  #portfolioIndex = 0;
 
   public static async create(opts: TestFactoryOpts): Promise<TestFactory> {
     const { handles: signers } = opts;
@@ -57,6 +58,18 @@ export class TestFactory {
     const c = Math.floor(this.#alphabetIndex / alphabet.length ** 2);
     this.#alphabetIndex += 1;
     return this.prefixNonce(`${alphabet[c]}${alphabet[b]}${alphabet[a]}`);
+  }
+
+  /**
+   * returns unique Portfolio name every time its called. e.g. AAA, AAB, AAC...
+   */
+  public nextPortfolio(): string {
+    const a = this.#portfolioIndex % alphabet.length;
+    const b = Math.floor((this.#portfolioIndex / alphabet.length) % alphabet.length);
+    const c = Math.floor(this.#portfolioIndex / alphabet.length ** 2);
+    this.#portfolioIndex += 1;
+    const randomName = this.prefixNonce(`${alphabet[c]}${alphabet[b]}${alphabet[a]}`);
+    return `PF-${randomName}`;
   }
 
   /**
