@@ -12,6 +12,7 @@
     "test:run": "jest --maxWorkers=8",
     "test:teardown": "./scripts/teardown.sh",
     "prebuild": "rimraf dist",
+    "postinstall": "rimraf node_modules/@polymeshassociation/polymesh-sdk/node_modules/@polkadot/{util-crypto,wasm-crypto,util,wasm-bridge} && rimraf node_modules/@polymeshassociation/{hashicorp-vault-signing-manager,local-signing-manager}/node_modules/@polkadot/{util,util-crypto,wasm-bridge,was-crypto}",
     "build": "ttsc -b",
     "build:docs": "typedoc src",
     "commit": "npx git-cz",
@@ -74,23 +75,5 @@
     "@polymeshassociation/polymesh-sdk": "19.0.0",
     "cross-fetch": "^3.1.5",
     "dotenv": "^16.0.3"
-  },
-  "resolutions": {
-    "@polkadot/keyring": "9.5.1",
-    "@polkadot/api-augment": "8.9.1",
-    "@polkadot/api-base": "8.9.1",
-    "@polkadot/api-derive": "8.9.1",
-    "@polkadot/rpc-augment": "8.9.1",
-    "@polkadot/rpc-core": "8.9.1",
-    "@polkadot/rpc-provider": "8.9.1",
-    "@polkadot/types": "8.9.1",
-    "@polkadot/types-augment": "8.9.1",
-    "@polkadot/types-codec": "8.9.1",
-    "@polkadot/types-create": "8.9.1",
-    "@polkadot/types-known": "8.9.1",
-    "@polkadot/util": "9.5.1",
-    "@polkadot/networks": "9.5.1",
-    "@polkadot/util-crypto": "9.5.1",
-    "@polkadot/x-bigint": "9.5.1"
   }
 }
