@@ -1,6 +1,6 @@
 import { TxBase, TxExtras } from '~/rest/common';
 
-export const createPortfolioParams = (name: string, base: TxBase, extras: TxExtras = {}) =>
+export const portfolioParams = (name: string, base: TxBase, extras: TxExtras = {}) =>
   ({
     name,
     ...extras,

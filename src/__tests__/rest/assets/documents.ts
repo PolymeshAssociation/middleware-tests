@@ -45,25 +45,23 @@ describe('AssetDocument', () => {
     });
   });
 
-  it('should get an Assets metadata', async () => {
+  it('should get an Asset documents', async () => {
     const result = await restClient.assets.getDocuments(asset);
 
     expect(result).toEqual(
       expect.objectContaining({
-        results: expect.arrayContaining([
-          expect.objectContaining({
+        results: [
+          {
             name: 'Document 1',
             uri: 'https://example.com/document.pdf',
             type: 'PDF',
-          }),
-          expect.objectContaining({
+          },
+          {
             name: 'Document 2',
             uri: 'https://example.com/document2.pdf',
             type: 'PDF',
-          }),
-        ]),
-        total: '2',
-        next: null,
+          },
+        ],
       })
     );
   });

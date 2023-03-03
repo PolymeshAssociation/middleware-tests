@@ -6,7 +6,7 @@ import { managePortfolios } from '~/sdk/identities/portfolios';
 
 let factory: TestFactory;
 
-describe('manageClaims', () => {
+describe('managePortfolios', () => {
   let sdk: Polymesh;
   let ticker: string;
 
@@ -22,7 +22,7 @@ describe('manageClaims', () => {
     await factory.close();
   });
 
-  it('should execute manageClaims without errors', async () => {
+  it('should execute managePortfolios without errors', async () => {
     await expect(managePortfolios(sdk, ticker)).resolves.not.toThrow();
   });
 });

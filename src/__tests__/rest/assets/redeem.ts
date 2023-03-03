@@ -3,7 +3,7 @@ import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
 import { createAssetParams, redeemTokenParams } from '~/rest/assets';
 import { Identity } from '~/rest/identities/interfaces';
-import { createPortfolioParams, moveAssetParams } from '~/rest/portfolios';
+import { moveAssetParams, portfolioParams } from '~/rest/portfolios';
 
 const handles = ['issuer'];
 let factory: TestFactory;
@@ -48,8 +48,8 @@ describe('Redeem', () => {
 
   it('should redeem tokens from specified Portfolio', async () => {
     const portfolioName = factory.nextPortfolio();
-    const portfolioParams = createPortfolioParams(portfolioName, { signer });
-    const result = await restClient.portfolios.createPortfolio(portfolioParams);
+    const createPortfolioParams = portfolioParams(portfolioName, { signer });
+    const result = await restClient.portfolios.create(createPortfolioParams);
     const createdPortfolio = result.portfolio.id;
 
     const moveFundParams = moveAssetParams(asset, '0', createdPortfolio, { signer });
