@@ -4,6 +4,7 @@ import fetch from 'cross-fetch';
 import { Assets } from '~/rest/assets';
 import { Compliance } from '~/rest/compliance';
 import { Identities } from '~/rest/identities';
+import { PortfolioManagement } from '~/rest/portfolios';
 import { Settlements } from '~/rest/settlements';
 import { Subsidy } from '~/rest/subsidy';
 import { TickerReservations } from '~/rest/tickerReservations';
@@ -15,6 +16,7 @@ export class RestClient {
   public settlements: Settlements;
   public subsidy: Subsidy;
   public tickerReservations: TickerReservations;
+  public portfolioManagement: PortfolioManagement;
 
   constructor(public baseUrl: string) {
     this.assets = new Assets(this);
@@ -23,6 +25,7 @@ export class RestClient {
     this.settlements = new Settlements(this);
     this.subsidy = new Subsidy(this);
     this.tickerReservations = new TickerReservations(this);
+    this.portfolioManagement = new PortfolioManagement(this);
   }
 
   public async get<T = unknown>(path: string): Promise<T> {
