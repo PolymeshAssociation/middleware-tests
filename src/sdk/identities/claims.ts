@@ -46,6 +46,7 @@ export const manageClaims = async (sdk: Polymesh, targetDid: string): Promise<vo
   await middlewareSynced();
 
   // Get issued claims
+  console.log('getting issued claims: ', identity.did);
   const issuedClaims = await sdk.claims.getIssuedClaims({
     target: identity.did,
     includeExpired: false,

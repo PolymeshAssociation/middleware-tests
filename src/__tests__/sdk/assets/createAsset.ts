@@ -27,7 +27,6 @@ describe('createAsset', () => {
         ticker,
         name: 'test',
         isDivisible: true,
-        requireInvestorUniqueness: false,
         assetType: KnownAssetType.EquityCommon,
       })
     ).resolves.not.toThrow();

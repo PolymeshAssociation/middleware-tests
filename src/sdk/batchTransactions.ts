@@ -37,7 +37,6 @@ export const batchTransactions = async (sdk: Polymesh, ticker: string): Promise<
     ticker,
     isDivisible: true,
     initialSupply: new BigNumber(10000),
-    requireInvestorUniqueness: false,
     assetType: KnownAssetType.EquityCommon,
   });
 

@@ -2,8 +2,6 @@ services:
   postgres:
     image: postgres:12-alpine
     restart: unless-stopped
-    ports:
-      - ${PG_PORT:-5432}:5432
     volumes:
       - './docker/pg-extensions.sh:/docker-entrypoint-initdb.d/load-extensions.sh'
     environment:
@@ -27,7 +25,7 @@ services:
     restart: 'no'
 
   alice:
-    image: ${CHAIN_IMAGE:-polymeshassociation/polymesh:latest-develop-debian}
+    image: ${CHAIN_IMAGE:-polymeshassociation/polymesh:latest-staging-debian}
     init: true # Faster shutdown by container process not be PID 1
     restart: unless-stopped
     ports: # expose ports to localhostpoint to dockerfile
@@ -47,6 +45,8 @@ services:
     restart: unless-stopped
     depends_on:
       - 'postgres'
+    ports:
+      - 3002:3000
     environment:
       NETWORK_ENDPOINT: ws://alice:9944
       NETWORK_HTTP_ENDPOINT: http://alice:9933
@@ -61,36 +61,42 @@ services:
       - -f=/app
       - --local
 
-  tooling:
-    image: ${TOOLING_IMAGE:-polymeshassociation/polymesh-tooling-gql}
-    init: true
-    restart: unless-stopped
+  graphql:
+    image: onfinality/subql-query:v1.0.0
+    ports:
+      - ${SQ_PORT:-3001}:3000
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     depends_on:
       - 'postgres'
-    ports:
-      - ${TOOLING_PORT:-3007}:3000
+      - 'subquery'
+    restart: unless-stopped
     environment:
-      PG_HOST: '${PG_HOST:-postgres}'
-      PG_USERNAME: '${PG_USER:-postgres}'
-      PG_PASSWORD: '${PG_PASSWORD:-postgres}'
-      STAGE: dev
+      DB_DATABASE: postgres
+      DB_USER: '${PG_USER:-postgres}'
+      DB_PASS: '${PG_PASSWORD:-postgres}'
+      DB_PORT: '${PG_PORT:-5432}'
+      DB_HOST: '${PG_HOST:-postgres}'
+    command:
+      - --name=public
+      - --playground
+      - --indexer=http:/host.docker.internal:3002
 
-  rest_api:
+  rest-api:
     image: ${REST_IMAGE:-polymeshassociation/polymesh-rest-api:latest}
     init: true
     restart: unless-stopped
     depends_on:
       - alice
       - vault
-      - tooling
+      - graphql
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     ports:
       - ${REST_PORT:-3004}:3000
     environment:
       POLYMESH_NODE_URL: 'ws://alice:9944'
-      POLYMESH_MIDDLEWARE_URL: 'http://tooling:3000'
-      POLYMESH_MIDDLEWARE_API_KEY: 'needed-but-not-checked'
+      POLYMESH_MIDDLEWARE_V2_URL: 'http://host.docker.internal'
       VAULT_URL: 'http://vault:8200/v1/transit'
       VAULT_TOKEN: 'root'
       AUTH_STRATEGY: 'open'
