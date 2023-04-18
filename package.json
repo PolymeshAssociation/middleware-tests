@@ -8,7 +8,7 @@
   "license": "ISC",
   "scripts": {
     "test": "yarn test:setup && yarn test:run && yarn test:teardown",
-    "test:setup": "docker compose up -d && ./scripts/check-services.sh && docker compose restart graphql",
+    "test:setup": "./scripts/setup.sh",
     "test:run": "jest --maxWorkers=8",
     "test:teardown": "docker compose down",
     "prebuild": "rimraf dist",
@@ -88,8 +88,8 @@
     "@polkadot/types-codec": "8.9.1",
     "@polkadot/types-create": "8.9.1",
     "@polkadot/types-known": "8.9.1",
-    "@polkadot/util": "9.7.2",
-    "@polkadot/networks": "9.7.2",
+    "@polkadot/util": "9.5.1",
+    "@polkadot/networks": "9.5.1",
     "@polkadot/util-crypto": "9.5.1",
     "@polkadot/x-bigint": "9.5.1"
   }
