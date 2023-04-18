@@ -8,7 +8,7 @@
   "license": "ISC",
   "scripts": {
     "test": "yarn test:setup && yarn test:run && yarn test:teardown",
-    "test:setup": "docker compose pull && docker compose up -d && ./scripts/check-rest.sh",
+    "test:setup": "docker compose build --no-cache && docker compose up -d && ./scripts/check-rest.sh",
     "test:run": "jest --maxWorkers=8",
     "test:teardown": "docker compose down",
     "prebuild": "rimraf dist",
