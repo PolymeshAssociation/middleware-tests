@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Replace with the desired URL of your service
 SERVICE_URL="http://localhost:3004/"
 
 EXPECTED_STATUS_CODE=200
