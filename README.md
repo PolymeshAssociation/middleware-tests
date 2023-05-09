@@ -9,7 +9,7 @@ The tests primarily make use of the [REST API](https://github.com/PolymeshAssoci
 
 ## Environment Variables
 
-By default `yarn test` will use polymesh-local to setup a docker environment with the latest docker image for each service.
+By default `yarn test` will use `docker compose up` to setup a docker environment with the latest docker image for each service.
 
 The URLs of the services under test can be set with environment variables. Look at the [environment.ts file](./src/environment.ts) for a complete list
 

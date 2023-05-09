@@ -7,7 +7,7 @@ const restApi = process.env.REST_API_URL || 'http://localhost:3004';
 const vaultUrl = process.env.VAULT_API_URL || 'http://localhost:8200';
 const vaultTransitPath = process.env.VAULT_TRANSIT_PATH || '/v1/transit';
 const vaultToken = process.env.VAULT_TOKEN || 'root';
-const toolingGqlUrl = process.env.TOOLING_GQL_URL || 'http://localhost:3007/graphql';
+const graphqlUrl = process.env.GRAPHQL_URL || 'http://localhost:3001';
 /**
  * Set to a truthy value to remove used Vault keys
  */
@@ -19,6 +19,6 @@ export const env = {
   vaultUrl,
   vaultToken,
   vaultTransitPath,
-  toolingGqlUrl,
+  graphqlUrl,
   deleteUsedKeys,
 };
