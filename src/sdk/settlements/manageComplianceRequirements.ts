@@ -22,7 +22,9 @@ export const manageComplianceRequirements = async (
   ticker: string
 ): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
-  assert(identity);
+  if (!identity) {
+    throw new Error('the SDK must have a signing identity');
+  }
 
   // destructure to reduce `asset.` repetition
   const { compliance } = await sdk.assets.getAsset({ ticker });

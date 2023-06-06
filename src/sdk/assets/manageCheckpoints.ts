@@ -1,6 +1,7 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
 import { CalendarUnit } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
+import { sign } from 'node:crypto';
 
 /*
   This script showcases Checkpoints related functionality. It:
@@ -15,7 +16,9 @@ import assert from 'node:assert';
 */
 export const manageCheckpoints = async (sdk: Polymesh, ticker: string): Promise<void> => {
   const signingIdentity = await sdk.getSigningIdentity();
-  assert(signingIdentity);
+  if (!signingIdentity) {
+    throw new Error('The SDK must have a signing identity');
+  }
 
   // The signing identity should be an agent of the Asset and have appropriate permission
   const asset = await sdk.assets.getAsset({ ticker });

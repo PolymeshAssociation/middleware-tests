@@ -17,7 +17,9 @@ export const portfolioCustody = async (sdk: Polymesh, custodianDid: string): Pro
   const { account: custodianAccount } = await custodian.getPrimaryAccount();
 
   const identity = await sdk.getSigningIdentity();
-  assert(identity);
+  if (!identity) {
+    throw new Error('the SDK must have a signing identity');
+  }
 
   const createPortfolioTx = await sdk.identities.createPortfolio({ name: 'CUSTODY_PORTFOLIO' });
   const portfolio = await createPortfolioTx.run();

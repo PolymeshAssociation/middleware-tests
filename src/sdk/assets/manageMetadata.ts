@@ -19,7 +19,9 @@ import assert from 'node:assert';
 */
 export const manageMetadata = async (sdk: Polymesh, ticker: string): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
-  assert(identity);
+  if (!identity) {
+    throw new Error('the SDK must have an identity');
+  }
 
   const asset = await sdk.assets.getAsset({ ticker });
 

@@ -13,7 +13,7 @@ const graphqlUrl = process.env.GRAPHQL_URL || 'http://localhost:3001';
  */
 const deleteUsedKeys = !!process.env.DELETE_USED_KEYS || false;
 
-export const env = {
+export const config = {
   nodeUrl,
   restApi,
   vaultUrl,

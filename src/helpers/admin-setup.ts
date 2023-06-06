@@ -3,15 +3,15 @@ import 'tsconfig-paths/register'; // (Solution from)[https://github.com/facebook
 import { RestClient } from '~/rest';
 import { VaultClient } from '~/vault';
 
-import { env } from '../environment';
+import { config } from '../config';
 
 const maxWorkersSupported = 8;
 
 const initialPolyx = 100000000;
 
 export default async (): Promise<void> => {
-  const vaultClient = new VaultClient(env.vaultUrl, env.vaultTransitPath, env.vaultToken);
-  const restClient = new RestClient(env.restApi);
+  const vaultClient = new VaultClient(config.vaultUrl, config.vaultTransitPath, config.vaultToken);
+  const restClient = new RestClient(config.restApi);
 
   const adminSigners = [...Array(maxWorkersSupported)].map((_, index) => `${index + 1}-admin`);
 

@@ -32,7 +32,9 @@ export const createSto = async (
     sdk.assets.getAsset({ ticker: offeringTicker }),
     sdk.assets.getAsset({ ticker: raisingTicker }),
   ]);
-  assert(identity);
+  if (!identity) {
+    throw new Error('the SDK must have a signing identity');
+  }
 
   // Get the investors portfolio and primary account
   const [investorPortfolio, { account: investorAccount }] = await Promise.all([

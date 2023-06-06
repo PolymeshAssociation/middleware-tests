@@ -1,7 +1,7 @@
 import { LocalSigningManager } from '@polymeshassociation/local-signing-manager';
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 
-import { env } from '~/environment';
+import { config } from '~/config';
 import { TestFactoryOpts } from '~/helpers/types';
 import { RestClient } from '~/rest';
 import { Identity } from '~/rest/identities';
@@ -11,7 +11,7 @@ import { VaultClient } from '~/vault';
 
 const nonceLength = 9;
 const startingPolyx = 100000;
-const { nodeUrl, vaultUrl, vaultToken, vaultTransitPath } = env;
+const { nodeUrl, vaultUrl, vaultToken, vaultTransitPath } = config;
 
 export class TestFactory {
   public nonce: string;
@@ -27,7 +27,7 @@ export class TestFactory {
     const { handles: signers } = opts;
 
     const middlewareV2 = {
-      link: env.graphqlUrl,
+      link: config.graphqlUrl,
       key: '',
     };
 
@@ -143,7 +143,7 @@ export class TestFactory {
   }
 
   private async cleanupIdentities(): Promise<void> {
-    if (env.deleteUsedKeys) {
+    if (config.deleteUsedKeys) {
       await Promise.all(
         Object.keys(this.handleToIdentity).map(async (handle) => {
           const keyName = this.prefixNonce(handle);
@@ -157,7 +157,7 @@ export class TestFactory {
 
   private constructor(public readonly polymeshSdk: Polymesh) {
     this.nonce = randomNonce(nonceLength);
-    this.restClient = new RestClient(env.restApi);
+    this.restClient = new RestClient(config.restApi);
     this.vaultClient = new VaultClient(vaultUrl, vaultTransitPath, vaultToken);
   }
 }

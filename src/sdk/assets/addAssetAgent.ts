@@ -13,7 +13,9 @@ export const addAssetAgent = async (
   ticker: string
 ): Promise<void> => {
   const signingIdentity = await sdk.getSigningIdentity();
-  assert(signingIdentity);
+  if (!signingIdentity) {
+    throw new Error('The SDK does not have a signing identity');
+  }
 
   const target = await sdk.identities.getIdentity({
     did: targetDid,

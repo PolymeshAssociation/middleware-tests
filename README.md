@@ -22,6 +22,7 @@ The URLs of the services under test can be set with environment variables. Look 
 - `yarn semantic-release` runs semantic release to calculate version numbers based on the nature of changes since the last version (used in CI pipelines)
 - `yarn lint` runs the linter on all .ts(x) and .js(x) files and outputs all errors
 - `yarn format` runs prettier on all .ts(x) and .js(x) files and formats them according to the project standards
+- `yarn generate-examples` modifies SDK src files to generate examples. These will need to be copied to the examples repository
 
 ## Notes
 

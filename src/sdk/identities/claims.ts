@@ -14,7 +14,9 @@ import assert from 'node:assert';
 */
 export const manageClaims = async (sdk: Polymesh, targetDid: string): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
-  assert(identity);
+  if (!identity) {
+    throw new Error('the SDK must have an signing identity');
+  }
 
   const { account: signingAccount } = await identity.getPrimaryAccount();
 

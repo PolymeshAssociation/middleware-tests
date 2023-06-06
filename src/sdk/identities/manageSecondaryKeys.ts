@@ -11,7 +11,9 @@ import assert from 'node:assert';
 */
 export const manageSecondaryKeys = async (sdk: Polymesh, targetAddress: string): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
-  assert(identity);
+  if (!identity) {
+    throw new Error('the SDK must have a signing identity');
+  }
 
   // Account to invite to join the signing Identity
   const targetAccount = await sdk.accountManagement.getAccount({

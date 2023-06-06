@@ -16,7 +16,9 @@ import { wellKnown } from '~/consts';
 */
 export const transferRestrictions = async (sdk: Polymesh, ticker: string): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
-  assert(identity);
+  if (!identity) {
+    throw new Error('the SDK must have a signing identity');
+  }
 
   const asset = await sdk.assets.getAsset({ ticker });
 

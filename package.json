@@ -19,7 +19,8 @@
     "semantic-release": "semantic-release",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
     "format": "cross-env prettier-eslint $PWD\"/src/**/*.{ts,tsx,js,jsx,json,css,md}\" --write",
-    "dedupe:lock": "npx yarn-deduplicate yarn.lock"
+    "dedupe:lock": "npx yarn-deduplicate yarn.lock",
+    "generate-examples": "ts-node ./scripts/generate-examples.ts"
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.20.11",

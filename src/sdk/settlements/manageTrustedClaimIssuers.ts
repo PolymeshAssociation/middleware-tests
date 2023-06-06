@@ -15,7 +15,9 @@ import { wellKnown } from '~/consts';
 */
 export const manageTrustedClaimIssuers = async (sdk: Polymesh, ticker: string): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
-  assert(identity);
+  if (!identity) {
+    throw new Error('the SDK must have a signing identity');
+  }
 
   // destructure to reduce `asset.` repetition
   const { compliance } = await sdk.assets.getAsset({ ticker });

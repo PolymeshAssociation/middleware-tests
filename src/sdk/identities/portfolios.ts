@@ -15,7 +15,9 @@ import { randomNonce } from '~/util';
 */
 export const managePortfolios = async (sdk: Polymesh, ticker: string): Promise<void> => {
   const signingIdentity = await sdk.getSigningIdentity();
-  assert(signingIdentity);
+  if (!signingIdentity) {
+    throw new Error('the SDK must have a signing identity');
+  }
 
   const asset = await sdk.assets.getAsset({ ticker });
 

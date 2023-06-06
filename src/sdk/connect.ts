@@ -1,9 +1,9 @@
 import { LocalSigningManager } from '@polymeshassociation/local-signing-manager';
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 
-import { env } from '~/environment';
+import { config } from '~/config';
 
-const { nodeUrl } = env;
+const { nodeUrl } = config;
 
 let sdk: Polymesh;
 

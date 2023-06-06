@@ -17,7 +17,9 @@ export const manageCAA = async (
     sdk.getSigningIdentity(),
     sdk.identities.getIdentity({ did: targetDid }),
   ]);
-  assert(identity);
+  if (!identity) {
+    throw new Error('The SDK must have a signing identity');
+  }
 
   const asset = await sdk.assets.getAsset({ ticker });
 
@@ -40,7 +42,9 @@ export const manageCAA = async (
 
   const pendingAuthorizations = await target.authorizations.getReceived({ includeExpired: false });
   const becomeCAAAuth = pendingAuthorizations.find(({ authId }) => authId.eq(authRequest.authId));
-  assert(becomeCAAAuth, 'the authorization should be findable by the target');
+  if (!becomeCAAAuth) {
+    throw new Error('The CAA auth should be findable');
+  }
 
   const { account: targetAccount } = await target.getPrimaryAccount();
 

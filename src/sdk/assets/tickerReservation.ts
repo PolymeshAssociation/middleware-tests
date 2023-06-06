@@ -10,7 +10,9 @@ import assert from 'assert';
 */
 export const tickerReservation = async (sdk: Polymesh, ticker: string): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
-  assert(identity);
+  if (!identity) {
+    throw new Error('the SDK must have a signing identity');
+  }
 
   const { account: signingAccount } = await identity.getPrimaryAccount();
 

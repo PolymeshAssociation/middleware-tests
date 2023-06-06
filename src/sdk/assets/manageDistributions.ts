@@ -21,7 +21,9 @@ export const manageDistributions = async (
   distributionTicker: string
 ): Promise<void> => {
   const signingIdentity = await sdk.getSigningIdentity();
-  assert(signingIdentity);
+  if (!signingIdentity) {
+    throw new Error('the SDK must have a signing identity');
+  }
 
   const alice = await sdk.identities.getIdentity({ did: wellKnown.alice.did });
 

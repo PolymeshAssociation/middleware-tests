@@ -38,7 +38,9 @@ export const tradeAssets = async (
     sdk.assets.getAsset({ ticker: bid.ticker }),
     sdk.assets.getAsset({ ticker: ask.ticker }),
   ]);
-  assert(identity);
+  if (!identity) {
+    throw new Error('The SDK must have a signing identity');
+  }
 
   const { account: counterPartyAccount } = await counterParty.getPrimaryAccount();
 
@@ -101,7 +103,9 @@ export const tradeAssets = async (
   const { pending } = await counterParty.getInstructions();
 
   const counterInstruction = pending.find(({ id }) => id.eq(instruction.id));
-  assert(counterInstruction, 'the counter party should have the instruction as pending');
+  if (!counterInstruction) {
+    throw new Error('the counter party should have the instruction as pending');
+  }
 
   // All legs of an Instruction should be inspected before before affirming
   const { data: legs } = await counterInstruction.getLegs();
