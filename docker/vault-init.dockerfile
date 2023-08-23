@@ -1,4 +1,4 @@
-FROM vault
+FROM hashicorp/vault
 
 COPY ./vault-init.sh /
 

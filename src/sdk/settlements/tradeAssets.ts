@@ -113,7 +113,7 @@ export const tradeAssets = async (
    Note, the actual settlement will be executed in a block after the final affirmation.
    The instruction can still be rejected even if the final affirmation succeeds
   */
-  const affirmTx = await counterInstruction.affirm({ signingAccount: counterPartyAccount });
+  const affirmTx = await counterInstruction.affirm({}, { signingAccount: counterPartyAccount });
   await affirmTx.run();
   assert(affirmTx.isSuccess);
 };
