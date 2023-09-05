@@ -74,12 +74,6 @@ export const manageClaims = async (sdk: Polymesh, targetDid: string): Promise<vo
     'The signing Identity should have at least one Customer Due Diligence claim'
   );
 
-  const investorUniquenessClaims = await sdk.claims.getInvestorUniquenessClaims();
-  assert(
-    Array.isArray(investorUniquenessClaims),
-    '`getInvestorUniquenessClaims` should return an Array'
-  );
-
   // `target` can specify which Identity to fetch Claims for
   const targetingClaims = await sdk.claims.getTargetingClaims({ target: targetDid });
   assert(Array.isArray(targetingClaims.data), 'Data should be an Array for `getTargetingClaims`');

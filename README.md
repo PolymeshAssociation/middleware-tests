@@ -1,7 +1,7 @@
 [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/standard/semistandard)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
-# Tooling tests
+# Polymesh Integration Tests
 
 Here is a collection of integration tests to help ensure the various Polymesh services work together correctly.
 
@@ -9,7 +9,7 @@ The tests primarily make use of the [REST API](https://github.com/PolymeshAssoci
 
 ## Environment Variables
 
-By default `yarn test` will use `docker compose up` to setup a docker environment with the latest docker image for each service.
+By default `yarn test` will use `docker compose up` to setup a docker environment with the latest docker image for each service. Look in `envs/` for supported image sets. Look in `scripts/setup.sh` to see the set of images under test.
 
 The URLs of the services under test can be set with environment variables. Look at the [environment.ts file](./src/environment.ts) for a complete list
 
