@@ -25,7 +25,7 @@ export const manageComplianceRequirements = async (
   assert(identity);
 
   // destructure to reduce `asset.` repetition
-  const { compliance } = await sdk.assets.getAsset({ ticker });
+  const { compliance } = await sdk.assets.getFungibleAsset({ ticker });
 
   /*
     Set compliance requirements for the Asset. Instructions will be rejected if any party fails to comply with a rule.

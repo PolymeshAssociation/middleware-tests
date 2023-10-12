@@ -38,6 +38,16 @@ export const manageSecondaryKeys = async (sdk: Polymesh, targetAddress: string):
   const joinTx = await joinAuth.accept({ signingAccount: targetAddress });
   await joinTx.run();
   assert(joinTx.isSuccess);
+};
+
+export const modifyPermissions = async (sdk: Polymesh, targetAddress: string): Promise<void> => {
+  const identity = await sdk.getSigningIdentity();
+  assert(identity);
+
+  // Account to invite to join the signing Identity
+  const targetAccount = await sdk.accountManagement.getAccount({
+    address: targetAddress,
+  });
 
   const { data: secondaryAccounts } = await identity.getSecondaryAccounts();
   assert(secondaryAccounts.length > 0, 'The identity should have at least one secondary account');

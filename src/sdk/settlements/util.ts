@@ -1,13 +1,16 @@
 import {
-  Asset,
   ClaimType,
   ConditionTarget,
   ConditionType,
+  FungibleAsset,
   ScopeType,
 } from '@polymeshassociation/polymesh-sdk/types';
 
 // Helper function - Assets need compliance requirements configured before they can traded
-export const addIsNotBlocked = async (asset: Asset, signingAccount?: string): Promise<unknown> => {
+export const addIsNotBlocked = async (
+  asset: FungibleAsset,
+  signingAccount?: string
+): Promise<unknown> => {
   const tx = await asset.compliance.requirements.add(
     {
       conditions: [

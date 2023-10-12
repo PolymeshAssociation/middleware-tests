@@ -6,7 +6,7 @@ const config: Config.InitialOptions = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   transformIgnorePatterns: ['/node_modules/(?![@polymeshassociation/src]).+\\.js$'],
   testMatch: ['**/__tests__/**/*.(ts|tsx)'],
-  testPathIgnorePatterns: ['dist'],
+  testPathIgnorePatterns: ['dist', '.history'],
   moduleNameMapper: {
     '~/(.*)': '<rootDir>/src/$1',
   },

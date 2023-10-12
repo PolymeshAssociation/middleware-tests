@@ -18,7 +18,7 @@ export const transferRestrictions = async (sdk: Polymesh, ticker: string): Promi
   const identity = await sdk.getSigningIdentity();
   assert(identity);
 
-  const asset = await sdk.assets.getAsset({ ticker });
+  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   /*
     Transfer Restrictions require their respective stats to be enabled. Enabling a stat will slightly increase gas fees for all transfers.

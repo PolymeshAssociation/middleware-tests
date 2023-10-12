@@ -1,23 +1,23 @@
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 import {
-  Asset,
   CreateAssetWithTickerParams,
+  FungibleAsset,
   KnownAssetType,
   ProcedureOpts,
 } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'assert';
 
 /**
- * This function showcases creating an Asset in single transaction
+ * This function showcases creating an FungibleAsset in single transaction
  */
 export const createAsset = async (
   sdk: Polymesh,
   args: Partial<CreateAssetWithTickerParams>,
   opts?: ProcedureOpts
-): Promise<Asset> => {
+): Promise<FungibleAsset> => {
   // Note, optional params include `initialSupply`, `initialStatistics` and `documents` among others
   const requiredParams = {
-    name: 'Asset Name',
+    name: 'FungibleAsset Name',
     ticker: 'TICKER',
     isDivisible: false,
     assetType: KnownAssetType.EquityCommon,
@@ -32,7 +32,7 @@ export const createAsset = async (
   // Validates arguments (e.g. ticker is not taken) and returns a Transaction to be ran.
   const createAssetTx = await sdk.assets.createAsset(params, opts);
 
-  // The `Asset` entity will be returned after the transaction is finalized
+  // The `FungibleAsset` entity will be returned after the transaction is finalized
   const asset = await createAssetTx.run();
   assert(createAssetTx.isSuccess);
 
