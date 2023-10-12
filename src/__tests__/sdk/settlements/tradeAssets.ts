@@ -51,7 +51,7 @@ describe('tradeAssets', () => {
 
   it('should check canTransfer without error', async () => {
     const [asset, to] = await Promise.all([
-      sdk.assets.getAsset({ ticker: askTicker }),
+      sdk.assets.getFungibleAsset({ ticker: askTicker }),
       sdk.identities.getIdentity({ did: counterPartyDid }),
     ]);
 
