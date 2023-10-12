@@ -1,5 +1,4 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { CalendarUnit } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 /*
@@ -18,7 +17,7 @@ export const manageCheckpoints = async (sdk: Polymesh, ticker: string): Promise<
   assert(signingIdentity);
 
   // The signing identity should be an agent of the Asset and have appropriate permission
-  const asset = await sdk.assets.getAsset({ ticker });
+  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   // prepare and run a create checkpoint transaction
   const createCheckpointTx = await asset.checkpoints.create();
@@ -53,12 +52,13 @@ export const manageCheckpoints = async (sdk: Polymesh, ticker: string): Promise<
   );
 
   // A schedule will create checkpoints on a regular cadence. e.g. for a monthly dividend
-  const start = new Date();
-  start.setMonth(start.getMonth() + 1); // start on the first of next month
+  const points = Array.from({ length: 12 }, (_, i) => {
+    const currentDate = new Date();
+    currentDate.setMonth(currentDate.getMonth() + i + 1);
+    return currentDate;
+  });
   const createScheduleTx = await asset.checkpoints.schedules.create({
-    start,
-    period: { unit: CalendarUnit.Month, amount: new BigNumber(1) },
-    repetitions: new BigNumber(12),
+    points,
   });
   const newSchedule = await createScheduleTx.run();
   assert(createCheckpointTx.isSuccess);

@@ -19,7 +19,7 @@ export const manageCAA = async (
   ]);
   assert(identity);
 
-  const asset = await sdk.assets.getAsset({ ticker });
+  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   const setCorporateActionsAgentTx = await asset.permissions.inviteAgent({
     target,

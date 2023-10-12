@@ -13,7 +13,7 @@ export const getAssetHolders = async (
   ticker: string,
   paginationOpts?: PaginationOptions
 ): Promise<ResultSet<IdentityBalance>> => {
-  const asset = await sdk.assets.getAsset({ ticker });
+  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   return asset.assetHolders.get(paginationOpts);
 };

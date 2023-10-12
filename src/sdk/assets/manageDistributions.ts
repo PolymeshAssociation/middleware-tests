@@ -26,7 +26,7 @@ export const manageDistributions = async (
   const alice = await sdk.identities.getIdentity({ did: wellKnown.alice.did });
 
   // The signing identity should be an agent of the Asset and have appropriate permission
-  const asset = await sdk.assets.getAsset({ ticker });
+  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   // fetch all current distributions for the Asset
   const allDistributions = await asset.corporateActions.distributions.get();
