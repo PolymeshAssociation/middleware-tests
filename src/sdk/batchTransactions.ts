@@ -1,5 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { Asset, KnownAssetType } from '@polymeshassociation/polymesh-sdk/types';
+import { FungibleAsset, KnownAssetType } from '@polymeshassociation/polymesh-sdk/types';
 import { isPolymeshTransactionBatch } from '@polymeshassociation/polymesh-sdk/utils';
 import { assert } from 'console';
 
@@ -41,7 +41,7 @@ export const batchTransactions = async (sdk: Polymesh, ticker: string): Promise<
   });
 
   // The transaction type needs to be narrowed with an exported type guard
-  if (isPolymeshTransactionBatch<Asset>(batchTx2)) {
+  if (isPolymeshTransactionBatch<FungibleAsset>(batchTx2)) {
     const transactions = batchTx2.splitTransactions();
 
     // Transactions MUST be run in strict order, waiting for one to finalize before running the next.

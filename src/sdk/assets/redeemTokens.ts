@@ -11,7 +11,7 @@ export const redeemTokens = async (
   ticker: string,
   amount: BigNumber
 ): Promise<void> => {
-  const asset = await sdk.assets.getAsset({ ticker });
+  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   const { owner: identity } = await asset.details();
 

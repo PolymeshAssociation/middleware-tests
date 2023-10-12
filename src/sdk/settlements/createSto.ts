@@ -29,8 +29,8 @@ export const createSto = async (
   const [identity, investor, offeringAsset, raisingAsset] = await Promise.all([
     sdk.getSigningIdentity(),
     sdk.identities.getIdentity({ did: investorDid }),
-    sdk.assets.getAsset({ ticker: offeringTicker }),
-    sdk.assets.getAsset({ ticker: raisingTicker }),
+    sdk.assets.getFungibleAsset({ ticker: offeringTicker }),
+    sdk.assets.getFungibleAsset({ ticker: raisingTicker }),
   ]);
   assert(identity);
 

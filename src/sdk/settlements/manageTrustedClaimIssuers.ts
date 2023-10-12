@@ -18,7 +18,7 @@ export const manageTrustedClaimIssuers = async (sdk: Polymesh, ticker: string): 
   assert(identity);
 
   // destructure to reduce `asset.` repetition
-  const { compliance } = await sdk.assets.getAsset({ ticker });
+  const { compliance } = await sdk.assets.getFungibleAsset({ ticker });
 
   // Add a claim Issuer for trusted for all claims
   const addClaimIssuerTx = await compliance.trustedClaimIssuers.add({

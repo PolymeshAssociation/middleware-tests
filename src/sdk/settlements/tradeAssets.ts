@@ -35,8 +35,8 @@ export const tradeAssets = async (
   const [identity, counterParty, bidAsset, askAsset] = await Promise.all([
     sdk.getSigningIdentity(),
     sdk.identities.getIdentity({ did: counterPartyDid }),
-    sdk.assets.getAsset({ ticker: bid.ticker }),
-    sdk.assets.getAsset({ ticker: ask.ticker }),
+    sdk.assets.getFungibleAsset({ ticker: bid.ticker }),
+    sdk.assets.getFungibleAsset({ ticker: ask.ticker }),
   ]);
   assert(identity);
 

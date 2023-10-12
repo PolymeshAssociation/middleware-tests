@@ -2,7 +2,7 @@ import { LocalSigningManager } from '@polymeshassociation/local-signing-manager'
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 
 import { TestFactory } from '~/helpers';
-import { manageSecondaryKeys } from '~/sdk/identities/manageSecondaryKeys';
+import { manageSecondaryKeys, modifyPermissions } from '~/sdk/identities/manageSecondaryKeys';
 
 let factory: TestFactory;
 
@@ -25,5 +25,6 @@ describe('manageSecondaryKeys', () => {
 
   it('should execute without errors', async () => {
     await expect(manageSecondaryKeys(sdk, targetAddress)).resolves.not.toThrow();
+    await expect(modifyPermissions(sdk, targetAddress)).resolves.not.toThrow();
   });
 });

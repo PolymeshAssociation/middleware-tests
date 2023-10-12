@@ -17,7 +17,7 @@ export const managePortfolios = async (sdk: Polymesh, ticker: string): Promise<v
   const signingIdentity = await sdk.getSigningIdentity();
   assert(signingIdentity);
 
-  const asset = await sdk.assets.getAsset({ ticker });
+  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   const nonce = randomNonce(12);
   const portfolioTx = await sdk.identities.createPortfolio({ name: `TEST-${nonce}` });
