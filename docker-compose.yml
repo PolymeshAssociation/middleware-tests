@@ -61,7 +61,7 @@ services:
       DB_USER: '${PG_USER:-postgres}'
       DB_PASS: '${PG_PASSWORD:-postgres}'
       DB_DATABASE: '${PG_DB:-postgres}'
-      DB_PORT: '${PG_PORT:-postgres}'
+      DB_PORT: '${PG_PORT:-5432}'
       DB_HOST: '${PG_HOST:-postgres}'
       NODE_ENV: local
     command:
