@@ -97,9 +97,14 @@ services:
     init: true
     restart: unless-stopped
     depends_on:
-      - alice
-      - vault
-      - graphql
+      alice:
+        condition: service_started
+      vault:
+        condition: service_started
+      graphql:
+        condition: service_started
+      subquery:
+        condition: service_healthy
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     ports:
