@@ -27,7 +27,7 @@ export const createNftCollection = async (
   // Validates arguments (e.g. ticker is not taken) and returns a Transaction to be ran.
   const createCollectionTx = await sdk.assets.createNftCollection(params, opts);
 
-  // The `FungibleAsset` entity will be returned after the transaction is finalized
+  // The `NftCollection` entity will be returned after the transaction is finalized
   const collection = await createCollectionTx.run();
   assert(createCollectionTx.isSuccess);
 

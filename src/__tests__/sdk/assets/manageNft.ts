@@ -84,7 +84,7 @@ describe('manageNft', () => {
   });
 
   it('should return the needed metadata', async () => {
-    const requiredMetadata = await collection.collectionMetadata();
+    const requiredMetadata = await collection.collectionKeys();
 
     expect(requiredMetadata).toEqual(
       expect.arrayContaining([

@@ -1,7 +1,11 @@
 import { RestClient } from '~/rest/client';
 import { TxBase } from '~/rest/common';
 import { PostResult } from '~/rest/interfaces';
-import { instructionParams, venueParams } from '~/rest/settlements/params';
+import {
+  fungibleInstructionParams,
+  nftInstructionParams,
+  venueParams,
+} from '~/rest/settlements/params';
 
 export class Settlements {
   constructor(private client: RestClient) {}
@@ -12,12 +16,16 @@ export class Settlements {
 
   public async createInstruction(
     venueId: string,
-    params: ReturnType<typeof instructionParams>
+    params: ReturnType<typeof fungibleInstructionParams> | ReturnType<typeof nftInstructionParams>
   ): Promise<PostResult> {
     return this.client.post(`/venues/${venueId}/instructions/create`, params);
   }
 
   public async affirmInstruction(instructionId: string, txBase: TxBase): Promise<PostResult> {
     return this.client.post(`/instructions/${instructionId}/affirm`, { ...txBase });
+  }
+
+  public async getInstruction(instructionId: string): Promise<unknown> {
+    return this.client.get(`/instructions/${instructionId}`);
   }
 }

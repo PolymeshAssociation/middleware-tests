@@ -4,6 +4,7 @@ import fetch from 'cross-fetch';
 import { Assets } from '~/rest/assets';
 import { Compliance } from '~/rest/compliance';
 import { Identities } from '~/rest/identities';
+import { Nfts } from '~/rest/nfts';
 import { PortfolioManagement } from '~/rest/portfolios';
 import { Settlements } from '~/rest/settlements';
 import { Subsidy } from '~/rest/subsidy';
@@ -11,6 +12,7 @@ import { TickerReservations } from '~/rest/tickerReservations';
 
 export class RestClient {
   public assets: Assets;
+  public nfts: Nfts;
   public compliance: Compliance;
   public identities: Identities;
   public settlements: Settlements;
@@ -20,6 +22,7 @@ export class RestClient {
 
   constructor(public baseUrl: string) {
     this.assets = new Assets(this);
+    this.nfts = new Nfts(this);
     this.compliance = new Compliance(this);
     this.identities = new Identities(this);
     this.settlements = new Settlements(this);

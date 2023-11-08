@@ -13,6 +13,10 @@ By default `yarn test` will use `docker compose up` to setup a docker environmen
 
 The URLs of the services under test can be set with environment variables. Look at the [environment.ts file](./src/environment.ts) for a complete list
 
+## Local Images
+
+To test a local image update the corresponding  env to be set to the local tag name. `docker compose` by default attempts to pull, so you will need to add `pull_policy: never` to the respective service.
+
 ## Scripts
 
 - `yarn build:ts` compiles typescript files into javascript and type declarations. Outputs to `dist/` directory

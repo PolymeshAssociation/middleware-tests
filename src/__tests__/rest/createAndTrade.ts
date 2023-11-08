@@ -3,7 +3,7 @@ import { RestClient } from '~/rest';
 import { createAssetParams } from '~/rest/assets/params';
 import { complianceRestrictionParams } from '~/rest/compliance';
 import { Identity } from '~/rest/identities/interfaces';
-import { instructionParams, venueParams } from '~/rest/settlements';
+import { fungibleInstructionParams, venueParams } from '~/rest/settlements';
 
 const handles = ['issuer', 'investor'];
 let factory: TestFactory;
@@ -97,7 +97,7 @@ describe('Create and trading an Asset', () => {
   it('should create an instruction', async () => {
     const sender = issuer.did;
     const receiver = investor.did;
-    const params = instructionParams(ticker, sender, receiver, { signer });
+    const params = fungibleInstructionParams(ticker, sender, receiver, { signer });
     const instructionData = await restClient.settlements.createInstruction(venueId, params);
 
     expect(instructionData).toMatchObject({
@@ -119,8 +119,17 @@ describe('Create and trading an Asset', () => {
 
     expect(pendingInstructionId).not.toBeUndefined();
 
-    await restClient.settlements.affirmInstruction(pendingInstructionId, {
+    const affirmResult = await restClient.settlements.affirmInstruction(pendingInstructionId, {
       signer: investor.signer,
+    });
+
+    expect(affirmResult).toMatchObject({
+      transactions: expect.arrayContaining([
+        expect.objectContaining({
+          transactionTag: 'settlement.affirmInstruction',
+          ...expectTxInfo,
+        }),
+      ]),
     });
   });
 });

@@ -2,6 +2,8 @@ services:
   postgres:
     image: postgres:12-alpine
     restart: unless-stopped
+    ports:
+      - ${PG_PORT:-5432}:5432
     volumes:
       - './docker/pg-extensions.sh:/docker-entrypoint-initdb.d/load-extensions.sh'
     environment:
@@ -38,8 +40,6 @@ services:
       - '9944:9944' # ws://
       - '9933:9933' # http://
       - '30333:30333' # for other nodes
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
     volumes:
       - './docker/chain-entry.sh:/chain-entry.sh'
     entrypoint: '/chain-entry.sh'
@@ -47,14 +47,14 @@ services:
 
   subquery:
     image:  ${SUBQUERY_INDEXER_IMAGE}
-    init: true
     platform: linux/amd64
+    init: true
     healthcheck:
       test: curl --fail http://localhost:3000/meta || exit 1
       interval: 20s
       retries: 30
       start_period: 20s
-      timeout: 10s
+      timeout: 20s
     restart: unless-stopped
     depends_on:
      postgres:
@@ -81,8 +81,6 @@ services:
     image: onfinality/subql-query:v1.0.0
     ports:
       - ${SQ_PORT:-3001}:3000
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
     depends_on:
       postgres:
         condition: service_started
@@ -98,7 +96,7 @@ services:
     command:
       - --name=public
       - --playground
-      - --indexer=http:/host.docker.internal:3002
+      - --indexer=http://subquery:3000
 
   rest-api:
     image: ${REST_IMAGE}
@@ -114,13 +112,11 @@ services:
         condition: service_started
       subquery:
         condition: service_healthy
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
     ports:
       - ${REST_PORT:-3004}:3000
     environment:
       POLYMESH_NODE_URL: 'ws://alice:9944'
-      POLYMESH_MIDDLEWARE_V2_URL: 'http://host.docker.internal:3001'
+      POLYMESH_MIDDLEWARE_V2_URL: 'http://graphql:3000'
       VAULT_URL: 'http://vault:8200/v1/transit'
       VAULT_TOKEN: 'root'
       AUTH_STRATEGY: 'open'
