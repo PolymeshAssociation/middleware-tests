@@ -25,8 +25,12 @@ services:
     restart: 'no'
 
   alice:
-    # image: ${CHAIN_IMAGE:-polymeshassociation/polymesh:latest-staging-debian}
-    # image: polymeshassociation/polymesh-arm64:99dc6cc1b2-develop-debian
+    healthcheck:
+      test: "timeout 5 bash -c 'cat < /dev/null > /dev/tcp/localhost/9933' && exit 0 || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     image: ${CHAIN_IMAGE}
     init: true # Faster shutdown by container process not be PID 1
     restart: unless-stopped
@@ -44,6 +48,7 @@ services:
   subquery:
     image:  ${SUBQUERY_INDEXER_IMAGE}
     init: true
+    platform: linux/amd64
     healthcheck:
       test: curl --fail http://localhost:3000/meta || exit 1
       interval: 20s
@@ -52,7 +57,10 @@ services:
       timeout: 10s
     restart: unless-stopped
     depends_on:
-      - 'postgres'
+     postgres:
+        condition: service_started
+     alice:
+        condition: service_healthy
     ports:
       - 3002:3000
     environment:
@@ -94,6 +102,7 @@ services:
 
   rest-api:
     image: ${REST_IMAGE}
+    platform: linux/amd64
     init: true
     restart: unless-stopped
     depends_on:

@@ -3,8 +3,8 @@ check_url() {
   EXPECTED_STATUS_CODE=200
 
   # Maximum number of attempts
-  MAX_ATTEMPTS=30
-  INTERVAL=20
+  MAX_ATTEMPTS=20
+  INTERVAL=5
 
   # Current attempt number
   ATTEMPT=1
