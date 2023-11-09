@@ -43,7 +43,6 @@ export const tickerReservation = async (sdk: Polymesh, ticker: string): Promise<
       name: 'Reservation Demo',
       isDivisible: true,
       assetType: KnownAssetType.EquityCommon,
-      requireInvestorUniqueness: false,
     },
     { signingAccount }
   );

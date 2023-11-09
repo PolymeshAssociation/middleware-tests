@@ -26,7 +26,7 @@ describe('createSto', () => {
 
     offeringTicker = factory.nextTicker();
     raisingTicker = factory.nextTicker();
-    const initialSupply = new BigNumber(1000)
+    const initialSupply = new BigNumber(1000);
     await Promise.all([
       createAsset(sdk, { ticker: offeringTicker, initialSupply }),
       createAsset(

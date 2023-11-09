@@ -21,7 +21,7 @@ export const manageMetadata = async (sdk: Polymesh, ticker: string): Promise<voi
   const identity = await sdk.getSigningIdentity();
   assert(identity);
 
-  const asset = await sdk.assets.getAsset({ ticker });
+  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   // register a new metadata key for the asset
   const registerTx = await asset.metadata.register({

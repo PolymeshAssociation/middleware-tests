@@ -1,12 +1,11 @@
 #!/bin/bash
 
-parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
-cd "$parent_path"
+SCRIPT_DIR=$(dirname "$0")
 
-source ./env.sh
+VERSION='6.0.0'
 
+# Note: for teardown the specifics don't matter to much, as long as the compose file can be properly templated
+ENV_FILE="$SCRIPT_DIR/../envs/$VERSION.env"
 
-echo "Stopping: $VAULT_CONTAINER_NAME"
-docker stop $VAULT_CONTAINER_NAME
+docker compose --env-file $ENV_FILE down
 
-yarn run polymesh-local stop --clean

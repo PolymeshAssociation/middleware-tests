@@ -1,14 +1,36 @@
 #!/bin/bash
 
-parent_path=$( cd "$(dirname "$BASH_SOURCE[0]")" ; pwd -P )
-cd "$parent_path"
-source ./env.sh
+set -e
 
-echo "starting vault on port: '$VAULT_PORT' root token: '$VAULT_ROOT_TOKEN'"
-docker run -p 8200:8200 --rm -d --name $VAULT_CONTAINER_NAME --env VAULT_DEV_ROOT_TOKEN_ID=$VAULT_ROOT_TOKEN vault
-sleep 3
+SCRIPT_DIR=$(dirname "$0")
 
-echo 'enabling vault transit engine'
-docker exec --env VAULT_ADDR='http://localhost:8200' --env VAULT_TOKEN=$VAULT_ROOT_TOKEN $VAULT_CONTAINER_NAME sh -c 'vault secrets enable transit'
+IMAGE_REPO=polymeshassociation/polymesh
 
-yarn run polymesh-local start -v $CHAIN_VERSION -c --vaultUrl="http://host.docker.internal:$VAULT_PORT/v1/transit" --vaultToken=$VAULT_ROOT_TOKEN
+# Chain version to test
+VERSION='6.0.0'
+
+# service manifest
+ENV_FILE="$SCRIPT_DIR/../envs/$VERSION.env"
+
+# ensure env file exists
+if ! [ -f $ENV_FILE ]; then
+  echo "Env file does not exist: $ENV_FILE"
+  exit 1
+fi
+
+# The chain arm64 docker images are stored in a separate repo
+# The arch should be checked and the env modified to accomodate
+# the chain incurs large performance penalties when emulated
+WORK_ENV_FILE=$ENV_FILE
+ARCH=$(uname -m)
+if [ $ARCH = 'arm64' ]; then
+  WORK_ENV_FILE="/tmp/polymesh-test.env"
+  REPO="${IMAGE_REPO}-arm64"
+  sed "s|CHAIN_IMAGE=${IMAGE_REPO}:\(.*\)|CHAIN_IMAGE=${REPO}:\1|" "$ENV_FILE" > "$WORK_ENV_FILE"
+
+  echo "Note: arm64 detected, chain repo from was set to ${REPO}. env file written to: ${WORK_ENV_FILE}"
+fi
+
+echo "starting polymesh test envrionment"
+docker compose --env-file=$WORK_ENV_FILE up -d --force-recreate --renew-anon-volumes
+./scripts/check-services.sh

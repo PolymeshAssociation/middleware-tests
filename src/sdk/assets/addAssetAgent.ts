@@ -20,7 +20,7 @@ export const addAssetAgent = async (
   });
   const { account: targetAccount } = await target.getPrimaryAccount();
 
-  const asset = await sdk.assets.getAsset({ ticker });
+  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   // Fetch full agents of the Asset
   const { fullAgents } = await asset.details();

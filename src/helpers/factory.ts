@@ -27,12 +27,12 @@ export class TestFactory {
   public static async create(opts: TestFactoryOpts): Promise<TestFactory> {
     const { handles: signers } = opts;
 
-    const middleware = {
-      link: env.toolingGqlUrl,
+    const middlewareV2 = {
+      link: env.graphqlUrl,
       key: '',
     };
 
-    const polymesh = await Polymesh.connect({ nodeUrl, middleware });
+    const polymesh = await Polymesh.connect({ nodeUrl, middlewareV2 });
 
     const factory = new TestFactory(polymesh);
 

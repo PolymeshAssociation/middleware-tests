@@ -27,8 +27,18 @@ describe('createAsset', () => {
         ticker,
         name: 'test',
         isDivisible: true,
-        requireInvestorUniqueness: false,
         assetType: KnownAssetType.EquityCommon,
+      })
+    ).resolves.not.toThrow();
+  });
+
+  it('should execute createAsset with a custom type without errors', async () => {
+    await expect(
+      createAsset(sdk, {
+        ticker: factory.nextTicker(),
+        name: 'testWithType',
+        isDivisible: true,
+        assetType: 'customTypeTest',
       })
     ).resolves.not.toThrow();
   });

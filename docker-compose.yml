@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: postgres
 
   vault:
-    image: vault:${VAULT_VERSION:-latest}
+    image: hashicorp/vault
     restart: unless-stopped
     ports:
       - ${VAULT_PORT:-8200}:8200
@@ -27,33 +27,49 @@ services:
     restart: 'no'
 
   alice:
-    image: ${CHAIN_IMAGE:-polymeshassociation/polymesh:latest-develop-debian}
+    healthcheck:
+      test: "timeout 5 bash -c 'cat < /dev/null > /dev/tcp/localhost/9933' && exit 0 || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    image: ${CHAIN_IMAGE}
     init: true # Faster shutdown by container process not be PID 1
     restart: unless-stopped
     ports: # expose ports to localhostpoint to dockerfile
       - '9944:9944' # ws://
       - '9933:9933' # http://
       - '30333:30333' # for other nodes
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
     volumes:
       - './docker/chain-entry.sh:/chain-entry.sh'
     entrypoint: '/chain-entry.sh'
     command: ['--alice --chain dev']
 
   subquery:
-    image: '${SUBQUERY_IMAGE:-polymeshassociation/polymesh-subquery:latest}'
+    image:  ${SUBQUERY_INDEXER_IMAGE}
+    platform: linux/amd64
     init: true
+    healthcheck:
+      test: curl --fail http://localhost:3000/meta || exit 1
+      interval: 20s
+      retries: 30
+      start_period: 20s
+      timeout: 20s
     restart: unless-stopped
     depends_on:
-      - 'postgres'
+     postgres:
+        condition: service_started
+     alice:
+        condition: service_healthy
+    ports:
+      - 3002:3000
     environment:
       NETWORK_ENDPOINT: ws://alice:9944
       NETWORK_HTTP_ENDPOINT: http://alice:9933
       DB_USER: '${PG_USER:-postgres}'
       DB_PASS: '${PG_PASSWORD:-postgres}'
       DB_DATABASE: '${PG_DB:-postgres}'
-      DB_PORT: '${PG_PORT:-postgres}'
+      DB_PORT: '${PG_PORT:-5432}'
       DB_HOST: '${PG_HOST:-postgres}'
       NODE_ENV: local
     command:
@@ -61,36 +77,46 @@ services:
       - -f=/app
       - --local
 
-  tooling:
-    image: ${TOOLING_IMAGE:-polymeshassociation/polymesh-tooling-gql}
-    init: true
-    restart: unless-stopped
-    depends_on:
-      - 'postgres'
+  graphql:
+    image: onfinality/subql-query:v1.0.0
     ports:
-      - ${TOOLING_PORT:-3007}:3000
+      - ${SQ_PORT:-3001}:3000
+    depends_on:
+      postgres:
+        condition: service_started
+      subquery:
+        condition: service_healthy
+    restart: unless-stopped
     environment:
-      PG_HOST: '${PG_HOST:-postgres}'
-      PG_USERNAME: '${PG_USER:-postgres}'
-      PG_PASSWORD: '${PG_PASSWORD:-postgres}'
-      STAGE: dev
+      DB_DATABASE: postgres
+      DB_USER: '${PG_USER:-postgres}'
+      DB_PASS: '${PG_PASSWORD:-postgres}'
+      DB_PORT: '${PG_PORT:-5432}'
+      DB_HOST: '${PG_HOST:-postgres}'
+    command:
+      - --name=public
+      - --playground
+      - --indexer=http://subquery:3000
 
-  rest_api:
-    image: ${REST_IMAGE:-polymeshassociation/polymesh-rest-api:latest}
+  rest-api:
+    image: ${REST_IMAGE}
+    platform: linux/amd64
     init: true
     restart: unless-stopped
     depends_on:
-      - alice
-      - vault
-      - tooling
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
+      alice:
+        condition: service_started
+      vault:
+        condition: service_started
+      graphql:
+        condition: service_started
+      subquery:
+        condition: service_healthy
     ports:
       - ${REST_PORT:-3004}:3000
     environment:
       POLYMESH_NODE_URL: 'ws://alice:9944'
-      POLYMESH_MIDDLEWARE_URL: 'http://tooling:3000'
-      POLYMESH_MIDDLEWARE_API_KEY: 'needed-but-not-checked'
+      POLYMESH_MIDDLEWARE_V2_URL: 'http://graphql:3000'
       VAULT_URL: 'http://vault:8200/v1/transit'
       VAULT_TOKEN: 'root'
       AUTH_STRATEGY: 'open'

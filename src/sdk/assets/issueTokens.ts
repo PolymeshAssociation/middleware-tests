@@ -11,7 +11,7 @@ export const issueTokens = async (
   ticker: string,
   amount: BigNumber
 ): Promise<void> => {
-  const asset = await sdk.assets.getAsset({ ticker });
+  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   // Sign with the owner of the Asset. This assumes `signingAccount` is present in the SDK's SigningManager
   const { owner } = await asset.details();
