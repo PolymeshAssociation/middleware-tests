@@ -2,23 +2,7 @@ import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
 import { ClaimType, ScopeType } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
-function hashTimeToLetters(adjust = 0) {
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const timestamp = new Date().getTime();
-  const length = 6;
-
-  const hashValue = timestamp + (adjust % Math.pow(26, length)); // ensures a 6 letter word
-
-  let result = '';
-  let number = hashValue;
-
-  for (let i = 0; i < length; i++) {
-    result = alphabet[number % 26] + result;
-    number = Math.floor(number / 26);
-  }
-
-  return result;
-}
+import { randomString } from '~/util';
 
 export const manageCustomClaims = async (sdk: Polymesh, targetDid: string): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
@@ -27,7 +11,7 @@ export const manageCustomClaims = async (sdk: Polymesh, targetDid: string): Prom
 
   const { account: signingAccount } = await identity.getPrimaryAccount();
 
-  const name = hashTimeToLetters();
+  const name = randomString(12);
 
   // Prepare and run the add claim transaction
   const registerCustomClaimTypeTx = await sdk.claims.registerCustomClaimType(
@@ -39,8 +23,6 @@ export const manageCustomClaims = async (sdk: Polymesh, targetDid: string): Prom
     new Promise((resolve) => registerCustomClaimTypeTx.onProcessedByMiddleware(resolve));
 
   const customClaimTypeId = await registerCustomClaimTypeTx.run();
-
-  console.warn(customClaimTypeId.toNumber());
 
   await middlewareSyncedOnClaimType();
 
@@ -61,7 +43,7 @@ export const manageCustomClaims = async (sdk: Polymesh, targetDid: string): Prom
           target: targetDid,
           claim: {
             type: ClaimType.Custom,
-            customClaimTypeId: new BigNumber(1),
+            customClaimTypeId,
             scope: {
               type: ScopeType.Ticker,
               value: 'TICKER',
@@ -91,15 +73,17 @@ export const manageCustomClaims = async (sdk: Polymesh, targetDid: string): Prom
 
   const customClaim = issuedClaims.data.find(
     (claim) =>
-      claim.claim.type === ClaimType.Custom && claim.claim.customClaimTypeId === customClaimTypeId
+      claim.claim.type === ClaimType.Custom &&
+      claim.claim.customClaimTypeId.isEqualTo(customClaimTypeId)
   );
 
-  assert(customClaim, 'The issed CustomClaim should be found in the issued claims list');
+  assert(customClaim, 'The default signer should have the custom claim issued');
 
   const revokeClaimTx = await sdk.claims.revokeClaims(
     { claims: [customClaim] },
     { signingAccount }
   );
+  await revokeClaimTx.run();
 
   assert(revokeClaimTx.isSuccess);
 };
