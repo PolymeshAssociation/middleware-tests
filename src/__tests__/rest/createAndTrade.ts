@@ -1,3 +1,4 @@
+import { expectBasicTxInfo } from '~/__tests__/rest/utils';
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
 import { createAssetParams } from '~/rest/assets/params';
@@ -40,7 +41,7 @@ describe('Create and trading an Asset', () => {
         {
           type: 'batch',
           transactionTags: ['asset.createAsset', 'asset.issue', 'asset.addDocuments'],
-          ...expectTxInfo,
+          ...expectBasicTxInfo,
         },
       ]),
     });
@@ -61,7 +62,7 @@ describe('Create and trading an Asset', () => {
         {
           transactionTag: 'complianceManager.replaceAssetCompliance',
           type: 'single',
-          ...expectTxInfo,
+          ...expectBasicTxInfo,
         },
       ]),
     });
@@ -85,7 +86,7 @@ describe('Create and trading an Asset', () => {
         {
           transactionTag: 'settlement.createVenue',
           type: 'single',
-          ...expectTxInfo,
+          ...expectBasicTxInfo,
         },
       ]),
       venue: expect.any(String),
@@ -105,7 +106,7 @@ describe('Create and trading an Asset', () => {
         {
           transactionTag: expect.stringMatching(/settlement.addAndAffirmInstruction(WithMemo)?/),
           type: 'single',
-          ...expectTxInfo,
+          ...expectBasicTxInfo,
         },
       ]),
     });
@@ -127,15 +128,9 @@ describe('Create and trading an Asset', () => {
       transactions: expect.arrayContaining([
         expect.objectContaining({
           transactionTag: 'settlement.affirmInstruction',
-          ...expectTxInfo,
+          ...expectBasicTxInfo,
         }),
       ]),
     });
   });
 });
-
-export const expectTxInfo = {
-  blockNumber: expect.any(String),
-  blockHash: expect.stringContaining('0x'),
-  transactionHash: expect.stringContaining('0x'),
-};

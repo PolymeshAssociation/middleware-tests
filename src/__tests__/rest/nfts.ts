@@ -1,3 +1,4 @@
+import { expectBasicTxInfo } from '~/__tests__/rest/utils';
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
 import { createMetadataParams } from '~/rest/assets';
@@ -80,7 +81,7 @@ describe('NFTs', () => {
     expect(result).toMatchObject({
       transactions: expect.arrayContaining([
         expect.objectContaining({
-          ...expectTxInfo,
+          ...expectBasicTxInfo,
           transactionTag: 'nft.issueNft',
         }),
       ]),
@@ -109,7 +110,7 @@ describe('NFTs', () => {
     expect(result).toMatchObject({
       transactions: expect.arrayContaining([
         expect.objectContaining({
-          ...expectTxInfo,
+          ...expectBasicTxInfo,
           transactionTag: 'complianceManager.replaceAssetCompliance',
         }),
       ]),
@@ -126,7 +127,7 @@ describe('NFTs', () => {
         {
           transactionTag: 'settlement.createVenue',
           type: 'single',
-          ...expectTxInfo,
+          ...expectBasicTxInfo,
         },
       ]),
       venue: expect.any(String),
@@ -145,7 +146,7 @@ describe('NFTs', () => {
       transactions: expect.arrayContaining([
         expect.objectContaining({
           transactionTag: 'settlement.addAndAffirmInstruction',
-          ...expectTxInfo,
+          ...expectBasicTxInfo,
         }),
       ]),
     });
@@ -179,7 +180,7 @@ describe('NFTs', () => {
     expect(result).toMatchObject({
       transactions: expect.arrayContaining([
         expect.objectContaining({
-          ...expectTxInfo,
+          ...expectBasicTxInfo,
           transactionTag: 'settlement.affirmInstruction',
         }),
       ]),
@@ -193,7 +194,7 @@ describe('NFTs', () => {
     expect(result).toMatchObject({
       transactions: expect.arrayContaining([
         expect.objectContaining({
-          ...expectTxInfo,
+          ...expectBasicTxInfo,
           transactionTag: 'asset.registerAndSetLocalAssetMetadata',
         }),
       ]),
@@ -211,9 +212,3 @@ describe('NFTs', () => {
     });
   });
 });
-
-const expectTxInfo = {
-  blockNumber: expect.any(String),
-  blockHash: expect.stringContaining('0x'),
-  transactionHash: expect.stringContaining('0x'),
-};

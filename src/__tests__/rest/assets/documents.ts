@@ -1,4 +1,4 @@
-import { expectTxInfo } from '~/__tests__/rest/createAndTrade';
+import { expectBasicTxInfo } from '~/__tests__/rest/utils';
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
 import { createAssetParams, setAssetDocumentParams } from '~/rest/assets';
@@ -39,7 +39,7 @@ describe('AssetDocument', () => {
         {
           transactionTags: ['asset.removeDocuments', 'asset.addDocuments'],
           type: 'batch',
-          ...expectTxInfo,
+          ...expectBasicTxInfo,
         },
       ]),
     });

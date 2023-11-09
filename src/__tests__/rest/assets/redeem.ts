@@ -1,4 +1,4 @@
-import { expectTxInfo } from '~/__tests__/rest/createAndTrade';
+import { expectBasicTxInfo } from '~/__tests__/rest/utils';
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
 import { createAssetParams, redeemTokenParams } from '~/rest/assets';
@@ -40,7 +40,7 @@ describe('Redeem', () => {
         {
           transactionTag: 'asset.redeem',
           type: 'single',
-          ...expectTxInfo,
+          ...expectBasicTxInfo,
         },
       ]),
     });
@@ -60,11 +60,11 @@ describe('Redeem', () => {
 
     expect(txData).toMatchObject({
       transactions: expect.arrayContaining([
-        {
-          transactionTag: 'asset.redeem',
+        expect.objectContaining({
+          transactionTag: 'asset.redeemFromPortfolio',
           type: 'single',
-          ...expectTxInfo,
-        },
+          ...expectBasicTxInfo,
+        }),
       ]),
     });
   });
