@@ -65,7 +65,6 @@ export const manageCustomClaims = async (sdk: Polymesh, targetDid: string): Prom
   await middlewareSyncedOnAddClaim();
 
   const issuedClaims = await sdk.claims.getIssuedClaims({
-    target: identity.did,
     includeExpired: false,
   });
 
