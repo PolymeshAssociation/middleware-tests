@@ -32,7 +32,11 @@ export class TestFactory {
       key: '',
     };
 
-    const polymesh = await Polymesh.connect({ nodeUrl, middlewareV2 });
+    const polymesh = await Polymesh.connect({
+      nodeUrl,
+      middlewareV2,
+      polkadot: { noInitWarn: true },
+    });
 
     const factory = new TestFactory(polymesh);
 

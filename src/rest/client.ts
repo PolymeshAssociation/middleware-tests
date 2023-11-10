@@ -56,14 +56,7 @@ export class RestClient {
       method,
       body,
     });
-    this.assertOk(response, { method, url });
 
     return response.json();
-  }
-
-  private assertOk(response: Response, opts: { method: string; url: string }) {
-    const { method, url } = opts;
-    const { status } = response;
-    assert(status < 300, `${method}: ${url} had non 2xx status: ${status}`);
   }
 }
