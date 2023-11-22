@@ -20,6 +20,9 @@ export async function getPolymeshSdk(): Promise<Polymesh> {
     sdk = await Polymesh.connect({
       nodeUrl,
       signingManager,
+      polkadot: {
+        noInitWarn: true,
+      },
     });
   }
 
