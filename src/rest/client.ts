@@ -1,4 +1,3 @@
-import { assert } from 'console';
 import fetch from 'cross-fetch';
 
 import { Assets } from '~/rest/assets';
