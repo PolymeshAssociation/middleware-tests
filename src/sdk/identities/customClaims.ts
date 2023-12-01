@@ -26,6 +26,13 @@ export const manageCustomClaims = async (sdk: Polymesh, targetDid: string): Prom
 
   await middlewareSyncedOnClaimType();
 
+  const registeredCustomClaimTypes = await sdk.claims.getAllCustomClaimTypes();
+
+  assert(
+    registeredCustomClaimTypes.count?.isGreaterThanOrEqualTo(1),
+    'There should be at least one registered CustomClaimType'
+  );
+
   assert(registerCustomClaimTypeTx.isSuccess, 'Should register a CustomClaimType');
   assert(BigNumber.isBigNumber(customClaimTypeId), 'CustomClaimTypeId should be BigNumber');
 

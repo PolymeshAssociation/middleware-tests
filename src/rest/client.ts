@@ -1,6 +1,7 @@
 import fetch from 'cross-fetch';
 
 import { Assets } from '~/rest/assets';
+import { Claims } from '~/rest/claims/client';
 import { Compliance } from '~/rest/compliance';
 import { Identities } from '~/rest/identities';
 import { Nfts } from '~/rest/nfts';
@@ -18,6 +19,7 @@ export class RestClient {
   public subsidy: Subsidy;
   public tickerReservations: TickerReservations;
   public portfolios: Portfolios;
+  public claims: Claims;
 
   constructor(public baseUrl: string) {
     this.assets = new Assets(this);
@@ -28,10 +30,12 @@ export class RestClient {
     this.subsidy = new Subsidy(this);
     this.tickerReservations = new TickerReservations(this);
     this.portfolios = new Portfolios(this);
+    this.claims = new Claims(this);
   }
 
-  public async get<T = unknown>(path: string): Promise<T> {
+  public async get<T = unknown>(path: string, params?: Record<string, unknown>): Promise<T> {
     const url = new URL(path, this.baseUrl).href;
+
     const method = 'GET';
 
     return this.fetch(url, method) as Promise<T>;
@@ -57,5 +61,25 @@ export class RestClient {
     });
 
     return response.json();
+  }
+
+  public async pingForTransaction(txHash: string, times: number): Promise<unknown> {
+    const url = new URL(`/transactions/${txHash}/details`, this.baseUrl).href;
+
+    // ping specified times to check if given transaction is in SQ (wait until 200 response)
+    let i = 0;
+    let success = false;
+
+    while (i < times && !success) {
+      const response = await fetch(url, { method: 'GET' });
+      if (response.status === 200) {
+        success = true;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      i++;
+    }
+
+    return success;
   }
 }
