@@ -48,7 +48,6 @@ describe('CustomClaimType', () => {
       ]),
     });
 
-    // @ts-expect-error TODO: fix this
     txHash = txData.transactions[0].transactionHash;
   });
 

@@ -1,17 +1,13 @@
-import {
-  CreateClaimParams,
-  GetCustomClaimTypesParams,
-  registerCustomClaimTypeParams,
-} from '~/rest/claims/params';
+import { CreateClaimParams, registerCustomClaimTypeParams } from '~/rest/claims/params';
 import { RestClient } from '~/rest/client';
-import { PostResult } from '~/rest/interfaces';
+import { PostResult, RestSuccessResult } from '~/rest/interfaces';
 
 export class Claims {
   constructor(private client: RestClient) {}
 
   public async registerCustomClaimType(
     params: ReturnType<typeof registerCustomClaimTypeParams>
-  ): Promise<PostResult> {
+  ): Promise<RestSuccessResult> {
     return this.client.post('/claims/custom-claim-type', params);
   }
 
@@ -19,8 +15,8 @@ export class Claims {
     return this.client.get(`/claims/custom-claim-types/${id}`);
   }
 
-  public async getCustomClaimTypes(params?: GetCustomClaimTypesParams): Promise<PostResult> {
-    return this.client.get('/claims/custom-claim-types', params);
+  public async getCustomClaimTypes(): Promise<PostResult> {
+    return this.client.get('/claims/custom-claim-types');
   }
 
   public async addClaim(params: CreateClaimParams): Promise<PostResult> {

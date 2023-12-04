@@ -33,7 +33,7 @@ export class RestClient {
     this.claims = new Claims(this);
   }
 
-  public async get<T = unknown>(path: string, params?: Record<string, unknown>): Promise<T> {
+  public async get<T = unknown>(path: string): Promise<T> {
     const url = new URL(path, this.baseUrl).href;
 
     const method = 'GET';

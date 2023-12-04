@@ -48,7 +48,6 @@ describe('CustomClaim', () => {
     const params = registerCustomClaimTypeParams(factory.nextTicker(), { signer });
     const txData = await restClient.claims.registerCustomClaimType(params);
 
-    // @ts-expect-error TODO: fix this
     txHash = txData.transactions[0].transactionHash;
 
     await restClient.pingForTransaction(txHash, 10);

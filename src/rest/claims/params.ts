@@ -1,15 +1,5 @@
-import { BigNumber } from '@polymeshassociation/polymesh-sdk';
-
 import { TxBase, TxExtras } from '~/rest/common';
 
-export type PaginationParams = {
-  size?: BigNumber;
-  start?: BigNumber;
-};
-
-export type GetCustomClaimTypesParams = PaginationParams & {
-  dids?: string[];
-};
 
 type Claim = {
   target: string;

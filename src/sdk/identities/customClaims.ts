@@ -82,5 +82,5 @@ export const manageCustomClaims = async (sdk: Polymesh, targetDid: string): Prom
   );
   await revokeClaimTx.run();
 
-  assert(revokeClaimTx.isSuccess);
+  assert(revokeClaimTx.isSuccess, 'Should be able to revoke a custom claim');
 };
