@@ -1,4 +1,4 @@
-export enum Mode {
+export enum ProcessMode {
   Submit = 'submit',
   SubmitWithCallback = 'submitWithCallback',
   Offline = 'offline',
@@ -7,7 +7,7 @@ export enum Mode {
   AMQP = 'AMQP',
 }
 export interface TxBase {
-  options: { processMode: Mode; signer: string };
+  options: { processMode: ProcessMode; signer: string };
 }
 
 /**

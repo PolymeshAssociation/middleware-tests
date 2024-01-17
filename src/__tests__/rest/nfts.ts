@@ -2,7 +2,7 @@ import { expectBasicTxInfo } from '~/__tests__/rest/utils';
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
 import { createMetadataParams } from '~/rest/assets';
-import { Mode } from '~/rest/common';
+import { ProcessMode } from '~/rest/common';
 import { complianceRestrictionParams } from '~/rest/compliance';
 import { Identity } from '~/rest/identities/interfaces';
 import { createNftCollectionParams, issueNftParams } from '~/rest/nfts';
@@ -36,7 +36,7 @@ describe('NFTs', () => {
     const nftParams = createNftCollectionParams(
       ticker,
       [{ type: 'Local', name: 'Test', spec: { description: 'test metadata' } }],
-      { options: { processMode: Mode.Submit, signer } }
+      { options: { processMode: ProcessMode.Submit, signer } }
     );
     const result = await restClient.nfts.createNftCollection(nftParams);
 
@@ -74,7 +74,7 @@ describe('NFTs', () => {
 
   it('should issue an NFT', async () => {
     const params = issueNftParams(ticker, [{ type: 'Local', id: '1', value: 'test value' }], {
-      options: { processMode: Mode.Submit, signer },
+      options: { processMode: ProcessMode.Submit, signer },
     });
 
     const result = await restClient.nfts.issueNft(ticker, params);
@@ -106,7 +106,7 @@ describe('NFTs', () => {
 
   it('should pause compliance requirements', async () => {
     const params = complianceRestrictionParams(ticker, {
-      options: { processMode: Mode.Submit, signer },
+      options: { processMode: ProcessMode.Submit, signer },
     });
     const result = await restClient.compliance.createRestriction(ticker, params);
 
@@ -122,7 +122,7 @@ describe('NFTs', () => {
 
   let venueId: string;
   it('should create a Venue to trade the NFTs', async () => {
-    const params = venueParams({ options: { processMode: Mode.Submit, signer } });
+    const params = venueParams({ options: { processMode: ProcessMode.Submit, signer } });
     const txData = await restClient.settlements.createVenue(params);
 
     expect(txData).toMatchObject({
@@ -143,7 +143,7 @@ describe('NFTs', () => {
     const sender = issuer.did;
     const receiver = collector.did;
     const params = nftInstructionParams(ticker, sender, receiver, ['1'], {
-      options: { processMode: Mode.Submit, signer },
+      options: { processMode: ProcessMode.Submit, signer },
     });
 
     const result = await restClient.settlements.createInstruction(venueId, params);
@@ -180,7 +180,7 @@ describe('NFTs', () => {
 
   it('should allow instruction to be affirmed', async () => {
     const result = await restClient.settlements.affirmInstruction(instructionId, {
-      options: { processMode: Mode.Submit, signer: collector.signer },
+      options: { processMode: ProcessMode.Submit, signer: collector.signer },
     });
     expect(result).toMatchObject({
       transactions: expect.arrayContaining([
@@ -193,7 +193,7 @@ describe('NFTs', () => {
   });
 
   it('should set NFT Collection metadata', async () => {
-    const params = createMetadataParams({ options: { processMode: Mode.Submit, signer } });
+    const params = createMetadataParams({ options: { processMode: ProcessMode.Submit, signer } });
     const result = await restClient.assets.createMetadata(ticker, params);
 
     expect(result).toMatchObject({

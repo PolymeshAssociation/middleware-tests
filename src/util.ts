@@ -29,3 +29,6 @@ export const randomString = (length = 6, adjust = 0): string => {
 
   return result;
 };
+
+export const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms));

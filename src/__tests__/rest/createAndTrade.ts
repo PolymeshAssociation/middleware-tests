@@ -2,7 +2,7 @@ import { expectBasicTxInfo } from '~/__tests__/rest/utils';
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
 import { createAssetParams } from '~/rest/assets/params';
-import { Mode } from '~/rest/common';
+import { ProcessMode } from '~/rest/common';
 import { complianceRestrictionParams } from '~/rest/compliance';
 import { Identity } from '~/rest/identities/interfaces';
 import { fungibleInstructionParams, venueParams } from '~/rest/settlements';
@@ -28,7 +28,7 @@ describe('Create and trading an Asset', () => {
     signer = issuer.signer;
 
     assetParams = createAssetParams(ticker, {
-      options: { processMode: Mode.Submit, signer },
+      options: { processMode: ProcessMode.Submit, signer },
     });
   });
 
@@ -58,7 +58,7 @@ describe('Create and trading an Asset', () => {
 
   it('should create compliance rules for the Asset', async () => {
     const params = complianceRestrictionParams(ticker, {
-      options: { processMode: Mode.Submit, signer },
+      options: { processMode: ProcessMode.Submit, signer },
     });
     const txData = await restClient.compliance.createRestriction(ticker, params);
 
@@ -84,7 +84,7 @@ describe('Create and trading an Asset', () => {
   let venueId: string;
   it('should create a Venue to trade the Asset', async () => {
     const params = venueParams({
-      options: { processMode: Mode.Submit, signer },
+      options: { processMode: ProcessMode.Submit, signer },
     });
     const txData = await restClient.settlements.createVenue(params);
 
@@ -106,7 +106,7 @@ describe('Create and trading an Asset', () => {
     const sender = issuer.did;
     const receiver = investor.did;
     const params = fungibleInstructionParams(ticker, sender, receiver, {
-      options: { processMode: Mode.Submit, signer },
+      options: { processMode: ProcessMode.Submit, signer },
     });
     const instructionData = await restClient.settlements.createInstruction(venueId, params);
 
@@ -130,7 +130,7 @@ describe('Create and trading an Asset', () => {
     expect(pendingInstructionId).not.toBeUndefined();
 
     const affirmResult = await restClient.settlements.affirmInstruction(pendingInstructionId, {
-      options: { processMode: Mode.Submit, signer: investor.signer },
+      options: { processMode: ProcessMode.Submit, signer: investor.signer },
     });
 
     expect(affirmResult).toMatchObject({

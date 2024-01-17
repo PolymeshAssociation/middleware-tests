@@ -5,9 +5,6 @@ import { join } from 'path';
 
 import { GetVaultKeyResponse, VaultKey } from '~/vault/interfaces';
 
-export const sleep = (ms: number): Promise<void> =>
-  new Promise((resolve) => setTimeout(resolve, ms));
-
 export class VaultClient {
   constructor(public baseUrl: string, public transitPath: string, private vaultToken: string) {}
 

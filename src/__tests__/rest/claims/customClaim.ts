@@ -2,7 +2,7 @@ import { expectBasicTxInfo } from '~/__tests__/rest/utils';
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
 import { createClaimParams, registerCustomClaimTypeParams } from '~/rest/claims/params';
-import { Mode } from '~/rest/common';
+import { ProcessMode } from '~/rest/common';
 import { Identity } from '~/rest/identities/interfaces';
 
 const handles = ['issuer', 'target'];
@@ -47,7 +47,7 @@ describe('CustomClaim', () => {
     });
 
     const params = registerCustomClaimTypeParams(factory.nextTicker(), {
-      options: { signer, processMode: Mode.Submit },
+      options: { signer, processMode: ProcessMode.Submit },
     });
     const txData = await restClient.claims.registerCustomClaimType(params);
 

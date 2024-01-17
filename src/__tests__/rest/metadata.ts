@@ -1,7 +1,7 @@
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
 import { createAssetParams, createMetadataParams, setMetadataParams } from '~/rest/assets';
-import { Mode } from '~/rest/common';
+import { ProcessMode } from '~/rest/common';
 import { Identity } from '~/rest/identities/interfaces';
 
 const handles = ['issuer'];
@@ -24,7 +24,7 @@ describe('Metadata', () => {
     signer = issuer.signer;
 
     assetParams = createAssetParams(asset, {
-      options: { processMode: Mode.Submit, signer },
+      options: { processMode: ProcessMode.Submit, signer },
     });
     console.log('calling create');
     await restClient.assets.createAsset(assetParams);
@@ -42,7 +42,7 @@ describe('Metadata', () => {
   });
 
   it('should set an Assets metadata', async () => {
-    const params = createMetadataParams({ options: { processMode: Mode.Submit, signer } });
+    const params = createMetadataParams({ options: { processMode: ProcessMode.Submit, signer } });
     const result = await restClient.assets.createMetadata(asset, params);
 
     expect(result).toEqual(
@@ -63,7 +63,7 @@ describe('Metadata', () => {
   });
 
   it('should update metadata', async () => {
-    const params = setMetadataParams({ options: { processMode: Mode.Submit, signer } });
+    const params = setMetadataParams({ options: { processMode: ProcessMode.Submit, signer } });
 
     const result = await restClient.assets.setMetadataValue(asset, 'Local', '1', params);
 

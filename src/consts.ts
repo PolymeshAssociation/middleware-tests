@@ -6,3 +6,7 @@ export const wellKnown = {
     mnemonic: '//Alice',
   },
 } as const;
+
+export enum AMQPTopics {
+  Finalizations = 'Finalizations',
+}
