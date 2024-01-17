@@ -1,5 +1,13 @@
+export enum Mode {
+  Submit = 'submit',
+  SubmitWithCallback = 'submitWithCallback',
+  Offline = 'offline',
+  DryRun = 'dryRun',
+
+  AMQP = 'AMQP',
+}
 export interface TxBase {
-  signer: string;
+  options: { processMode: Mode; signer: string };
 }
 
 /**

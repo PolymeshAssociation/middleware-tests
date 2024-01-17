@@ -1,6 +1,7 @@
 import { assertTagPresent } from '~/assertions';
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
+import { Mode } from '~/rest/common';
 import { Identity } from '~/rest/identities/interfaces';
 import { RestErrorResult } from '~/rest/interfaces';
 import { portfolioParams } from '~/rest/portfolios';
@@ -29,7 +30,9 @@ describe('Portfolio Management', () => {
   });
 
   it('should create a portfolio', async () => {
-    const params = portfolioParams(`TEST-${nonce}`, { signer });
+    const params = portfolioParams(`TEST-${nonce}`, {
+      options: { processMode: Mode.Submit, signer },
+    });
 
     const result = await restClient.portfolios.create(params);
 
@@ -39,7 +42,9 @@ describe('Portfolio Management', () => {
   });
 
   it('should rename a portfolio', async () => {
-    const params = portfolioParams(`RENAME-${nonce}`, { signer });
+    const params = portfolioParams(`RENAME-${nonce}`, {
+      options: { processMode: Mode.Submit, signer },
+    });
 
     const result = await restClient.portfolios.rename(issuer.did, portfolioId, params);
 
@@ -47,7 +52,9 @@ describe('Portfolio Management', () => {
   });
 
   it('should return error when renaming to same name', async () => {
-    const params = portfolioParams(`RENAME-${nonce}`, { signer });
+    const params = portfolioParams(`RENAME-${nonce}`, {
+      options: { processMode: Mode.Submit, signer },
+    });
 
     const result = (await restClient.portfolios.rename(
       issuer.did,
@@ -59,7 +66,9 @@ describe('Portfolio Management', () => {
   });
 
   it('should return error when renaming default portfolio', async () => {
-    const params = portfolioParams(`RENAME-${nonce}`, { signer });
+    const params = portfolioParams(`RENAME-${nonce}`, {
+      options: { processMode: Mode.Submit, signer },
+    });
 
     const result = (await restClient.portfolios.rename(issuer.did, '0', params)) as RestErrorResult;
 
@@ -67,7 +76,9 @@ describe('Portfolio Management', () => {
   });
 
   it('should return error when renaming portfolio to an existing portfolio name', async () => {
-    const existingPortfolioParams = portfolioParams(`EXISTING-${nonce}`, { signer });
+    const existingPortfolioParams = portfolioParams(`EXISTING-${nonce}`, {
+      options: { processMode: Mode.Submit, signer },
+    });
 
     await restClient.portfolios.create(existingPortfolioParams);
 

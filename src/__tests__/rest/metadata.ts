@@ -1,6 +1,7 @@
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
 import { createAssetParams, createMetadataParams, setMetadataParams } from '~/rest/assets';
+import { Mode } from '~/rest/common';
 import { Identity } from '~/rest/identities/interfaces';
 
 const handles = ['issuer'];
@@ -14,6 +15,7 @@ describe('Metadata', () => {
   let asset: string;
 
   beforeAll(async () => {
+    console.log('before all meta');
     factory = await TestFactory.create({ handles });
     ({ restClient } = factory);
     issuer = factory.getSignerIdentity(handles[0]);
@@ -21,8 +23,12 @@ describe('Metadata', () => {
     asset = factory.nextTicker();
     signer = issuer.signer;
 
-    assetParams = createAssetParams(asset, { signer });
+    assetParams = createAssetParams(asset, {
+      options: { processMode: Mode.Submit, signer },
+    });
+    console.log('calling create');
     await restClient.assets.createAsset(assetParams);
+    console.log('created asset');
   });
 
   afterAll(async () => {
@@ -36,7 +42,7 @@ describe('Metadata', () => {
   });
 
   it('should set an Assets metadata', async () => {
-    const params = createMetadataParams({ signer });
+    const params = createMetadataParams({ options: { processMode: Mode.Submit, signer } });
     const result = await restClient.assets.createMetadata(asset, params);
 
     expect(result).toEqual(
@@ -57,7 +63,7 @@ describe('Metadata', () => {
   });
 
   it('should update metadata', async () => {
-    const params = setMetadataParams({ signer });
+    const params = setMetadataParams({ options: { processMode: Mode.Submit, signer } });
 
     const result = await restClient.assets.setMetadataValue(asset, 'Local', '1', params);
 

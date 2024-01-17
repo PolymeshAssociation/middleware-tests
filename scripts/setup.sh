@@ -7,7 +7,7 @@ SCRIPT_DIR=$(dirname "$0")
 IMAGE_REPO=polymeshassociation/polymesh
 
 # Chain version to test
-VERSION='6.0.0'
+VERSION='6.1.2'
 
 # service manifest
 ENV_FILE="$SCRIPT_DIR/../envs/$VERSION.env"
@@ -19,7 +19,7 @@ if ! [ -f $ENV_FILE ]; then
 fi
 
 # The chain arm64 docker images are stored in a separate repo
-# The arch should be checked and the env modified to accomodate
+# The arch should be checked and the env modified because
 # the chain incurs large performance penalties when emulated
 WORK_ENV_FILE=$ENV_FILE
 ARCH=$(uname -m)

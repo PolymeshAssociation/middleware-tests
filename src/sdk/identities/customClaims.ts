@@ -1,10 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
-import {
-  ClaimTarget,
-  ClaimType,
-  CustomClaim,
-  ScopeType,
-} from '@polymeshassociation/polymesh-sdk/types';
+import { ClaimTarget, ClaimType, ScopeType } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 import { randomString } from '~/util';

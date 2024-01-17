@@ -1,6 +1,7 @@
 import { assertTagPresent } from '~/assertions';
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
+import { Mode } from '~/rest/common';
 import { Identity } from '~/rest/identities/interfaces';
 import { RestErrorResult } from '~/rest/interfaces';
 import { reserveTickerParams, transferTickerReservationParams } from '~/rest/tickerReservations';
@@ -34,7 +35,9 @@ describe('Ticker Reservations', () => {
   });
 
   it('should reserve a ticker', async () => {
-    const params = reserveTickerParams(ticker, { signer });
+    const params = reserveTickerParams(ticker, {
+      options: { processMode: Mode.Submit, signer },
+    });
 
     const result = await restClient.tickerReservations.reserve(params);
 
@@ -53,13 +56,17 @@ describe('Ticker Reservations', () => {
   });
 
   it('should extend a reservation', async () => {
-    const result = await restClient.tickerReservations.extend(ticker, { signer });
+    const result = await restClient.tickerReservations.extend(ticker, {
+      options: { processMode: Mode.Submit, signer },
+    });
 
     expect(result).toEqual(assertTagPresent(expect, 'asset.registerTicker'));
   });
 
   it('should transfer ownership', async () => {
-    const params = transferTickerReservationParams(receiver.did, { signer });
+    const params = transferTickerReservationParams(receiver.did, {
+      options: { processMode: Mode.Submit, signer },
+    });
 
     const result = await restClient.tickerReservations.transfer(ticker, params);
 
@@ -84,7 +91,7 @@ describe('Ticker Reservations', () => {
   });
 
   it('should accept the transfer', async () => {
-    const params = { signer: receiver.signer };
+    const params = { options: { processMode: Mode.Submit, signer: receiver.signer } };
 
     const result = await restClient.identities.acceptAuthorization(transferAuthId, params);
 
@@ -98,7 +105,9 @@ describe('Ticker Reservations', () => {
   });
 
   it('should not be able to reserve an already reserved ticker', async () => {
-    const params = reserveTickerParams(ticker, { signer });
+    const params = reserveTickerParams(ticker, {
+      options: { processMode: Mode.Submit, signer },
+    });
 
     const result = (await restClient.tickerReservations.reserve(params)) as RestErrorResult;
 

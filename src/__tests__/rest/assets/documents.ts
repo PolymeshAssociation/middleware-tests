@@ -2,6 +2,7 @@ import { expectBasicTxInfo } from '~/__tests__/rest/utils';
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
 import { createAssetParams, setAssetDocumentParams } from '~/rest/assets';
+import { Mode } from '~/rest/common';
 import { Identity } from '~/rest/identities/interfaces';
 
 const handles = ['issuer'];
@@ -22,7 +23,9 @@ describe('AssetDocument', () => {
     asset = factory.nextTicker();
     signer = issuer.signer;
 
-    assetParams = createAssetParams(asset, { signer });
+    assetParams = createAssetParams(asset, {
+      options: { processMode: Mode.Submit, signer },
+    });
     await restClient.assets.createAsset(assetParams);
   });
 
@@ -31,7 +34,7 @@ describe('AssetDocument', () => {
   });
 
   it('should set Asset Documents', async () => {
-    const params = setAssetDocumentParams({ signer });
+    const params = setAssetDocumentParams({ options: { processMode: Mode.Submit, signer } });
     const txData = await restClient.assets.setDocuments(asset, params);
 
     expect(txData).toMatchObject({

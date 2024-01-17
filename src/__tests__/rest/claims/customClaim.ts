@@ -2,6 +2,7 @@ import { expectBasicTxInfo } from '~/__tests__/rest/utils';
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
 import { createClaimParams, registerCustomClaimTypeParams } from '~/rest/claims/params';
+import { Mode } from '~/rest/common';
 import { Identity } from '~/rest/identities/interfaces';
 
 const handles = ['issuer', 'target'];
@@ -45,7 +46,9 @@ describe('CustomClaim', () => {
       ],
     });
 
-    const params = registerCustomClaimTypeParams(factory.nextTicker(), { signer });
+    const params = registerCustomClaimTypeParams(factory.nextTicker(), {
+      options: { signer, processMode: Mode.Submit },
+    });
     const txData = await restClient.claims.registerCustomClaimType(params);
 
     txHash = txData.transactions[0].transactionHash;

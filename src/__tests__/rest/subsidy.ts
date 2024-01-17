@@ -1,6 +1,7 @@
 import { assertTagPresent } from '~/assertions';
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
+import { Mode } from '~/rest/common';
 import { Identity } from '~/rest/identities/interfaces';
 import { createSubsidyParams, quitSubsidyParams, setSubsidyAllowanceParams } from '~/rest/subsidy';
 
@@ -34,7 +35,9 @@ describe('Subsidy', () => {
   });
 
   it('should subsidize an account', async () => {
-    const params = createSubsidyParams(beneficiaryAddress, { signer });
+    const params = createSubsidyParams(beneficiaryAddress, {
+      options: { processMode: Mode.Submit, signer },
+    });
 
     const result = await restClient.subsidy.createSubsidy(params);
 
@@ -49,7 +52,7 @@ describe('Subsidy', () => {
   });
 
   it('should accept a subsidy', async () => {
-    const params = { signer: beneficiary.signer };
+    const params = { options: { processMode: Mode.Submit, signer: beneficiary.signer } };
 
     const result = await restClient.identities.acceptAuthorization(authId, params);
 
@@ -57,7 +60,9 @@ describe('Subsidy', () => {
   });
 
   it('should set subsidy allowance', async () => {
-    const params = setSubsidyAllowanceParams(beneficiaryAddress, setAllowanceAmount, { signer });
+    const params = setSubsidyAllowanceParams(beneficiaryAddress, setAllowanceAmount, {
+      options: { processMode: Mode.Submit, signer },
+    });
 
     const result = await restClient.subsidy.setSubsidyAllowance(params);
 
@@ -84,7 +89,7 @@ describe('Subsidy', () => {
 
   it('should quit a subsidy', async () => {
     const params = quitSubsidyParams(subsidizerAddress, {
-      signer: beneficiary.signer,
+      options: { processMode: Mode.Submit, signer: beneficiary.signer },
     });
 
     const result = await restClient.subsidy.quitSubsidy(params);
