@@ -15,7 +15,6 @@ describe('Metadata', () => {
   let asset: string;
 
   beforeAll(async () => {
-    console.log('before all meta');
     factory = await TestFactory.create({ handles });
     ({ restClient } = factory);
     issuer = factory.getSignerIdentity(handles[0]);
@@ -26,9 +25,7 @@ describe('Metadata', () => {
     assetParams = createAssetParams(asset, {
       options: { processMode: ProcessMode.Submit, signer },
     });
-    console.log('calling create');
     await restClient.assets.createAsset(assetParams);
-    console.log('created asset');
   });
 
   afterAll(async () => {
