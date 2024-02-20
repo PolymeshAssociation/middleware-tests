@@ -150,7 +150,7 @@ describe('NFTs', () => {
     expect(result).toMatchObject({
       transactions: expect.arrayContaining([
         expect.objectContaining({
-          transactionTag: 'settlement.addAndAffirmInstruction',
+          transactionTag: 'settlement.addAndAffirmWithMediators',
           ...expectBasicTxInfo,
         }),
       ]),

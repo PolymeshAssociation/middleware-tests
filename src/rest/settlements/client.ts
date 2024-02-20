@@ -25,6 +25,29 @@ export class Settlements {
     return this.client.post(`/instructions/${instructionId}/affirm`, { ...txBase });
   }
 
+  public async affirmInstructionAsMediator(
+    instructionId: string,
+    expiry: Date | undefined,
+    txBase: TxBase
+  ): Promise<PostResult> {
+    return this.client.post(`/instructions/${instructionId}/affirm-as-mediator`, {
+      expiry,
+      ...txBase,
+    });
+  }
+
+  public async withdrawAsMediator(instructionId: string, txBase: TxBase): Promise<PostResult> {
+    return this.client.post(`/instructions/${instructionId}/withdraw-as-mediator`, {
+      ...txBase,
+    });
+  }
+
+  public async rejectAsMediator(instructionId: string, txBase: TxBase): Promise<PostResult> {
+    return this.client.post(`/instructions/${instructionId}/reject-as-mediator`, {
+      ...txBase,
+    });
+  }
+
   public async getInstruction(instructionId: string): Promise<unknown> {
     return this.client.get(`/instructions/${instructionId}`);
   }

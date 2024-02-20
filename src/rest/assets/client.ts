@@ -1,4 +1,5 @@
 import {
+  assetMediatorsParams,
   createAssetParams,
   createMetadataParams,
   MetadataType,
@@ -52,6 +53,10 @@ export class Assets {
     return this.client.get(`assets/${ticker}/documents`);
   }
 
+  public async getAssetMediators(ticker: string): Promise<unknown> {
+    return this.client.get(`assets/${ticker}/required-mediators`);
+  }
+
   public async setDocuments(
     ticker: string,
     params: ReturnType<typeof setAssetDocumentParams>
@@ -64,5 +69,19 @@ export class Assets {
     params: ReturnType<typeof redeemTokenParams>
   ): Promise<PostResult> {
     return this.client.post(`assets/${ticker}/redeem`, params);
+  }
+
+  public async addAssetMediators(
+    ticker: string,
+    params: ReturnType<typeof assetMediatorsParams>
+  ): Promise<PostResult> {
+    return this.client.post(`assets/${ticker}/add-required-mediators`, params);
+  }
+
+  public async removeAssetMediators(
+    ticker: string,
+    params: ReturnType<typeof assetMediatorsParams>
+  ): Promise<PostResult> {
+    return this.client.post(`assets/${ticker}/remove-required-mediators`, params);
   }
 }

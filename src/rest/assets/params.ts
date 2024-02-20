@@ -81,3 +81,10 @@ export const redeemTokenParams = (from: string, base: TxBase, extras: TxExtras =
     ...extras,
     ...base,
   } as const);
+
+export const assetMediatorsParams = (mediators: string[], base: TxBase, extras: TxExtras = {}) =>
+  ({
+    mediators,
+    ...extras,
+    ...base,
+  } as const);

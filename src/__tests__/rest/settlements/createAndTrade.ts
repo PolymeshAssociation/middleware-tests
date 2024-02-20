@@ -113,7 +113,7 @@ describe('Create and trading an Asset', () => {
     expect(instructionData).toMatchObject({
       transactions: expect.arrayContaining([
         {
-          transactionTag: expect.stringMatching(/settlement.addAndAffirmInstruction(WithMemo)?/),
+          transactionTag: expect.stringMatching('settlement.addAndAffirmWithMediators'),
           type: 'single',
           ...expectBasicTxInfo,
         },

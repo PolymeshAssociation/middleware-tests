@@ -76,6 +76,7 @@ services:
     ports:
       - 3002:3000
     environment:
+      START_BLOCK: 1
       NETWORK_ENDPOINT: ws://alice:9944
       NETWORK_HTTP_ENDPOINT: http://alice:9933
       DB_USER: '${PG_USER:-postgres}'
