@@ -8,6 +8,7 @@ import {
   setMetadataParams,
 } from '~/rest/assets/params';
 import { RestClient } from '~/rest/client';
+import { TxBase } from '~/rest/common';
 import { PostResult } from '~/rest/interfaces';
 
 export class Assets {
@@ -83,5 +84,21 @@ export class Assets {
     params: ReturnType<typeof assetMediatorsParams>
   ): Promise<PostResult> {
     return this.client.post(`assets/${ticker}/remove-required-mediators`, params);
+  }
+
+  public async preApprove(ticker: string, params: TxBase): Promise<PostResult> {
+    return this.client.post(`assets/${ticker}/pre-approve`, { ...params });
+  }
+
+  public async removePreApproval(ticker: string, params: TxBase): Promise<PostResult> {
+    return this.client.post(`assets/${ticker}/remove-pre-approval`, { ...params });
+  }
+
+  public async getIsPreApproved(ticker: string, did: string): Promise<unknown> {
+    return this.client.get(`identities/${did}/is-pre-approved?ticker=${ticker}`);
+  }
+
+  public async getPreApprovals(did: string): Promise<unknown> {
+    return this.client.get(`identities/${did}/pre-approved-assets`);
   }
 }
