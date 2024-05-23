@@ -1,7 +1,18 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { NumberedPortfolio } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 import { randomNonce } from '~/util';
+
+export const createPortfolio = async (sdk: Polymesh, nonce: string): Promise<NumberedPortfolio> => {
+  const signingIdentity = await sdk.getSigningIdentity();
+  assert(signingIdentity);
+
+  const portfolioTx = await sdk.identities.createPortfolio({ name: `TEST-${nonce}` });
+  const portfolio = await portfolioTx.run();
+
+  return portfolio;
+};
 
 /*
   This script showcases Portfolio related functionality. It:
@@ -20,8 +31,7 @@ export const managePortfolios = async (sdk: Polymesh, ticker: string): Promise<v
   const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   const nonce = randomNonce(12);
-  const portfolioTx = await sdk.identities.createPortfolio({ name: `TEST-${nonce}` });
-  const portfolio = await portfolioTx.run();
+  const portfolio = await createPortfolio(sdk, nonce);
 
   const renameTx = await portfolio.modifyName({ name: `RENAME-${nonce}` });
   await renameTx.run();

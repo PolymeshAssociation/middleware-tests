@@ -9,7 +9,8 @@ import assert from 'assert';
 export const issueTokens = async (
   sdk: Polymesh,
   ticker: string,
-  amount: BigNumber
+  amount: BigNumber,
+  portfolioId?: BigNumber
 ): Promise<void> => {
   const asset = await sdk.assets.getFungibleAsset({ ticker });
 
@@ -18,7 +19,7 @@ export const issueTokens = async (
   const { account: signingAccount } = await owner.getPrimaryAccount();
 
   // Prepare and execute Asset issuance
-  const issueTokensTx = await asset.issuance.issue({ amount }, { signingAccount });
+  const issueTokensTx = await asset.issuance.issue({ amount, portfolioId }, { signingAccount });
 
   await issueTokensTx.run();
   assert(issueTokensTx.isSuccess);

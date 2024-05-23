@@ -1,5 +1,5 @@
-import { Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { KnownAssetType } from '@polymeshassociation/polymesh-sdk/types';
+import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { KnownAssetType, SecurityIdentifierType } from '@polymeshassociation/polymesh-sdk/types';
 
 import { TestFactory } from '~/helpers';
 import { createAsset } from '~/sdk/assets/createAsset';
@@ -39,6 +39,32 @@ describe('createAsset', () => {
         name: 'testWithType',
         isDivisible: true,
         assetType: 'customTypeTest',
+      })
+    ).resolves.not.toThrow();
+  });
+
+  it('should execute createAsset with a initial supply, funding round, security identifiers and documents', async () => {
+    await expect(
+      createAsset(sdk, {
+        ticker: factory.nextTicker(),
+        name: 'testWithType',
+        isDivisible: true,
+        assetType: 'Fund',
+        initialSupply: new BigNumber(100),
+        securityIdentifiers: [
+          {
+            type: SecurityIdentifierType.Cusip,
+            value: '037833100',
+          },
+        ],
+        documents: [
+          {
+            name: 'Asset Document',
+            uri: 'https://ipfs.io/ipfs/QmfUARYf1VrRYPGEmxaKpdJBEyzkDn2nmk7PAX73TENpCo/41.png',
+            type: 'Logo',
+          },
+        ],
+        fundingRound: 'Funding Round 1',
       })
     ).resolves.not.toThrow();
   });

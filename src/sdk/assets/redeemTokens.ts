@@ -1,4 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { DefaultPortfolio, NumberedPortfolio } from '@polymeshassociation/polymesh-sdk/types';
 import { assert } from 'console';
 
 /*
@@ -9,7 +10,8 @@ import { assert } from 'console';
 export const redeemTokens = async (
   sdk: Polymesh,
   ticker: string,
-  amount: BigNumber
+  amount: BigNumber,
+  from?: BigNumber | DefaultPortfolio | NumberedPortfolio
 ): Promise<void> => {
   const asset = await sdk.assets.getFungibleAsset({ ticker });
 
@@ -17,7 +19,10 @@ export const redeemTokens = async (
 
   const { account: signingAccount } = await identity.getPrimaryAccount();
 
-  const redeemTokensTx = await asset.redeem({ amount: new BigNumber(amount) }, { signingAccount });
+  const redeemTokensTx = await asset.redeem(
+    { amount: new BigNumber(amount), from },
+    { signingAccount }
+  );
   await redeemTokensTx.run();
   assert(redeemTokensTx.isSuccess);
 };
