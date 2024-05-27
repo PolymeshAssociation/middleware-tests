@@ -1,6 +1,8 @@
+import { AuthorizationType } from '@polymeshassociation/polymesh-sdk/types';
+
 import { RestClient } from '~/rest/client';
 import { TxBase } from '~/rest/common';
-import { Identity, PendingInstructions } from '~/rest/identities/interfaces';
+import { Identity, PendingAuthorizations, PendingInstructions } from '~/rest/identities/interfaces';
 import { ResultSet } from '~/rest/interfaces';
 
 interface CreateTestAccountParams {
@@ -17,6 +19,17 @@ export class Identities {
 
   public async acceptAuthorization(id: string, params: TxBase): Promise<unknown> {
     return this.client.post(`/authorizations/${id}/accept`, { ...params });
+  }
+
+  public async getPendingAuthorizations(
+    id: string,
+    type: AuthorizationType
+  ): Promise<PendingAuthorizations> {
+    let queryParams = '';
+    if (type) {
+      queryParams += `?type=${type}`;
+    }
+    return this.client.get(`/identities/${id}/pending-authorizations${queryParams}`);
   }
 
   public async createTestAccounts(

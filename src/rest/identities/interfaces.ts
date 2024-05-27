@@ -14,3 +14,16 @@ export interface Identity {
 export interface PendingInstructions {
   results: string[];
 }
+
+export interface Authorization {
+  id: string;
+  expiry: Date | null;
+  data: Record<string, unknown>;
+  target: string;
+  issuer: Record<string, unknown>;
+}
+
+export interface PendingAuthorizations {
+  sent: Authorization[];
+  received: Authorization[];
+}

@@ -6,6 +6,7 @@ import {
   redeemTokenParams,
   setAssetDocumentParams,
   setMetadataParams,
+  transferAssetOwnershipParams,
 } from '~/rest/assets/params';
 import { RestClient } from '~/rest/client';
 import { PostResult } from '~/rest/interfaces';
@@ -83,5 +84,12 @@ export class Assets {
     params: ReturnType<typeof assetMediatorsParams>
   ): Promise<PostResult> {
     return this.client.post(`assets/${ticker}/remove-required-mediators`, params);
+  }
+
+  public async transferAssetOwnership(
+    ticker: string,
+    params: ReturnType<typeof transferAssetOwnershipParams>
+  ): Promise<Record<string, unknown>> {
+    return this.client.post(`assets/${ticker}/transfer-ownership`, params);
   }
 }

@@ -88,3 +88,14 @@ export const assetMediatorsParams = (mediators: string[], base: TxBase, extras: 
     ...extras,
     ...base,
   } as const);
+
+export const transferAssetOwnershipParams = (
+  newOwner: string,
+  base: TxBase,
+  extras: TxExtras = {}
+) =>
+  ({
+    target: newOwner,
+    ...extras,
+    ...base,
+  } as const);
