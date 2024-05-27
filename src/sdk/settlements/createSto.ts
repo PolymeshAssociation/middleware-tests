@@ -119,9 +119,6 @@ export const createSto = async (
     { signingAccount: investorAccount }
   );
 
-  const middlewareSynced = () =>
-    new Promise((resolve) => investTx.onProcessedByMiddleware(resolve));
-
   await investTx.run();
   assert(investTx.isSuccess);
 
@@ -139,8 +136,6 @@ export const createSto = async (
   const closeTx = await offering.close();
   await closeTx.run();
   assert(closeTx.isSuccess);
-
-  await middlewareSynced();
 
   // Fetch investments from the offering
   const { data: investments } = await offering.getInvestments();
