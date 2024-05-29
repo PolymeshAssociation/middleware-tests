@@ -23,7 +23,7 @@ export class Identities {
 
   public async getPendingAuthorizations(
     id: string,
-    type: AuthorizationType
+    type?: AuthorizationType
   ): Promise<PendingAuthorizations> {
     let queryParams = '';
     if (type) {
