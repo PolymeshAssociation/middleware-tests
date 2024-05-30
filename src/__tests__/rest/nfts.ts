@@ -186,7 +186,7 @@ describe('NFTs', () => {
       transactions: expect.arrayContaining([
         expect.objectContaining({
           ...expectBasicTxInfo,
-          transactionTag: 'settlement.affirmInstruction',
+          transactionTag: 'settlement.affirmInstructionWithCount',
         }),
       ]),
     });
