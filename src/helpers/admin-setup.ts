@@ -7,7 +7,7 @@ import { env } from '../environment';
 
 const maxWorkersSupported = 8;
 
-const initialPolyx = 100000000;
+const initialPolyx = 1000000;
 
 export default async (): Promise<void> => {
   const vaultClient = new VaultClient(env.vaultUrl, env.vaultTransitPath, env.vaultToken);

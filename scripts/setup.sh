@@ -7,7 +7,7 @@ SCRIPT_DIR=$(dirname "$0")
 IMAGE_REPO=polymeshassociation/polymesh
 
 # Chain version to test
-VERSION='6.1.2'
+VERSION='6.2.0'
 
 # service manifest
 ENV_FILE="$SCRIPT_DIR/../envs/$VERSION.env"
