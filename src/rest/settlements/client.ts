@@ -51,4 +51,20 @@ export class Settlements {
   public async getInstruction(instructionId: string): Promise<unknown> {
     return this.client.get(`/instructions/${instructionId}`);
   }
+
+  public async withdrawAffirmation(instructionId: string, txBase: TxBase): Promise<PostResult> {
+    return this.client.post(`/instructions/${instructionId}/withdraw`, {
+      ...txBase,
+    });
+  }
+
+  public async rejectInstruction(instructionId: string, txBase: TxBase): Promise<PostResult> {
+    return this.client.post(`/instructions/${instructionId}/reject`, {
+      ...txBase,
+    });
+  }
+
+  public async getAffirmations(instructionId: string): Promise<unknown> {
+    return this.client.get(`/instructions/${instructionId}/affirmations`);
+  }
 }
