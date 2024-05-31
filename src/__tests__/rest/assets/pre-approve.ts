@@ -60,7 +60,7 @@ describe('Asset pre-approval', () => {
     expect(results).toEqual({
       results: [
         {
-          ticker: 'TICKER',
+          ticker: asset,
           did: issuer.did,
           isPreApproved: true,
         },
