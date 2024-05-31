@@ -111,7 +111,7 @@ describe('Create and trading an NFT', () => {
       transactions: expect.arrayContaining([
         expect.objectContaining({
           ...expectBasicTxInfo,
-          transactionTag: 'settlement.affirmInstruction',
+          transactionTag: 'settlement.affirmInstructionWithCount',
         }),
       ]),
     });
@@ -142,7 +142,7 @@ describe('Create and trading an NFT', () => {
       transactions: expect.arrayContaining([
         expect.objectContaining({
           ...expectBasicTxInfo,
-          transactionTag: 'settlement.withdrawAffirmation',
+          transactionTag: 'settlement.withdrawAffirmationWithCount',
         }),
       ]),
     });
@@ -156,7 +156,7 @@ describe('Create and trading an NFT', () => {
       transactions: expect.arrayContaining([
         expect.objectContaining({
           ...expectBasicTxInfo,
-          transactionTag: 'settlement.rejectInstruction',
+          transactionTag: 'settlement.rejectInstructionWithCount',
         }),
       ]),
     });
