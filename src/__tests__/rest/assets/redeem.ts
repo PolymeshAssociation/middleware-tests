@@ -54,13 +54,13 @@ describe('Redeem', () => {
     const createPortfolioParams = portfolioParams(portfolioName, {
       options: { processMode: ProcessMode.Submit, signer },
     });
-    const result = await restClient.portfolios.create(createPortfolioParams);
+    const result = await restClient.portfolios.createPortfolio(createPortfolioParams);
     const createdPortfolio = result.portfolio.id;
 
     const moveFundParams = moveAssetParams(asset, '0', createdPortfolio, {
       options: { processMode: ProcessMode.Submit, signer },
     });
-    await restClient.portfolios.moveFunds(issuer.did, moveFundParams);
+    await restClient.portfolios.moveAssets(issuer.did, moveFundParams);
 
     const params = redeemTokenParams(createdPortfolio, {
       options: { processMode: ProcessMode.Submit, signer },
