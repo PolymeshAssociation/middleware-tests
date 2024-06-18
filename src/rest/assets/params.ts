@@ -99,3 +99,10 @@ export const transferAssetOwnershipParams = (
     ...extras,
     ...base,
   } as const);
+
+export const issueAssetParams = (amount: number, base: TxBase, extras: TxExtras = {}) =>
+  ({
+    amount,
+    ...extras,
+    ...base,
+  } as const);

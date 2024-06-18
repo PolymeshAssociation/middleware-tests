@@ -2,6 +2,7 @@ import fetch from 'cross-fetch';
 
 import { Assets } from '~/rest/assets';
 import { Claims } from '~/rest/claims/client';
+import { TxBase } from '~/rest/common';
 import { Compliance } from '~/rest/compliance';
 import { Identities } from '~/rest/identities';
 import { Nfts } from '~/rest/nfts';
@@ -45,6 +46,15 @@ export class RestClient {
     const url = new URL(path, this.baseUrl).href;
     const method = 'POST';
     return this.fetch(url, method, body) as Promise<T>;
+  }
+
+  public async postDelete<T = unknown>(path: string, txBase: TxBase): Promise<T> {
+    const url = new URL(
+      `${path}?signer=${txBase.options.signer}&processMode=${txBase.options.processMode}`,
+      this.baseUrl
+    ).href;
+    const method = 'POST';
+    return this.fetch(url, method) as Promise<T>;
   }
 
   private async fetch(

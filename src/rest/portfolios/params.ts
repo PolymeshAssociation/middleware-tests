@@ -27,3 +27,14 @@ export const moveAssetParams = (
     ...extras,
     ...base,
   } as const);
+
+export const setCustodianParams = (
+  params: { target: string; expiry?: Date },
+  base: TxBase,
+  extras: TxExtras = {}
+) =>
+  ({
+    ...params,
+    ...extras,
+    ...base,
+  } as const);
