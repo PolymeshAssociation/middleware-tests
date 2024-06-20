@@ -2,6 +2,7 @@ import {
   assetMediatorsParams,
   createAssetParams,
   createMetadataParams,
+  issueAssetParams,
   MetadataType,
   redeemTokenParams,
   setAssetDocumentParams,
@@ -108,5 +109,12 @@ export class Assets {
 
   public async getPreApprovals(did: string): Promise<unknown> {
     return this.client.get(`identities/${did}/pre-approved-assets`);
+  }
+
+  public async issue(
+    ticker: string,
+    params: ReturnType<typeof issueAssetParams>
+  ): Promise<PostResult> {
+    return this.client.post(`assets/${ticker}/issue`, params);
   }
 }
