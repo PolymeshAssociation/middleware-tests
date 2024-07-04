@@ -103,20 +103,6 @@ describe('Create and trading an NFT', () => {
     });
   });
 
-  it('should allow instruction to be affirmed', async () => {
-    const result = await restClient.settlements.affirmInstruction(instructionId, {
-      options: { processMode: ProcessMode.Submit, signer: collector.signer },
-    });
-    expect(result).toMatchObject({
-      transactions: expect.arrayContaining([
-        expect.objectContaining({
-          ...expectBasicTxInfo,
-          transactionTag: 'settlement.affirmInstructionWithCount',
-        }),
-      ]),
-    });
-  });
-
   it('should allow to get affirmations', async () => {
     const result = await restClient.settlements.getAffirmations(instructionId);
 
@@ -126,23 +112,33 @@ describe('Create and trading an NFT', () => {
           identity: issuer.did,
           status: 'Affirmed',
         }),
-        expect.objectContaining({
-          identity: collector.did,
-          status: 'Affirmed',
-        }),
       ]),
     });
   });
 
   it('should allow affirmation to be withdrawn', async () => {
     const result = await restClient.settlements.withdrawAffirmation(instructionId, {
-      options: { processMode: ProcessMode.Submit, signer: collector.signer },
+      options: { processMode: ProcessMode.Submit, signer: issuer.signer },
     });
     expect(result).toMatchObject({
       transactions: expect.arrayContaining([
         expect.objectContaining({
           ...expectBasicTxInfo,
           transactionTag: 'settlement.withdrawAffirmationWithCount',
+        }),
+      ]),
+    });
+  });
+
+  it('should allow instruction to be affirmed by collector', async () => {
+    const result = await restClient.settlements.affirmInstruction(instructionId, {
+      options: { processMode: ProcessMode.Submit, signer: collector.signer },
+    });
+    expect(result).toMatchObject({
+      transactions: expect.arrayContaining([
+        expect.objectContaining({
+          ...expectBasicTxInfo,
+          transactionTag: 'settlement.affirmInstructionWithCount',
         }),
       ]),
     });

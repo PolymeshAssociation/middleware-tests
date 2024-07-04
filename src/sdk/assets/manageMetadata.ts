@@ -59,7 +59,8 @@ export const manageMetadata = async (sdk: Polymesh, ticker: string): Promise<voi
     });
 
     const globalSetTx = await globalMetadata.set({ value });
-    globalSetTx.run();
+    await globalSetTx.run();
+
     assert(globalSetTx.isSuccess);
   }
 };

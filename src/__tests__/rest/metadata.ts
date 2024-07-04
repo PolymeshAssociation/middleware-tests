@@ -35,7 +35,18 @@ describe('Metadata', () => {
   it('should list the global metadata', async () => {
     const result = await restClient.assets.getGlobalMetadata();
 
-    expect(result).toEqual([]);
+    expect(result).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: expect.any(String),
+          name: expect.any(String),
+          specs: expect.objectContaining({
+            description: expect.any(String),
+            url: expect.any(String),
+          }),
+        }),
+      ])
+    );
   });
 
   it('should set an Assets metadata', async () => {
@@ -56,7 +67,15 @@ describe('Metadata', () => {
   it('should get an Assets metadata', async () => {
     const result = await restClient.assets.getMetadata(asset);
 
-    expect(result).toEqual({ results: [{ asset: asset, id: '1', type: 'Local' }] });
+    expect(result).toEqual({
+      results: expect.arrayContaining([
+        expect.objectContaining({
+          id: expect.stringMatching(/\d/),
+          asset,
+          type: expect.stringMatching(/Global|Local/),
+        }),
+      ]),
+    });
   });
 
   it('should update metadata', async () => {
