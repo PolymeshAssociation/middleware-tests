@@ -153,8 +153,6 @@ describe('Portfolio Asset Transfers', () => {
   it.skip("should have created transaction history for the asset's transfer", async () => {
     const result = await restClient.portfolios.getTransactionHistory(issuer.did, '0');
 
-    console.log(result);
-
     expect(result.results).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
