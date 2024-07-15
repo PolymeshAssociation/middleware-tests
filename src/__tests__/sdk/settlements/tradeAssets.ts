@@ -25,7 +25,6 @@ describe('tradeAssets', () => {
     sdk = factory.polymeshSdk;
 
     const targetMnemonic = LocalSigningManager.generateAccount();
-    console.log(targetMnemonic);
     counterPartyAddress = factory.signingManager.addAccount({ mnemonic: targetMnemonic });
 
     offChainSenderDid = '0xd99b7c317566c53af54f111e7f82579207f72197e76ec31204ece65cf8db3eb8';
