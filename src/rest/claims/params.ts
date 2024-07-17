@@ -1,10 +1,11 @@
-import { TxBase, TxExtras } from '~/rest/common';
+import { ClaimType } from '@polymeshassociation/polymesh-sdk/types';
 
+import { TxBase, TxExtras } from '~/rest/common';
 
 type Claim = {
   target: string;
   claim: {
-    type: string;
+    type: ClaimType;
     scope?: {
       type: string;
       value: string;

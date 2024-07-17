@@ -1,3 +1,5 @@
+import { ClaimType } from '@polymeshassociation/polymesh-sdk/types';
+
 import { expectBasicTxInfo } from '~/__tests__/rest/utils';
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
@@ -35,7 +37,7 @@ describe('CustomClaim', () => {
         {
           target: targetDid,
           claim: {
-            type: 'Custom',
+            type: ClaimType.Custom,
             scope: {
               type: 'Identity',
               value: issuerDid,

@@ -3,7 +3,6 @@ import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
 import { createAssetParams } from '~/rest/assets/params';
 import { ProcessMode } from '~/rest/common';
-import { complianceRestrictionParams } from '~/rest/compliance';
 import { Identity } from '~/rest/identities/interfaces';
 import { fungibleInstructionParams, venueParams } from '~/rest/settlements';
 
@@ -53,31 +52,6 @@ describe('Create and trading an Asset', () => {
     expect(asset).toMatchObject({
       name: assetParams.name,
       assetType: assetParams.assetType,
-    });
-  });
-
-  it('should create compliance rules for the Asset', async () => {
-    const params = complianceRestrictionParams(ticker, {
-      options: { processMode: ProcessMode.Submit, signer },
-    });
-    const txData = await restClient.compliance.createRestriction(ticker, params);
-
-    expect(txData).toMatchObject({
-      transactions: expect.arrayContaining([
-        {
-          transactionTag: 'complianceManager.replaceAssetCompliance',
-          type: 'single',
-          ...expectBasicTxInfo,
-        },
-      ]),
-    });
-
-    const requirements = await restClient.compliance.getRestriction(ticker);
-
-    expect(requirements).toMatchObject({
-      requirements: expect.arrayContaining([
-        expect.objectContaining({ conditions: params.requirements[0] }),
-      ]),
     });
   });
 

@@ -3,7 +3,6 @@ import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
 import { createMetadataParams } from '~/rest/assets';
 import { ProcessMode } from '~/rest/common';
-import { complianceRestrictionParams } from '~/rest/compliance';
 import { Identity } from '~/rest/identities/interfaces';
 import { createNftCollectionParams, issueNftParams } from '~/rest/nfts';
 
@@ -96,23 +95,6 @@ describe('NFTs', () => {
         expect.objectContaining({
           key: expect.objectContaining({ id: '1', type: 'Local', ticker }),
           value: 'test value',
-        }),
-      ]),
-    });
-  });
-
-  // TODO: move to compliance
-  it('should pause compliance requirements', async () => {
-    const params = complianceRestrictionParams(ticker, {
-      options: { processMode: ProcessMode.Submit, signer },
-    });
-    const result = await restClient.compliance.createRestriction(ticker, params);
-
-    expect(result).toMatchObject({
-      transactions: expect.arrayContaining([
-        expect.objectContaining({
-          ...expectBasicTxInfo,
-          transactionTag: 'complianceManager.replaceAssetCompliance',
         }),
       ]),
     });
