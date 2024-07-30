@@ -11,6 +11,7 @@ export class Compliance {
 
   public async getComplianceRequirements(
     ticker: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<{ requirements: any[]; defaultTrustedClaimIssuers: any[] }> {
     return this.client.get(`/assets/${ticker}/compliance-requirements`);
   }
@@ -55,7 +56,7 @@ export class Compliance {
     return this.client.post(`/assets/${ticker}/compliance-requirements/${id}/modify`, params);
   }
 
-  public async areRequirementsPaused(ticker: string): Promise<unknown> {
+  public async areRequirementsPaused(ticker: string): Promise<{ arePaused: boolean }> {
     return this.client.get(`/assets/${ticker}/compliance-requirements/status`);
   }
 }

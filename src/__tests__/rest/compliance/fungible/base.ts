@@ -42,15 +42,13 @@ describe('Compliance Requirements for Fungible Assets', () => {
     await factory.close();
   });
 
-  it('method: getComplianceRequirements', async () => {
+  it('should get compliance requirements', async () => {
     const result = await restClient.compliance.getComplianceRequirements(ticker);
 
-    expect(result).toMatchObject({
-      requirements: expect.any(Array),
-    });
+    expect(result.requirements).toEqual([]);
   });
 
-  it('method: setRequirements', async () => {
+  it('should set compliance requirements', async () => {
     const params = complianceRequirementsParams(
       [
         bothConditionsRequirements(issuer.did, ticker, blocked.did, 'Us'),
@@ -72,19 +70,26 @@ describe('Compliance Requirements for Fungible Assets', () => {
     });
   });
 
-  it('method: pauseRequirements', async () => {
+  it('should pause compliance requirements', async () => {
     const txData = await restClient.compliance.pauseRequirements(ticker, signerTxBase);
 
     expect(txData).toEqual(assertTagPresent(expect, 'complianceManager.pauseAssetCompliance'));
+    const result = await restClient.compliance.areRequirementsPaused(ticker);
+
+    expect(result.arePaused).toBeTruthy();
   });
 
-  it('method: unpauseRequirements', async () => {
+  it('should unpause compliance requirements', async () => {
     const txData = await restClient.compliance.unpauseRequirements(ticker, signerTxBase);
 
     expect(txData).toEqual(assertTagPresent(expect, 'complianceManager.resumeAssetCompliance'));
+
+    const result = await restClient.compliance.areRequirementsPaused(ticker);
+
+    expect(result.arePaused).toBeFalsy();
   });
 
-  it('method: deleteRequirement', async () => {
+  it('should delete compliance requirement with specified id', async () => {
     let requirements = await restClient.compliance.getComplianceRequirements(ticker);
     const id = requirements.requirements[0].id;
     const txData = await restClient.compliance.deleteRequirement(id, ticker, signerTxBase);
@@ -98,7 +103,7 @@ describe('Compliance Requirements for Fungible Assets', () => {
     expect(requirements.requirements).not.toContainEqual(expect.objectContaining({ id }));
   });
 
-  it('method: deleteRequirements', async () => {
+  it('should delete all compliance requirements', async () => {
     const txData = await restClient.compliance.deleteRequirements(ticker, signerTxBase);
 
     expect(txData).toEqual(assertTagPresent(expect, 'complianceManager.resetAssetCompliance'));
@@ -108,7 +113,7 @@ describe('Compliance Requirements for Fungible Assets', () => {
     expect(requirements.requirements).toHaveLength(0);
   });
 
-  it('method: addRequirement', async () => {
+  it('should add a single compliance requirement', async () => {
     const params = complianceRequirementParams(
       senderConditionsRequirements(issuer.did),
 
@@ -124,7 +129,7 @@ describe('Compliance Requirements for Fungible Assets', () => {
     expect(requirements.requirements).toHaveLength(1);
   });
 
-  it('method: modifyComplianceRequirement', async () => {
+  it('should modify compliance requirement with the specified id', async () => {
     const requirements = await restClient.compliance.getComplianceRequirements(ticker);
     const id = requirements.requirements[0].id;
     const params = complianceRequirementParams(
@@ -141,11 +146,5 @@ describe('Compliance Requirements for Fungible Assets', () => {
     const updatedRequirements = await restClient.compliance.getComplianceRequirements(ticker);
 
     expect(updatedRequirements.requirements[0]).toMatchObject({ conditions: params.conditions });
-  });
-
-  it('method: areRequirementsPaused', async () => {
-    const result = await restClient.compliance.areRequirementsPaused(ticker);
-
-    expect(result).toMatchObject({ arePaused: expect.any(Boolean) });
   });
 });

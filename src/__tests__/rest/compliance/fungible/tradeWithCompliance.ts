@@ -272,7 +272,7 @@ describe('Compliance Requirements for Fungible Assets', () => {
     );
   });
 
-  it('should be possible to send asset to blocked did after pausing compliance requirements', async () => {
+  it('should be possible to send an asset to a blocked did after pausing compliance requirements', async () => {
     const txData = await restClient.compliance.pauseRequirements(ticker, signerTxBase);
 
     expect(txData).toEqual(assertTagPresent(expect, 'complianceManager.pauseAssetCompliance'));
