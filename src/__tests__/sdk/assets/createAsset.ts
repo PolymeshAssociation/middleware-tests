@@ -32,6 +32,34 @@ describe('createAsset', () => {
     ).resolves.not.toThrow();
   });
 
+  it('should create asset and get the creation event', async () => {
+    const params = {
+      name: 'FungibleAsset Name',
+      ticker: factory.nextTicker(),
+      isDivisible: false,
+      assetType: KnownAssetType.EquityCommon,
+      requireInvestorUniqueness: false,
+    };
+
+    // Validates arguments (e.g. ticker is not taken) and returns a Transaction to be ran.
+    const createAssetTx = await sdk.assets.createAsset(params);
+
+    const middlewareSyncedOnAsset = () =>
+      new Promise((resolve) => createAssetTx.onProcessedByMiddleware(resolve));
+
+    const asset = await createAssetTx.run();
+
+    expect(asset.ticker).toEqual(params.ticker);
+
+    await middlewareSyncedOnAsset();
+
+    const createdAt = await asset.createdAt();
+
+    expect(createdAt).toEqual(
+      expect.objectContaining({ blockNumber: expect.any(BigNumber), blockHash: expect.any(String) })
+    );
+  });
+
   it('should execute createAsset with a custom type without errors', async () => {
     await expect(
       createAsset(sdk, {

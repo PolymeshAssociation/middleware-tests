@@ -117,4 +117,12 @@ export class Assets {
   ): Promise<PostResult> {
     return this.client.post(`assets/${ticker}/issue`, params);
   }
+
+  public async freeze(ticker: string, params: TxBase): Promise<PostResult> {
+    return this.client.post(`assets/${ticker}/freeze`, { ...params });
+  }
+
+  public async unfreeze(ticker: string, params: TxBase): Promise<PostResult> {
+    return this.client.post(`assets/${ticker}/unfreeze`, { ...params });
+  }
 }

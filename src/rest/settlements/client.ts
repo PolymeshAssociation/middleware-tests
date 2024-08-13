@@ -67,4 +67,24 @@ export class Settlements {
   public async getAffirmations(instructionId: string): Promise<unknown> {
     return this.client.get(`/instructions/${instructionId}/affirmations`);
   }
+
+  public async validateLeg({
+    asset,
+    toPortfolio,
+    toDid,
+    fromPortfolio,
+    fromDid,
+    amount,
+  }: {
+    asset: string;
+    toPortfolio: string;
+    toDid: string;
+    fromPortfolio: string;
+    fromDid: string;
+    amount: string;
+  }): Promise<unknown> {
+    return this.client.get(
+      `/leg-validations?asset=${asset}&toPortfolio=${toPortfolio}&toDid=${toDid}&fromPortfolio=${fromPortfolio}&fromDid=${fromDid}&amount=${amount}`
+    );
+  }
 }
