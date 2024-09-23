@@ -2,6 +2,8 @@ import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
 import { TransactionStatus } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
+import { awaitMiddlewareSynced } from '~/util';
+
 /*
   This script showcases MultiSig related functionality. It:
     - Creates a MultiSig
@@ -78,16 +80,9 @@ export const runMultiSigExamples = async (
 
   const rejectProposal = await reserveTickerProposal.reject({ signingAccount: signerTwo });
 
-  const middlewareSync = new Promise<void>((resolve, reject) => {
-    rejectProposal.onProcessedByMiddleware((err) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve();
-    });
-  });
   await rejectProposal.run();
+
   assert(rejectProposal.status === TransactionStatus.Succeeded);
 
-  await middlewareSync;
+  await awaitMiddlewareSynced(rejectProposal, sdk, 15, 2000);
 };

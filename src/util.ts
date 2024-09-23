@@ -1,3 +1,9 @@
+import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
+import {
+  GenericPolymeshTransaction,
+  TransactionStatus,
+} from '@polymeshassociation/polymesh-sdk/types';
+
 export const alphabet = [...Array(26)].map((val, i) => String.fromCharCode(i + 65));
 
 export const randomNonce = (digits: number): string => {
@@ -32,3 +38,47 @@ export const randomString = (length = 6, adjust = 0): string => {
 
 export const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Waits for the middleware to sync up to the block containing the given transaction
+ *
+ * @param tx - The transaction to wait for
+ * @param sdk - The Polymesh SDK instance
+ * @param retries - The number of times to retry checking the middleware
+ * @param delay - The delay in milliseconds between retries
+ * @throws {Error} If the transaction status is not Succeeded or Failed
+ * @throws {Error} If the middleware has not synced after the specified number of retries
+ * @returns {Promise<void>} Resolves when the middleware has synced up to the transaction's block
+ */
+export const awaitMiddlewareSynced = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tx: GenericPolymeshTransaction<any, any>,
+  sdk: Polymesh,
+  retries: number,
+  delay: number
+): Promise<void> => {
+  if (![TransactionStatus.Succeeded, TransactionStatus.Failed].includes(tx.status)) {
+    throw new Error('Transaction was not successful or failed and does not have a block number');
+  }
+
+  const txBlock = tx.blockNumber as BigNumber;
+
+  for (let i = 0; i < retries; i++) {
+    try {
+      const metadata = await sdk.network.getMiddlewareMetadata();
+      const latestBlock = metadata?.lastProcessedHeight;
+
+      if (latestBlock && latestBlock.gte(txBlock)) {
+        return;
+      }
+    } catch (err) {
+      throw new Error(`Error checking middleware sync status: ${err}`);
+    }
+
+    if (i === retries - 1) {
+      throw new Error(`Middleware has not synced after ${retries} attempts`);
+    }
+
+    await sleep(delay);
+  }
+};
