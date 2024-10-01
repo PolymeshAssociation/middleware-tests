@@ -3,6 +3,7 @@ import { KnownAssetType, SecurityIdentifierType } from '@polymeshassociation/pol
 
 import { TestFactory } from '~/helpers';
 import { createAsset } from '~/sdk/assets/createAsset';
+import { awaitMiddlewareSynced } from '~/util';
 
 let factory: TestFactory;
 
@@ -44,14 +45,11 @@ describe('createAsset', () => {
     // Validates arguments (e.g. ticker is not taken) and returns a Transaction to be ran.
     const createAssetTx = await sdk.assets.createAsset(params);
 
-    const middlewareSyncedOnAsset = () =>
-      new Promise((resolve) => createAssetTx.onProcessedByMiddleware(resolve));
-
     const asset = await createAssetTx.run();
 
     expect(asset.ticker).toEqual(params.ticker);
 
-    await middlewareSyncedOnAsset();
+    await awaitMiddlewareSynced(createAssetTx, sdk, 15, 2000);
 
     const createdAt = await asset.createdAt();
 

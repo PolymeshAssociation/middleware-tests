@@ -54,8 +54,8 @@ export const awaitMiddlewareSynced = async (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx: GenericPolymeshTransaction<any, any>,
   sdk: Polymesh,
-  retries: number,
-  delay: number
+  retries = 15,
+  delay = 2000
 ): Promise<void> => {
   if (![TransactionStatus.Succeeded, TransactionStatus.Failed].includes(tx.status)) {
     throw new Error('Transaction was not successful or failed and does not have a block number');
