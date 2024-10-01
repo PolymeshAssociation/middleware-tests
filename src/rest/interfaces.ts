@@ -38,6 +38,7 @@ interface BatchResult {
 
 export interface RestSuccessResult {
   transactions: SingleResult[] | BatchResult[];
+  proposal?: { multiSigAddress: string; id: string };
 }
 
 export interface RestErrorResult {
