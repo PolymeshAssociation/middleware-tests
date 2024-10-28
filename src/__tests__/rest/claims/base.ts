@@ -3,8 +3,7 @@ import { ClaimType } from '@polymeshassociation/polymesh-sdk/types';
 import { expectBasicTxInfo } from '~/__tests__/rest/utils';
 import { TestFactory } from '~/helpers';
 import { RestClient } from '~/rest';
-import { createClaimParams, registerCustomClaimTypeParams } from '~/rest/claims/params';
-import { ProcessMode } from '~/rest/common';
+import { createClaimParams } from '~/rest/claims/params';
 import { Identity } from '~/rest/identities/interfaces';
 
 const handles = ['issuer', 'target'];
@@ -18,7 +17,6 @@ describe('CustomClaim', () => {
   let targetDid: string;
   let issuerDid: string;
   let claimParams: ReturnType<typeof createClaimParams>;
-  let txHash: string;
 
   beforeAll(async () => {
     factory = await TestFactory.create({ handles });
@@ -37,32 +35,31 @@ describe('CustomClaim', () => {
         {
           target: targetDid,
           claim: {
-            type: ClaimType.Custom,
+            type: ClaimType.Exempted,
             scope: {
               type: 'Identity',
               value: issuerDid,
             },
-            customClaimTypeId: 1,
           },
         },
       ],
     });
-
-    const params = registerCustomClaimTypeParams(factory.nextTicker(), {
-      options: { signer, processMode: ProcessMode.Submit },
-    });
-    const txData = await restClient.claims.registerCustomClaimType(params);
-
-    txHash = txData.transactions[0].transactionHash;
-
-    await restClient.pingForTransaction(txHash, 10);
   });
 
   afterAll(async () => {
     await factory.close();
   });
 
-  it('should add a custom claim', async () => {
+  it('should list CDD claims for an identity', async () => {
+    const result = await restClient.identities.getCddClaims(issuerDid);
+
+    expect(result.results[0].claim).toMatchObject({
+      id: expect.any(String),
+      type: ClaimType.CustomerDueDiligence,
+    });
+  });
+
+  it('should add an `Exempted` claim', async () => {
     const result = await restClient.claims.addClaim(claimParams);
 
     expect(result).toMatchObject({
@@ -76,8 +73,37 @@ describe('CustomClaim', () => {
     });
   });
 
-  // TODO: re-enable once SDK supports scope retrieval for custom claims
-  it.skip('should find claim scopes by did', async () => {
+  // TODO: re-enable once REST API is updated with latest alpha
+  it.skip('should list Claims issued by an identity', async () => {
+    const result = await restClient.identities.getIssuedClaims(issuerDid);
+
+    expect(result).toMatchObject({
+      results: expect.arrayContaining([
+        expect.objectContaining({
+          issuer: issuerDid,
+          target: targetDid,
+          claim: expect.objectContaining({ claim: ClaimType.Custom }),
+        }),
+      ]),
+    });
+  });
+
+  // TODO: re-enable once REST API is updated with latest alpha
+  it.skip('should list Claims associated with an identity', async () => {
+    const result = await restClient.identities.getAssociatedClaims(targetDid);
+
+    expect(result).toMatchObject({
+      results: expect.arrayContaining([
+        expect.objectContaining({
+          issuer: issuerDid,
+          target: targetDid,
+          claim: expect.objectContaining({ claim: ClaimType.Custom }),
+        }),
+      ]),
+    });
+  });
+
+  it('should find claim scopes by did', async () => {
     const result = await restClient.identities.findClaimScopesByDid(targetDid);
 
     expect(result).toMatchObject({
@@ -89,7 +115,7 @@ describe('CustomClaim', () => {
     });
   });
 
-  it('should remove a custom claim', async () => {
+  it('should remove an `Exempted` claim', async () => {
     const result = await restClient.claims.removeClaim(claimParams);
 
     expect(result).toMatchObject({

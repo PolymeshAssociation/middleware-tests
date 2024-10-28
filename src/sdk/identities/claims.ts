@@ -1,4 +1,4 @@
-import { Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
 import { ClaimType, ScopeType } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
@@ -87,4 +87,27 @@ export const manageClaims = async (
   // `target` here refers to the issuer of the claim
   const claimsIssuedByTarget = await sdk.claims.getIssuedClaims({ target: targetDid });
   assert(Array.isArray(claimsIssuedByTarget.data), 'Data should be an Array for `getIssuedClaims`');
+
+  // get identities with claims using filters
+  const identitiesWithCddClaims = await sdk.claims.getIdentitiesWithClaims({
+    claimTypes: [ClaimType.CustomerDueDiligence],
+    size: new BigNumber(1),
+    start: new BigNumber(0),
+  });
+  assert(Array.isArray(identitiesWithCddClaims.data));
+  expect(identitiesWithCddClaims.data.length).toBe(1);
+  assert(identitiesWithCddClaims.data.some((i) => i.identity.did === targetDid));
+
+  // get the revoked accredited claim by filtering
+  const identitiesWithAccreditedClaim = await sdk.claims.getIdentitiesWithClaims({
+    targets: [targetDid],
+    claimTypes: [ClaimType.Accredited],
+    size: new BigNumber(1),
+    start: new BigNumber(0),
+    includeExpired: true,
+    trustedClaimIssuers: [identity.did],
+  });
+  assert(Array.isArray(identitiesWithAccreditedClaim.data));
+  expect(identitiesWithAccreditedClaim.data.length).toBe(1);
+  assert(identitiesWithAccreditedClaim.data[0].identity.did === targetDid);
 };
