@@ -76,8 +76,7 @@ describe('CustomClaim', () => {
     });
   });
 
-  // TODO: re-enable once SDK supports scope retrieval for custom claims
-  it.skip('should find claim scopes by did', async () => {
+  it('should find claim scopes by did', async () => {
     const result = await restClient.identities.findClaimScopesByDid(targetDid);
 
     expect(result).toMatchObject({
