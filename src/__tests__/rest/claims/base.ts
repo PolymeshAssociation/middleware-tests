@@ -73,8 +73,7 @@ describe('CustomClaim', () => {
     });
   });
 
-  // TODO: re-enable once REST API is updated with latest alpha
-  it.skip('should list Claims issued by an identity', async () => {
+  it('should list Claims issued by an identity', async () => {
     const result = await restClient.identities.getIssuedClaims(issuerDid);
 
     expect(result).toMatchObject({
@@ -88,8 +87,7 @@ describe('CustomClaim', () => {
     });
   });
 
-  // TODO: re-enable once REST API is updated with latest alpha
-  it.skip('should list Claims associated with an identity', async () => {
+  it('should list Claims associated with an identity', async () => {
     const result = await restClient.identities.getAssociatedClaims(targetDid);
 
     expect(result).toMatchObject({
