@@ -54,4 +54,20 @@ export class Identities {
       accounts,
     });
   }
+
+  public async getIssuedClaims(did: string): Promise<ResultSet<unknown>> {
+    return this.client.get(`/identities/${did}/issued-claims`);
+  }
+
+  public async getAssociatedClaims(did: string): Promise<ResultSet<unknown>> {
+    return this.client.get(`/identities/${did}/associated-claims`);
+  }
+
+  public async getCddClaims(did: string): Promise<ResultSet<Record<string, unknown>>> {
+    return this.client.get(`/identities/${did}/cdd-claims`);
+  }
+
+  public async findClaimScopesByDid(did: string): Promise<ResultSet<Record<string, unknown>>> {
+    return this.client.get(`/identities/${did}/claim-scopes`);
+  }
 }
