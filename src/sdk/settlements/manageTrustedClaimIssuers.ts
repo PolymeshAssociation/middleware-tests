@@ -1,5 +1,5 @@
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { ClaimType } from '@polymeshassociation/polymesh-sdk/types';
+import { ClaimType, FungibleAsset } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 import { wellKnown } from '~/consts';
@@ -13,12 +13,15 @@ import { wellKnown } from '~/consts';
 
   These issuers will be trusted implicitly in consideration of compliance restrictions
 */
-export const manageTrustedClaimIssuers = async (sdk: Polymesh, ticker: string): Promise<void> => {
+export const manageTrustedClaimIssuers = async (
+  sdk: Polymesh,
+  asset: FungibleAsset
+): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
   assert(identity);
 
   // destructure to reduce `asset.` repetition
-  const { compliance } = await sdk.assets.getFungibleAsset({ ticker });
+  const { compliance } = asset;
 
   // Add a claim Issuer for trusted for all claims
   const addClaimIssuerTx = await compliance.trustedClaimIssuers.add({

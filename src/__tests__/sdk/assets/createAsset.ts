@@ -43,11 +43,19 @@ describe('createAsset', () => {
     };
 
     // Validates arguments (e.g. ticker is not taken) and returns a Transaction to be ran.
+
+    const signingAccount = sdk.accountManagement.getSigningAccount();
+
+    const nextAssetId = await signingAccount?.getNextAssetId();
     const createAssetTx = await sdk.assets.createAsset(params);
 
     const asset = await createAssetTx.run();
 
-    expect(asset.ticker).toEqual(params.ticker);
+    expect(asset.id).toEqual(nextAssetId);
+
+    const assetDetails = await asset.details();
+
+    expect(assetDetails.ticker).toEqual(params.ticker);
 
     await awaitMiddlewareSynced(createAssetTx, sdk, 15, 2000);
 
@@ -61,7 +69,6 @@ describe('createAsset', () => {
   it('should execute createAsset with a custom type without errors', async () => {
     await expect(
       createAsset(sdk, {
-        ticker: factory.nextTicker(),
         name: 'testWithType',
         isDivisible: true,
         assetType: 'customTypeTest',

@@ -1,4 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/types';
 
 import { TestFactory } from '~/helpers';
 import { createAsset } from '~/sdk/assets/createAsset';
@@ -7,16 +8,15 @@ import { transferRestrictions } from '~/sdk/settlements/transferRestrictions';
 let factory: TestFactory;
 
 describe('transferRestrictions', () => {
-  let ticker: string;
+  let asset: FungibleAsset;
   let sdk: Polymesh;
 
   beforeAll(async () => {
     factory = await TestFactory.create({});
     sdk = factory.polymeshSdk;
 
-    ticker = factory.nextTicker();
     const initialSupply = new BigNumber(1000);
-    await createAsset(sdk, { ticker: ticker, initialSupply });
+    asset = await createAsset(sdk, { initialSupply });
   });
 
   afterAll(async () => {
@@ -24,6 +24,6 @@ describe('transferRestrictions', () => {
   });
 
   it('should execute without errors', async () => {
-    await transferRestrictions(sdk, ticker);
+    await transferRestrictions(sdk, asset);
   });
 });

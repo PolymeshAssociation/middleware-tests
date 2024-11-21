@@ -1,4 +1,5 @@
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/types';
 
 import { TestFactory } from '~/helpers';
 import { createAsset } from '~/sdk/assets/createAsset';
@@ -7,15 +8,14 @@ import { manageTrustedClaimIssuers } from '~/sdk/settlements/manageTrustedClaimI
 let factory: TestFactory;
 
 describe('manageTrustedClaimIssuers', () => {
-  let ticker: string;
+  let asset: FungibleAsset;
   let sdk: Polymesh;
 
   beforeAll(async () => {
     factory = await TestFactory.create({});
     sdk = factory.polymeshSdk;
 
-    ticker = factory.nextTicker();
-    await createAsset(sdk, { ticker });
+    asset = await createAsset(sdk, {});
   });
 
   afterAll(async () => {
@@ -23,6 +23,6 @@ describe('manageTrustedClaimIssuers', () => {
   });
 
   it('should execute without errors', async () => {
-    await manageTrustedClaimIssuers(sdk, ticker);
+    await manageTrustedClaimIssuers(sdk, asset);
   });
 });

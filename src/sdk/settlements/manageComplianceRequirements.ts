@@ -4,6 +4,7 @@ import {
   ConditionTarget,
   ConditionType,
   CountryCode,
+  FungibleAsset,
   ScopeType,
 } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
@@ -19,13 +20,13 @@ import assert from 'node:assert';
 */
 export const manageComplianceRequirements = async (
   sdk: Polymesh,
-  ticker: string
+  asset: FungibleAsset
 ): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
   assert(identity);
 
   // destructure to reduce `asset.` repetition
-  const { compliance } = await sdk.assets.getFungibleAsset({ ticker });
+  const { compliance } = asset;
 
   /*
     Set compliance requirements for the Asset. Instructions will be rejected if any party fails to comply with a rule.
@@ -49,8 +50,8 @@ export const manageComplianceRequirements = async (
           claim: {
             type: ClaimType.Accredited,
             scope: {
-              type: ScopeType.Ticker,
-              value: ticker,
+              type: ScopeType.Asset,
+              value: asset.id,
             },
           },
           target: ConditionTarget.Both,
@@ -72,15 +73,15 @@ export const manageComplianceRequirements = async (
             type: ClaimType.Jurisdiction,
             code: CountryCode.Us,
             scope: {
-              type: ScopeType.Ticker,
-              value: ticker,
+              type: ScopeType.Asset,
+              value: asset.id,
             },
           },
           {
             type: ClaimType.Blocked,
             scope: {
-              type: ScopeType.Ticker,
-              value: ticker,
+              type: ScopeType.Asset,
+              value: asset.id,
             },
           },
         ],

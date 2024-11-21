@@ -26,12 +26,13 @@ export const runMultiSigExamples = async (
     {
       signers: [signerOneAccount, signerTwoAccount],
       requiredSignatures: new BigNumber(2),
+      permissions: { assets: null, transactions: null, portfolios: null },
     },
     {
       signingAccount: creatorAddress,
     }
   );
-  const multiSig = await createMultiSig.run();
+  await createMultiSig.run();
 
   const [signerOneAuths, signerTwoAuths] = await Promise.all([
     signerOneAccount.authorizations.getReceived(),
@@ -44,12 +45,6 @@ export const runMultiSigExamples = async (
   ]);
 
   await Promise.all([await signerOneAccept.run(), await signerTwoAccept.run()]);
-
-  const joinCreator = await multiSig.joinCreator(
-    { asPrimary: false, permissions: { assets: null, transactions: null, portfolios: null } },
-    { signingAccount: creatorAddress }
-  );
-  await joinCreator.run();
 
   const createPortfolio = await sdk.identities.createPortfolio(
     {

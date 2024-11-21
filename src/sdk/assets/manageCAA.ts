@@ -1,5 +1,5 @@
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { ModuleName, PermissionType } from '@polymeshassociation/polymesh-sdk/types';
+import { FungibleAsset, ModuleName, PermissionType } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 /*
@@ -11,15 +11,13 @@ import assert from 'node:assert';
 export const manageCAA = async (
   sdk: Polymesh,
   targetDid: string,
-  ticker: string
+  asset: FungibleAsset
 ): Promise<void> => {
   const [identity, target] = await Promise.all([
     sdk.getSigningIdentity(),
     sdk.identities.getIdentity({ did: targetDid }),
   ]);
   assert(identity);
-
-  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   const setCorporateActionsAgentTx = await asset.permissions.inviteAgent({
     target,

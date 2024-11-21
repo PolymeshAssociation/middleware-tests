@@ -1,5 +1,9 @@
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { MetadataLockStatus, MetadataType } from '@polymeshassociation/polymesh-sdk/types';
+import {
+  FungibleAsset,
+  MetadataLockStatus,
+  MetadataType,
+} from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 /*
@@ -17,11 +21,9 @@ import assert from 'node:assert';
       - Register and set value for a local Asset Metadata
     - Fetch all Metadata for a Ticker
 */
-export const manageMetadata = async (sdk: Polymesh, ticker: string): Promise<void> => {
+export const manageMetadata = async (sdk: Polymesh, asset: FungibleAsset): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
   assert(identity);
-
-  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   // register a new metadata key for the asset
   const registerTx = await asset.metadata.register({

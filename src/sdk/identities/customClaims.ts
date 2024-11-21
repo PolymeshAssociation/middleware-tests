@@ -1,10 +1,19 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { ClaimTarget, ClaimType, ScopeType } from '@polymeshassociation/polymesh-sdk/types';
+import {
+  ClaimTarget,
+  ClaimType,
+  FungibleAsset,
+  ScopeType,
+} from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 import { randomString } from '~/util';
 
-export const manageCustomClaims = async (sdk: Polymesh, targetDid: string): Promise<void> => {
+export const manageCustomClaims = async (
+  sdk: Polymesh,
+  targetDid: string,
+  asset: FungibleAsset
+): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
 
   assert(identity);
@@ -49,8 +58,8 @@ export const manageCustomClaims = async (sdk: Polymesh, targetDid: string): Prom
       type: ClaimType.Custom,
       customClaimTypeId,
       scope: {
-        type: ScopeType.Ticker,
-        value: 'TICKER',
+        type: ScopeType.Asset,
+        value: asset.id,
       },
     },
   };

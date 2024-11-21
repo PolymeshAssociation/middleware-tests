@@ -1,5 +1,6 @@
 import { LocalSigningManager } from '@polymeshassociation/local-signing-manager';
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/types';
 
 import { TestFactory } from '~/helpers';
 import { createAsset } from '~/sdk/assets/createAsset';
@@ -8,8 +9,8 @@ import { createSto } from '~/sdk/settlements/createSto';
 let factory: TestFactory;
 
 describe('createSto', () => {
-  let offeringTicker: string;
-  let raisingTicker: string;
+  let offeringAsset: FungibleAsset;
+  let raisingAsset: FungibleAsset;
   let investorDid: string;
   let sdk: Polymesh;
 
@@ -24,16 +25,10 @@ describe('createSto', () => {
       results: [{ did: investorDid }],
     } = await factory.createIdentityForAddresses([investorAddress]));
 
-    offeringTicker = factory.nextTicker();
-    raisingTicker = factory.nextTicker();
     const initialSupply = new BigNumber(1000);
-    await Promise.all([
-      createAsset(sdk, { ticker: offeringTicker, initialSupply }),
-      createAsset(
-        sdk,
-        { ticker: raisingTicker, initialSupply },
-        { signingAccount: investorAddress }
-      ),
+    [offeringAsset, raisingAsset] = await Promise.all([
+      createAsset(sdk, { initialSupply }),
+      createAsset(sdk, { initialSupply }, { signingAccount: investorAddress }),
     ]);
   });
 
@@ -42,6 +37,6 @@ describe('createSto', () => {
   });
 
   it('should execute without errors', async () => {
-    await createSto(sdk, investorDid, offeringTicker, raisingTicker);
+    await createSto(sdk, investorDid, offeringAsset, raisingAsset);
   });
 });

@@ -1,5 +1,6 @@
 import { LocalSigningManager } from '@polymeshassociation/local-signing-manager';
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/types';
 
 import { TestFactory } from '~/helpers';
 import { addAssetAgent } from '~/sdk/assets/addAssetAgent';
@@ -8,7 +9,7 @@ import { createAsset } from '~/sdk/assets/createAsset';
 let factory: TestFactory;
 
 describe('addAssetAgent', () => {
-  let ticker: string;
+  let asset: FungibleAsset;
   let targetDid: string;
   let sdk: Polymesh;
 
@@ -23,8 +24,7 @@ describe('addAssetAgent', () => {
       results: [{ did: targetDid }],
     } = await factory.createIdentityForAddresses([targetAddress]));
 
-    ticker = factory.nextTicker();
-    await createAsset(sdk, { ticker });
+    asset = await createAsset(sdk, {});
   });
 
   afterAll(async () => {
@@ -32,6 +32,6 @@ describe('addAssetAgent', () => {
   });
 
   it('should execute addAssetAgent without errors', async () => {
-    await addAssetAgent(sdk, targetDid, ticker);
+    await addAssetAgent(sdk, targetDid, asset);
   });
 });

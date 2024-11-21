@@ -1,4 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/types';
 
 import { TestFactory } from '~/helpers';
 import { createAsset } from '~/sdk/assets/createAsset';
@@ -7,15 +8,14 @@ import { manageCheckpoints } from '~/sdk/assets/manageCheckpoints';
 let factory: TestFactory;
 
 describe('manageCheckpoints', () => {
-  let ticker: string;
+  let asset: FungibleAsset;
   let sdk: Polymesh;
 
   beforeAll(async () => {
     factory = await TestFactory.create({});
     sdk = factory.polymeshSdk;
 
-    ticker = factory.nextTicker();
-    await createAsset(sdk, { ticker, initialSupply: new BigNumber(100) });
+    asset = await createAsset(sdk, { initialSupply: new BigNumber(100) });
   });
 
   afterAll(async () => {
@@ -23,6 +23,6 @@ describe('manageCheckpoints', () => {
   });
 
   it('should execute mangeCheckpoints without errors', async () => {
-    await expect(manageCheckpoints(sdk, ticker)).resolves.not.toThrow();
+    await expect(manageCheckpoints(sdk, asset)).resolves.not.toThrow();
   });
 });

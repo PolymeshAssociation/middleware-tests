@@ -1,4 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/types';
 
 import { TestFactory } from '~/helpers';
 import { createAsset } from '~/sdk/assets/createAsset';
@@ -8,14 +9,13 @@ let factory: TestFactory;
 
 describe('managePortfolios', () => {
   let sdk: Polymesh;
-  let ticker: string;
+  let asset: FungibleAsset;
 
   beforeAll(async () => {
     factory = await TestFactory.create({});
     sdk = factory.polymeshSdk;
 
-    ticker = factory.nextTicker();
-    await createAsset(sdk, { ticker, initialSupply: new BigNumber(1000) });
+    asset = await createAsset(sdk, { initialSupply: new BigNumber(1000) });
   });
 
   afterAll(async () => {
@@ -23,6 +23,6 @@ describe('managePortfolios', () => {
   });
 
   it('should execute managePortfolios without errors', async () => {
-    await expect(managePortfolios(sdk, ticker)).resolves.not.toThrow();
+    await expect(managePortfolios(sdk, asset)).resolves.not.toThrow();
   });
 });

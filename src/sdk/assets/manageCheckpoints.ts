@@ -1,4 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 /*
@@ -12,12 +13,11 @@ import assert from 'node:assert';
     - Fetches Checkpoints originated by a Schedule
     - Deletes a Schedule
 */
-export const manageCheckpoints = async (sdk: Polymesh, ticker: string): Promise<void> => {
+export const manageCheckpoints = async (sdk: Polymesh, asset: FungibleAsset): Promise<void> => {
   const signingIdentity = await sdk.getSigningIdentity();
   assert(signingIdentity);
 
   // The signing identity should be an agent of the Asset and have appropriate permission
-  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   // prepare and run a create checkpoint transaction
   const createCheckpointTx = await asset.checkpoints.create();
@@ -32,7 +32,7 @@ export const manageCheckpoints = async (sdk: Polymesh, ticker: string): Promise<
   assert(totalSupply instanceof BigNumber);
 
   // get an Identity's balance at the checkpoint
-  const currentBalance = await signingIdentity.getAssetBalance({ ticker });
+  const currentBalance = await signingIdentity.getAssetBalance({ assetId: asset.id });
   const balanceAtCheckpoint = await newCheckpoint.balance({ identity: signingIdentity });
   assert(
     balanceAtCheckpoint.eq(currentBalance),
@@ -74,7 +74,7 @@ export const manageCheckpoints = async (sdk: Polymesh, ticker: string): Promise<
 
   // fetch active schedules for an asset
   const activeSchedules = await asset.checkpoints.schedules.get();
-  assert(activeSchedules.length > 0, `${ticker} should have at least one active schedule`);
+  assert(activeSchedules.length > 0, `${asset.id} should have at least one active schedule`);
 
   // A schedule can be removed if its no longer needed
   const removeScheduleTx = await asset.checkpoints.schedules.remove({

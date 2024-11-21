@@ -1,4 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 import { wellKnown } from '~/consts';
@@ -14,11 +15,9 @@ import { wellKnown } from '~/consts';
   If an Identity is in violation of a newly created Transfer Restriction they will only be able to trade the Asset
   in the direction that makes them more compliant. e.g. a majority holder able to sell but not buy
 */
-export const transferRestrictions = async (sdk: Polymesh, ticker: string): Promise<void> => {
+export const transferRestrictions = async (sdk: Polymesh, asset: FungibleAsset): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
   assert(identity);
-
-  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   /*
     Transfer Restrictions require their respective stats to be enabled. Enabling a stat will slightly increase gas fees for all transfers.
@@ -41,9 +40,6 @@ export const transferRestrictions = async (sdk: Polymesh, ticker: string): Promi
         percentage: new BigNumber(10),
         // (optional) investors can be exempt from any restriction, specified by an Identity or DID string
         exemptedIdentities: [identity],
-      },
-      {
-        percentage: new BigNumber(30),
       },
     ],
   });

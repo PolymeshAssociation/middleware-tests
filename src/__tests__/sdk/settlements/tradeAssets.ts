@@ -1,5 +1,6 @@
 import { LocalSigningManager } from '@polymeshassociation/local-signing-manager';
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/types';
 
 import { TestFactory } from '~/helpers';
 import { createAsset } from '~/sdk/assets/createAsset';
@@ -10,8 +11,8 @@ let factory: TestFactory;
 let counterPartyDid: string;
 
 describe('tradeAssets', () => {
-  let askTicker: string;
-  let bidTicker: string;
+  let askAsset: FungibleAsset;
+  let bidAsset: FungibleAsset;
   let sdk: Polymesh;
 
   let askOffChainTicker: string;
@@ -33,19 +34,13 @@ describe('tradeAssets', () => {
       results: [{ did: counterPartyDid }],
     } = await factory.createIdentityForAddresses([counterPartyAddress]));
 
-    askTicker = factory.nextTicker();
-    bidTicker = factory.nextTicker();
     askOffChainTicker = factory.nextTicker();
     bidOffChainTicker = factory.nextTicker();
 
     const initialSupply = new BigNumber(100);
-    await Promise.all([
-      createAsset(sdk, { ticker: bidTicker, initialSupply }),
-      createAsset(
-        sdk,
-        { ticker: askTicker, initialSupply },
-        { signingAccount: counterPartyAddress }
-      ),
+    [bidAsset, askAsset] = await Promise.all([
+      createAsset(sdk, { initialSupply }),
+      createAsset(sdk, { initialSupply }, { signingAccount: counterPartyAddress }),
     ]);
   });
 
@@ -54,22 +49,19 @@ describe('tradeAssets', () => {
   });
 
   it('should transfer fungible assets', async () => {
-    const bid = { ticker: bidTicker, amount: new BigNumber(10) };
-    const ask = { ticker: askTicker, amount: new BigNumber(20) };
+    const bid = { asset: bidAsset, amount: new BigNumber(10) };
+    const ask = { asset: askAsset, amount: new BigNumber(20) };
 
     await tradeAssets(sdk, counterPartyDid, bid, ask);
   });
 
   it('should check canTransfer without error', async () => {
-    const [asset, to] = await Promise.all([
-      sdk.assets.getFungibleAsset({ ticker: askTicker }),
-      sdk.identities.getIdentity({ did: counterPartyDid }),
-    ]);
+    const to = await sdk.identities.getIdentity({ did: counterPartyDid });
 
-    const { owner: from } = await asset.details();
+    const { owner: from } = await askAsset.details();
 
     return expect(
-      asset.settlements.canTransfer({ from, to, amount: new BigNumber(10) })
+      askAsset.settlements.canTransfer({ from, to, amount: new BigNumber(10) })
     ).resolves.not.toThrow();
   });
 

@@ -1,4 +1,5 @@
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/internal';
 import { PermissionGroupType } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
@@ -10,7 +11,7 @@ import assert from 'node:assert';
 export const addAssetAgent = async (
   sdk: Polymesh,
   targetDid: string,
-  ticker: string
+  asset: FungibleAsset
 ): Promise<void> => {
   const signingIdentity = await sdk.getSigningIdentity();
   assert(signingIdentity);
@@ -19,8 +20,6 @@ export const addAssetAgent = async (
     did: targetDid,
   });
   const { account: targetAccount } = await target.getPrimaryAccount();
-
-  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   // Fetch full agents of the Asset
   const { fullAgents } = await asset.details();

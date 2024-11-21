@@ -80,7 +80,8 @@ describe('manageNft', () => {
   });
 
   it('should be defined', async () => {
-    expect(collection).toEqual(expect.objectContaining({ ticker }));
+    const details = await collection.details();
+    expect(details.ticker).toEqual(ticker);
   });
 
   it('should return the needed metadata', async () => {
@@ -133,7 +134,7 @@ describe('manageNft', () => {
     expect(portfolioCollections).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          collection: expect.objectContaining({ ticker }),
+          collection: expect.objectContaining({ id: collection.id }),
           total: new BigNumber(1),
         }),
       ])
@@ -174,7 +175,7 @@ describe('manageNft', () => {
     expect(legs).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          asset: expect.objectContaining({ ticker }),
+          asset: expect.objectContaining({ id: collection.id }),
           nfts: expect.arrayContaining([expect.objectContaining({ id: nft.id })]),
         }),
       ])
@@ -193,7 +194,7 @@ describe('manageNft', () => {
       expect.arrayContaining([
         expect.objectContaining({
           collection: expect.objectContaining({
-            ticker,
+            id: collection.id,
           }),
           free: expect.arrayContaining([expect.objectContaining({ id: nft.id })]),
           total: new BigNumber(1),

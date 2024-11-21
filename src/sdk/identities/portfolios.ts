@@ -1,5 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { NumberedPortfolio } from '@polymeshassociation/polymesh-sdk/types';
+import { FungibleAsset, NumberedPortfolio } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 import { randomNonce } from '~/util';
@@ -24,11 +24,9 @@ export const createPortfolio = async (sdk: Polymesh, nonce: string): Promise<Num
     - Redeems tokens from Portfolio
     - Deletes a Portfolio
 */
-export const managePortfolios = async (sdk: Polymesh, ticker: string): Promise<void> => {
+export const managePortfolios = async (sdk: Polymesh, asset: FungibleAsset): Promise<void> => {
   const signingIdentity = await sdk.getSigningIdentity();
   assert(signingIdentity);
-
-  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   const nonce = randomNonce(12);
   const portfolio = await createPortfolio(sdk, nonce);
@@ -41,22 +39,22 @@ export const managePortfolios = async (sdk: Polymesh, ticker: string): Promise<v
   const [defaultPortfolio, examplePortfolio] = await signingIdentity.portfolios.getPortfolios();
 
   const amount = new BigNumber(3);
-  const [{ free: freeBalance }] = await defaultPortfolio.getAssetBalances({ assets: [ticker] });
+  const [{ free: freeBalance }] = await defaultPortfolio.getAssetBalances({ assets: [asset] });
 
   assert(
     freeBalance.gt(amount),
-    `The default portfolio does not have sufficient balance to move ${ticker}`
+    `The default portfolio does not have sufficient balance to move ${asset.id}`
   );
 
   const transferTx = await defaultPortfolio.moveFunds({
     to: examplePortfolio,
-    items: [{ asset: ticker, amount }],
+    items: [{ asset, amount }],
   });
   await transferTx.run();
   assert(transferTx.isSuccess);
 
   const customPortfolioBalanceAfter = await examplePortfolio.getAssetBalances({
-    assets: [ticker, 'TOKEN_2', 'TOKEN_3'],
+    assets: [asset.id, 'TOKEN_2', 'TOKEN_3'],
   });
 
   const [{ total: tokensInCustomPortfolio }] = customPortfolioBalanceAfter;

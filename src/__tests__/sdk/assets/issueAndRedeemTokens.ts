@@ -1,5 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { NumberedPortfolio } from '@polymeshassociation/polymesh-sdk/types';
+import { FungibleAsset, NumberedPortfolio } from '@polymeshassociation/polymesh-sdk/types';
 
 import { TestFactory } from '~/helpers';
 import { createAsset } from '~/sdk/assets/createAsset';
@@ -12,7 +12,7 @@ import { randomNonce } from '~/util';
 let factory: TestFactory;
 
 describe('issueAndRedeemTokens', () => {
-  let ticker: string;
+  let asset: FungibleAsset;
   let portfolio: NumberedPortfolio;
   let sdk: Polymesh;
 
@@ -20,12 +20,9 @@ describe('issueAndRedeemTokens', () => {
     factory = await TestFactory.create({});
     sdk = factory.polymeshSdk;
 
-    ticker = factory.nextTicker();
-
     portfolio = await createPortfolio(sdk, randomNonce(12));
 
-    await createAsset(sdk, {
-      ticker,
+    asset = await createAsset(sdk, {
       initialSupply: new BigNumber(100),
       portfolioId: portfolio.id,
     });
@@ -36,18 +33,18 @@ describe('issueAndRedeemTokens', () => {
   });
 
   it('should execute issueTokens without errors', async () => {
-    await expect(issueTokens(sdk, ticker, new BigNumber(100))).resolves.not.toThrow();
+    await expect(issueTokens(asset, new BigNumber(100))).resolves.not.toThrow();
   });
 
   it('should get asset holders', async () => {
-    await expect(getAssetHolders(sdk, ticker)).resolves.not.toThrow();
+    await expect(getAssetHolders(asset)).resolves.not.toThrow();
   });
 
   it('should execute redeemTokens without errors', async () => {
-    await expect(redeemTokens(sdk, ticker, new BigNumber(5))).resolves.not.toThrow();
+    await expect(redeemTokens(asset, new BigNumber(5))).resolves.not.toThrow();
   });
 
   it('should execute redeemTokens from a portfolio other than default portfolio without errors', async () => {
-    await expect(redeemTokens(sdk, ticker, new BigNumber(5), portfolio)).resolves.not.toThrow();
+    await expect(redeemTokens(asset, new BigNumber(5), portfolio)).resolves.not.toThrow();
   });
 });

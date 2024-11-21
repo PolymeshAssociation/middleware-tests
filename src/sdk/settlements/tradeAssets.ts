@@ -1,11 +1,12 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/internal';
 import { VenueType } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 import { addIsNotBlocked } from '~/sdk/settlements/util';
 
 interface Leg {
-  ticker: string;
+  asset: FungibleAsset;
   amount: BigNumber;
 }
 
@@ -32,12 +33,12 @@ export const tradeAssets = async (
   bid: Leg,
   ask: Leg
 ): Promise<void> => {
-  const [identity, counterParty, bidAsset, askAsset] = await Promise.all([
+  const [identity, counterParty] = await Promise.all([
     sdk.getSigningIdentity(),
     sdk.identities.getIdentity({ did: counterPartyDid }),
-    sdk.assets.getFungibleAsset({ ticker: bid.ticker }),
-    sdk.assets.getFungibleAsset({ ticker: ask.ticker }),
   ]);
+  const bidAsset = bid.asset;
+  const askAsset = ask.asset;
   assert(identity);
 
   const { account: counterPartyAccount } = await counterParty.getPrimaryAccount();
@@ -74,13 +75,13 @@ export const tradeAssets = async (
         from: identity, // Passing an Identity implies the default Portfolio
         to: destinationPortfolio, // Otherwise a Portfolio object should be passed
         amount: bid.amount,
-        asset: bid.ticker,
+        asset: bid.asset.id,
       },
       {
         to: identity,
         from: destinationPortfolio,
         amount: ask.amount,
-        asset: ask.ticker,
+        asset: ask.asset,
       },
     ],
     endBlock: undefined, // if specified the execution of the settlement will be delayed until this block

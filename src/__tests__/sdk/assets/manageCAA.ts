@@ -1,5 +1,6 @@
 import { LocalSigningManager } from '@polymeshassociation/local-signing-manager';
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/types';
 
 import { TestFactory } from '~/helpers';
 import { createAsset } from '~/sdk/assets/createAsset';
@@ -8,7 +9,7 @@ import { manageCAA } from '~/sdk/assets/manageCAA';
 let factory: TestFactory;
 
 describe('manageCAA', () => {
-  let ticker: string;
+  let asset: FungibleAsset;
   let targetDid: string;
   let sdk: Polymesh;
 
@@ -23,8 +24,7 @@ describe('manageCAA', () => {
       results: [{ did: targetDid }],
     } = await factory.createIdentityForAddresses([targetAddress]));
 
-    ticker = factory.nextTicker();
-    await createAsset(sdk, { ticker });
+    asset = await createAsset(sdk, {});
   });
 
   afterAll(async () => {
@@ -32,6 +32,6 @@ describe('manageCAA', () => {
   });
 
   it('should execute without errors', async () => {
-    await manageCAA(sdk, targetDid, ticker);
+    await manageCAA(sdk, targetDid, asset);
   });
 });

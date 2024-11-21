@@ -19,8 +19,8 @@ export const addIsNotBlocked = async (
           claim: {
             type: ClaimType.Blocked,
             scope: {
-              type: ScopeType.Ticker,
-              value: asset.ticker,
+              type: ScopeType.Asset,
+              value: asset.id,
             },
           },
           target: ConditionTarget.Both,

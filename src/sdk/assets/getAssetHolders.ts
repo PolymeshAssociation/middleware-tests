@@ -1,5 +1,5 @@
-import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 import {
+  FungibleAsset,
   IdentityBalance,
   PaginationOptions,
   ResultSet,
@@ -9,11 +9,8 @@ import {
  * This function demonstrates getting an Asset's holders from its ticker
  */
 export const getAssetHolders = async (
-  sdk: Polymesh,
-  ticker: string,
+  asset: FungibleAsset,
   paginationOpts?: PaginationOptions
 ): Promise<ResultSet<IdentityBalance>> => {
-  const asset = await sdk.assets.getFungibleAsset({ ticker });
-
   return asset.assetHolders.get(paginationOpts);
 };

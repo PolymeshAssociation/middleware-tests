@@ -1,5 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { NumberedPortfolio } from '@polymeshassociation/polymesh-sdk/types';
+import { FungibleAsset, NumberedPortfolio } from '@polymeshassociation/polymesh-sdk/types';
 
 import { TestFactory } from '~/helpers';
 import { createAsset } from '~/sdk/assets/createAsset';
@@ -11,7 +11,7 @@ import { randomNonce } from '~/util';
 let factory: TestFactory;
 
 describe('issueTokens', () => {
-  let ticker: string;
+  let asset: FungibleAsset;
   let sdk: Polymesh;
   let portfolio: NumberedPortfolio;
 
@@ -19,11 +19,9 @@ describe('issueTokens', () => {
     factory = await TestFactory.create({});
     sdk = factory.polymeshSdk;
 
-    ticker = factory.nextTicker();
-
     portfolio = await createPortfolio(sdk, randomNonce(12));
 
-    await createAsset(sdk, { ticker });
+    asset = await createAsset(sdk, {});
   });
 
   afterAll(async () => {
@@ -31,14 +29,14 @@ describe('issueTokens', () => {
   });
 
   it('should execute issueTokens without errors', async () => {
-    await expect(issueTokens(sdk, ticker, new BigNumber(100))).resolves.not.toThrow();
+    await expect(issueTokens(asset, new BigNumber(100))).resolves.not.toThrow();
   });
 
   it('should get asset holders', async () => {
-    await expect(getAssetHolders(sdk, ticker)).resolves.not.toThrow();
+    await expect(getAssetHolders(asset)).resolves.not.toThrow();
   });
 
   it('should execute issueTokens for issuing in a specific portfolio without errors', async () => {
-    await expect(issueTokens(sdk, ticker, new BigNumber(100), portfolio.id)).resolves.not.toThrow();
+    await expect(issueTokens(asset, new BigNumber(100), portfolio.id)).resolves.not.toThrow();
   });
 });

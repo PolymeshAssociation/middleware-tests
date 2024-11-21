@@ -1,5 +1,6 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
 import {
+  FungibleAsset,
   OfferingBalanceStatus,
   OfferingSaleStatus,
   OfferingTimingStatus,
@@ -23,14 +24,12 @@ import { addIsNotBlocked } from '~/sdk/settlements/util';
 export const createSto = async (
   sdk: Polymesh,
   investorDid: string,
-  offeringTicker: string,
-  raisingTicker: string
+  offeringAsset: FungibleAsset,
+  raisingAsset: FungibleAsset
 ): Promise<void> => {
-  const [identity, investor, offeringAsset, raisingAsset] = await Promise.all([
+  const [identity, investor] = await Promise.all([
     sdk.getSigningIdentity(),
     sdk.identities.getIdentity({ did: investorDid }),
-    sdk.assets.getFungibleAsset({ ticker: offeringTicker }),
-    sdk.assets.getFungibleAsset({ ticker: raisingTicker }),
   ]);
   assert(identity);
 
@@ -66,7 +65,7 @@ export const createSto = async (
   const launchTx = await offeringAsset.offerings.launch({
     offeringPortfolio, // optional, defaults to the PIA's default portfolio
     raisingPortfolio,
-    raisingCurrency: raisingAsset.ticker,
+    raisingCurrency: raisingAsset.id,
     venue, // optional, defaults to the first "Offering" type venue created by the owner of the Offering Portfolio
     name: 'Example STO',
     start: undefined, // optional, defaults to now

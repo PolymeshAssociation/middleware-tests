@@ -18,7 +18,6 @@ export const createAsset = async (
   // Note, optional params include `initialSupply`, `initialStatistics` and `documents` among others
   const requiredParams = {
     name: 'FungibleAsset Name',
-    ticker: 'TICKER',
     isDivisible: false,
     assetType: KnownAssetType.EquityCommon,
     requireInvestorUniqueness: false,
