@@ -4,6 +4,7 @@ import { RestClient } from '~/rest';
 import { createAssetParams } from '~/rest/assets/params';
 import { ProcessMode } from '~/rest/common';
 import { Identity } from '~/rest/identities/interfaces';
+import { RestSuccessResult } from '~/rest/interfaces';
 import { fungibleInstructionParams, venueParams } from '~/rest/settlements';
 
 const handles = ['issuer', 'investor'];
@@ -15,7 +16,7 @@ describe('Create and trading an Asset', () => {
   let issuer: Identity;
   let investor: Identity;
   let assetParams: ReturnType<typeof createAssetParams>;
-  let ticker: string;
+  let assetId: string;
 
   beforeAll(async () => {
     factory = await TestFactory.create({ handles });
@@ -23,10 +24,9 @@ describe('Create and trading an Asset', () => {
     issuer = factory.getSignerIdentity(handles[0]);
     investor = factory.getSignerIdentity(handles[1]);
 
-    ticker = factory.nextTicker();
     signer = issuer.signer;
 
-    assetParams = createAssetParams(ticker, {
+    assetParams = createAssetParams({
       options: { processMode: ProcessMode.Submit, signer },
     });
   });
@@ -38,6 +38,8 @@ describe('Create and trading an Asset', () => {
   it('should create and fetch the Asset', async () => {
     const txData = await restClient.assets.createAsset(assetParams);
 
+    assetId = (txData as RestSuccessResult).asset as string;
+
     expect(txData).toMatchObject({
       transactions: expect.arrayContaining([
         {
@@ -48,7 +50,7 @@ describe('Create and trading an Asset', () => {
       ]),
     });
 
-    const asset = await restClient.assets.getAsset(ticker);
+    const asset = await restClient.assets.getAsset(assetId);
     expect(asset).toMatchObject({
       name: assetParams.name,
       assetType: assetParams.assetType,
@@ -79,7 +81,7 @@ describe('Create and trading an Asset', () => {
   it('should create an instruction', async () => {
     const sender = issuer.did;
     const receiver = investor.did;
-    const params = fungibleInstructionParams(ticker, sender, receiver, {
+    const params = fungibleInstructionParams(assetId, sender, receiver, {
       options: { processMode: ProcessMode.Submit, signer },
     });
     const instructionData = await restClient.settlements.createInstruction(venueId, params);

@@ -18,7 +18,7 @@ describe('Portfolio Asset Transfers', () => {
   let custodian: Identity;
   let custodyPortfolioId: string;
   let authId: string;
-  let ticker: string;
+  let assetId: string;
   const nonce = randomNonce(12);
   let issuerBasePrams: TxBase;
   let custodianBaseParams: TxBase;
@@ -30,7 +30,6 @@ describe('Portfolio Asset Transfers', () => {
     ({ restClient } = factory);
     issuer = factory.getSignerIdentity(handles[0]);
     custodian = factory.getSignerIdentity(handles[1]);
-    ticker = factory.nextTicker();
     issuerBasePrams = {
       options: { processMode: ProcessMode.Submit, signer: issuer.signer },
     };
@@ -66,7 +65,7 @@ describe('Portfolio Asset Transfers', () => {
     await restClient.identities.acceptAuthorization(authId, custodianBaseParams);
 
     // create and issue an Asset to move
-    await restClient.assets.createAsset(createAssetParams(ticker, issuerBasePrams));
+    assetId = await restClient.assets.createAndGetAssetId(createAssetParams(issuerBasePrams));
   });
 
   afterAll(async () => {
@@ -81,7 +80,7 @@ describe('Portfolio Asset Transfers', () => {
         name: 'default',
         assetBalances: [
           {
-            asset: ticker,
+            asset: assetId,
             free: expect.any(String),
             locked: expect.any(String),
             total: expect.any(String),
@@ -96,7 +95,7 @@ describe('Portfolio Asset Transfers', () => {
   it('should transfer the asset from the issuer to the custody portfolio', async () => {
     const result = await restClient.portfolios.moveAssets(
       issuer.did,
-      moveAssetParams(ticker, '0', custodyPortfolioId, issuerBasePrams)
+      moveAssetParams(assetId, '0', custodyPortfolioId, issuerBasePrams)
     );
 
     expect(result).toEqual(assertTagPresent(expect, 'portfolio.movePortfolioFunds'));
@@ -108,7 +107,7 @@ describe('Portfolio Asset Transfers', () => {
         name: custodyPortfolioName,
         assetBalances: [
           {
-            asset: ticker,
+            asset: assetId,
             free: '1000',
             locked: '0',
             total: '1000',
@@ -124,7 +123,7 @@ describe('Portfolio Asset Transfers', () => {
   it('should allow custodian to transfer the asset to the default portfolio', async () => {
     const result = await restClient.portfolios.moveAssets(
       issuer.did,
-      moveAssetParams(ticker, custodyPortfolioId, '0', custodianBaseParams)
+      moveAssetParams(assetId, custodyPortfolioId, '0', custodianBaseParams)
     );
 
     expect(result).toEqual(assertTagPresent(expect, 'portfolio.movePortfolioFunds'));
@@ -136,7 +135,7 @@ describe('Portfolio Asset Transfers', () => {
         name: custodyPortfolioName,
         assetBalances: [
           {
-            asset: ticker,
+            asset: assetId,
             free: '0',
             locked: '0',
             total: '0',
@@ -156,13 +155,13 @@ describe('Portfolio Asset Transfers', () => {
     expect(result.results).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          asset: ticker,
+          asset: assetId,
           amount: '1000',
           from: custodyPortfolioId,
           to: '0',
         }),
         expect.objectContaining({
-          asset: ticker,
+          asset: assetId,
           amount: '1000',
           from: '0',
           to: custodyPortfolioId,

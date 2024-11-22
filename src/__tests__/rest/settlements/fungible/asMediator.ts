@@ -17,7 +17,7 @@ describe('Create and trading an Asset with mediators', () => {
   let mediator: Identity;
   let venueId: string;
   let assetParams: ReturnType<typeof createAssetParams>;
-  let ticker: string;
+  let assetId: string;
   let instructionId: string;
 
   beforeAll(async () => {
@@ -27,10 +27,9 @@ describe('Create and trading an Asset with mediators', () => {
     investor = factory.getSignerIdentity(handles[1]);
     mediator = factory.getSignerIdentity(handles[2]);
 
-    ticker = factory.nextTicker();
     signer = issuer.signer;
 
-    assetParams = createAssetParams(ticker, {
+    assetParams = createAssetParams({
       options: { processMode: ProcessMode.Submit, signer },
     });
   });
@@ -40,9 +39,9 @@ describe('Create and trading an Asset with mediators', () => {
   });
 
   it('should create and fetch the Asset', async () => {
-    await restClient.assets.createAsset(assetParams);
+    assetId = await restClient.assets.createAndGetAssetId(assetParams);
 
-    const asset = await restClient.assets.getAsset(ticker);
+    const asset = await restClient.assets.getAsset(assetId);
     expect(asset).toMatchObject({
       name: assetParams.name,
       assetType: assetParams.assetType,
@@ -62,7 +61,7 @@ describe('Create and trading an Asset with mediators', () => {
     const sender = issuer.did;
     const receiver = investor.did;
     const params = fungibleInstructionParams(
-      ticker,
+      assetId,
       sender,
       receiver,
       {

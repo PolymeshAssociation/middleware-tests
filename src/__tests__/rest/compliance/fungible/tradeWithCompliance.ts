@@ -19,7 +19,7 @@ describe('Compliance Requirements for Fungible Assets', () => {
   let issuer: Identity;
   let blocked: Identity;
   let investor: Identity;
-  let ticker: string;
+  let assetId: string;
   let signerTxBase: TxBase;
   let investorTxBase: TxBase;
   let blockedTxBase: TxBase;
@@ -36,13 +36,12 @@ describe('Compliance Requirements for Fungible Assets', () => {
     blocked = factory.getSignerIdentity(handles[1]);
     investor = factory.getSignerIdentity(handles[2]);
 
-    ticker = factory.nextTicker();
     signer = issuer.signer;
     signerTxBase = { options: { signer, processMode: ProcessMode.Submit } };
     investorTxBase = { options: { signer: investor.signer, processMode: ProcessMode.Submit } };
     blockedTxBase = { options: { signer: blocked.signer, processMode: ProcessMode.Submit } };
 
-    await restClient.assets.createAsset(createAssetParams(ticker, signerTxBase));
+    assetId = await restClient.assets.createAndGetAssetId(createAssetParams(signerTxBase));
     const venueData = await restClient.settlements.createVenue(venueParams(signerTxBase));
     ({ venue: venueId } = venueData as { venue: string });
   });
@@ -54,11 +53,11 @@ describe('Compliance Requirements for Fungible Assets', () => {
   it('should be able to create an instruction when no compliance rules exist', async () => {
     const investorInstruction = await restClient.settlements.createInstruction(
       venueId,
-      fungibleInstructionParams(ticker, issuer.did, investor.did, signerTxBase)
+      fungibleInstructionParams(assetId, issuer.did, investor.did, signerTxBase)
     );
     const blockedReceiverInstruction = await restClient.settlements.createInstruction(
       venueId,
-      fungibleInstructionParams(ticker, issuer.did, blocked.did, signerTxBase)
+      fungibleInstructionParams(assetId, issuer.did, blocked.did, signerTxBase)
     );
 
     expect(investorInstruction).toEqual(
@@ -112,7 +111,7 @@ describe('Compliance Requirements for Fungible Assets', () => {
     expect(investorPortfolio).toEqual(
       expect.objectContaining({
         assetBalances: expect.arrayContaining([
-          expect.objectContaining({ asset: ticker, free: investorBalance.toString() }),
+          expect.objectContaining({ asset: assetId, free: investorBalance.toString() }),
         ]),
       })
     );
@@ -122,7 +121,7 @@ describe('Compliance Requirements for Fungible Assets', () => {
     expect(blockedDidPortfolio).toEqual(
       expect.objectContaining({
         assetBalances: expect.arrayContaining([
-          expect.objectContaining({ asset: ticker, free: blockedBalance.toString() }),
+          expect.objectContaining({ asset: assetId, free: blockedBalance.toString() }),
         ]),
       })
     );
@@ -130,14 +129,14 @@ describe('Compliance Requirements for Fungible Assets', () => {
 
   it('should be able to create compliance requirements for trading', async () => {
     const params = complianceRequirementsParams(
-      [blockedIdentityRequirements(ticker, issuer.did)],
+      [blockedIdentityRequirements(assetId, issuer.did)],
       signerTxBase
     );
-    const txData = await restClient.compliance.setRequirements(ticker, params);
+    const txData = await restClient.compliance.setRequirements(assetId, params);
 
     expect(txData).toEqual(assertTagPresent(expect, 'complianceManager.replaceAssetCompliance'));
 
-    const requirements = await restClient.compliance.getComplianceRequirements(ticker);
+    const requirements = await restClient.compliance.getComplianceRequirements(assetId);
 
     expect(requirements).toMatchObject({
       requirements: expect.arrayContaining([
@@ -156,8 +155,8 @@ describe('Compliance Requirements for Fungible Assets', () => {
           claim: {
             type: ClaimType.Blocked,
             scope: {
-              type: 'Ticker',
-              value: ticker,
+              type: 'Asset',
+              value: assetId,
             },
           },
         },
@@ -173,12 +172,12 @@ describe('Compliance Requirements for Fungible Assets', () => {
 
     const investorInstruction = await restClient.settlements.createInstruction(
       venueId,
-      fungibleInstructionParams(ticker, issuer.did, investor.did, signerTxBase)
+      fungibleInstructionParams(assetId, issuer.did, investor.did, signerTxBase)
     );
 
     const blockedReceiverInstruction = await restClient.settlements.createInstruction(
       venueId,
-      fungibleInstructionParams(ticker, issuer.did, blocked.did, {
+      fungibleInstructionParams(assetId, issuer.did, blocked.did, {
         options: { signer: issuer.signer, processMode: ProcessMode.Submit },
       })
     );
@@ -232,7 +231,7 @@ describe('Compliance Requirements for Fungible Assets', () => {
     expect(investorPortfolio).toEqual(
       expect.objectContaining({
         assetBalances: expect.arrayContaining([
-          expect.objectContaining({ asset: ticker, free: investorBalance.toString() }),
+          expect.objectContaining({ asset: assetId, free: investorBalance.toString() }),
         ]),
       })
     );
@@ -244,7 +243,7 @@ describe('Compliance Requirements for Fungible Assets', () => {
     expect(blockedDidPortfolio).toEqual(
       expect.objectContaining({
         assetBalances: expect.arrayContaining([
-          expect.objectContaining({ asset: ticker, free: blockedBalance.toString() }),
+          expect.objectContaining({ asset: assetId, free: blockedBalance.toString() }),
         ]),
       })
     );
@@ -273,13 +272,13 @@ describe('Compliance Requirements for Fungible Assets', () => {
   });
 
   it('should be possible to send an asset to a blocked did after pausing compliance requirements', async () => {
-    const txData = await restClient.compliance.pauseRequirements(ticker, signerTxBase);
+    const txData = await restClient.compliance.pauseRequirements(assetId, signerTxBase);
 
     expect(txData).toEqual(assertTagPresent(expect, 'complianceManager.pauseAssetCompliance'));
 
     const blockedReceiverInstruction = await restClient.settlements.createInstruction(
       venueId,
-      fungibleInstructionParams(ticker, issuer.did, blocked.did, {
+      fungibleInstructionParams(assetId, issuer.did, blocked.did, {
         options: { signer: issuer.signer, processMode: ProcessMode.Submit },
       })
     );
@@ -311,7 +310,7 @@ describe('Compliance Requirements for Fungible Assets', () => {
     expect(blockedDidPortfolio).toEqual(
       expect.objectContaining({
         assetBalances: expect.arrayContaining([
-          expect.objectContaining({ asset: ticker, free: blockedBalance.toString() }),
+          expect.objectContaining({ asset: assetId, free: blockedBalance.toString() }),
         ]),
       })
     );

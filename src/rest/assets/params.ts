@@ -23,10 +23,9 @@ const defaultAssetParams = {
   ],
 };
 
-export const createAssetParams = (ticker: string, base: TxBase, extras: TxExtras = {}) =>
+export const createAssetParams = (base: TxBase, extras: TxExtras = {}) =>
   ({
-    name: `Test Corp - ${ticker}`,
-    ticker,
+    name: 'Test Corp',
     ...defaultAssetParams,
     ...extras,
     ...base,

@@ -15,7 +15,7 @@ describe('Freeze/unfreeze Asset', () => {
   let issuer: Identity;
   let recipient: Identity;
   let assetParams: ReturnType<typeof createAssetParams>;
-  let ticker: string;
+  let assetId: string;
 
   beforeAll(async () => {
     factory = await TestFactory.create({ handles });
@@ -23,10 +23,9 @@ describe('Freeze/unfreeze Asset', () => {
     issuer = factory.getSignerIdentity(handles[0]);
     recipient = factory.getSignerIdentity(handles[1]);
 
-    ticker = factory.nextTicker();
     signer = issuer.signer;
 
-    assetParams = createAssetParams(ticker, {
+    assetParams = createAssetParams({
       options: { processMode: ProcessMode.Submit, signer },
     });
   });
@@ -36,16 +35,16 @@ describe('Freeze/unfreeze Asset', () => {
   });
 
   it('should create and fetch the Asset', async () => {
-    await restClient.assets.createAsset(assetParams);
+    assetId = await restClient.assets.createAndGetAssetId(assetParams);
 
-    const asset = await restClient.assets.getAsset(ticker);
+    const asset = await restClient.assets.getAsset(assetId);
 
     expect(asset).toMatchObject({
       name: assetParams.name,
       assetType: assetParams.assetType,
     });
 
-    await restClient.compliance.pauseRequirements(ticker, {
+    await restClient.compliance.pauseRequirements(assetId, {
       options: { processMode: ProcessMode.Submit, signer },
     });
   });
@@ -58,7 +57,7 @@ describe('Freeze/unfreeze Asset', () => {
         name: 'default',
         assetBalances: [
           {
-            asset: ticker,
+            asset: assetId,
             free: expect.any(String),
             locked: expect.any(String),
             total: expect.any(String),
@@ -71,9 +70,9 @@ describe('Freeze/unfreeze Asset', () => {
   });
 
   it('should freeze the Asset and get the isFrozen state as true', async () => {
-    await restClient.assets.freeze(assetParams.ticker, assetParams);
+    await restClient.assets.freeze(assetId, assetParams);
 
-    const asset = await restClient.assets.getAsset(ticker);
+    const asset = await restClient.assets.getAsset(assetId);
 
     expect(asset).toMatchObject({
       name: assetParams.name,
@@ -84,7 +83,7 @@ describe('Freeze/unfreeze Asset', () => {
 
   it('should not allow transfers when frozen', async () => {
     const result = await restClient.settlements.validateLeg({
-      asset: ticker,
+      asset: assetId,
       fromDid: issuer.did,
       toDid: recipient.did,
       amount: '100',
@@ -99,9 +98,9 @@ describe('Freeze/unfreeze Asset', () => {
   });
 
   it('should unfreeze the Asset and get the isFrozen state as false', async () => {
-    await restClient.assets.unfreeze(assetParams.ticker, assetParams);
+    await restClient.assets.unfreeze(assetId, assetParams);
 
-    const asset = await restClient.assets.getAsset(ticker);
+    const asset = await restClient.assets.getAsset(assetId);
 
     expect(asset).toMatchObject({
       name: assetParams.name,
@@ -112,7 +111,7 @@ describe('Freeze/unfreeze Asset', () => {
 
   it('should allow transfers when asset is unfrozen', async () => {
     const result = await restClient.settlements.validateLeg({
-      asset: ticker,
+      asset: assetId,
       fromDid: issuer.did,
       toDid: recipient.did,
       amount: '100',

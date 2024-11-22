@@ -16,7 +16,7 @@ describe('Transferring asset ownership', () => {
   let issuer: Identity;
   let newOwner: Identity;
   let assetParams: ReturnType<typeof createAssetParams>;
-  let ticker: string;
+  let assetId: string;
   let transferAuthId: string;
 
   beforeAll(async () => {
@@ -25,10 +25,9 @@ describe('Transferring asset ownership', () => {
     issuer = factory.getSignerIdentity(handles[0]);
     newOwner = factory.getSignerIdentity(handles[1]);
 
-    ticker = factory.nextTicker();
     signer = issuer.signer;
 
-    assetParams = createAssetParams(ticker, {
+    assetParams = createAssetParams({
       options: { processMode: ProcessMode.Submit, signer },
     });
   });
@@ -38,9 +37,9 @@ describe('Transferring asset ownership', () => {
   });
 
   it('should create and fetch the Asset', async () => {
-    await restClient.assets.createAsset(assetParams);
+    assetId = await restClient.assets.createAndGetAssetId(assetParams);
 
-    const asset = await restClient.assets.getAsset(ticker);
+    const asset = await restClient.assets.getAsset(assetId);
 
     expect(asset).toMatchObject({
       name: assetParams.name,
@@ -52,13 +51,13 @@ describe('Transferring asset ownership', () => {
     const params = transferAssetOwnershipParams(newOwner.did, {
       options: { processMode: ProcessMode.Submit, signer },
     });
-    const result = await restClient.assets.transferAssetOwnership(ticker, params);
+    const result = await restClient.assets.transferAssetOwnership(assetId, params);
 
     expect(result.authorizationRequest).toEqual(
       expect.objectContaining({
         id: expect.stringMatching(/\d+/),
         issuer: issuer.did,
-        data: { type: 'TransferAssetOwnership', value: ticker },
+        data: { type: 'TransferAssetOwnership', value: assetId },
       })
     );
 
@@ -86,7 +85,7 @@ describe('Transferring asset ownership', () => {
   });
 
   it('should reflect the newOwner as the owner of the asset', async () => {
-    const asset = await restClient.assets.getAsset(ticker);
+    const asset = await restClient.assets.getAsset(assetId);
 
     expect(asset).toMatchObject({
       owner: newOwner.did,

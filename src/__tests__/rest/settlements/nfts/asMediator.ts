@@ -17,7 +17,7 @@ describe('Trading an NFT with mediators', () => {
   let mediator: Identity;
   let venueId: string;
   let nftParams: ReturnType<typeof createNftCollectionParams>;
-  let ticker: string;
+  let collectionId: string;
   let instructionId: string;
 
   beforeAll(async () => {
@@ -27,20 +27,19 @@ describe('Trading an NFT with mediators', () => {
     investor = factory.getSignerIdentity(handles[1]);
     mediator = factory.getSignerIdentity(handles[2]);
 
-    ticker = factory.nextTicker();
     signer = issuer.signer;
 
     nftParams = createNftCollectionParams(
-      ticker,
       [{ type: 'Local', name: 'Test', spec: { description: 'test metadata' } }],
       { options: { processMode: ProcessMode.Submit, signer } }
     );
-    const params = issueNftParams(ticker, [{ type: 'Local', id: '1', value: 'test value' }], {
+
+    collectionId = await restClient.nfts.createAndGetNftCollection(nftParams);
+
+    const params = issueNftParams(collectionId, [{ type: 'Local', id: '1', value: 'test value' }], {
       options: { processMode: ProcessMode.Submit, signer },
     });
-
-    await restClient.nfts.createNftCollection(nftParams);
-    await restClient.nfts.issueNft(ticker, params);
+    await restClient.nfts.issueNft(collectionId, params);
     const txData = await restClient.settlements.createVenue(
       venueParams({
         options: { processMode: ProcessMode.Submit, signer },
@@ -58,7 +57,7 @@ describe('Trading an NFT with mediators', () => {
     const sender = issuer.did;
     const receiver = investor.did;
     const params = nftInstructionParams(
-      ticker,
+      collectionId,
       sender,
       receiver,
       ['1'],

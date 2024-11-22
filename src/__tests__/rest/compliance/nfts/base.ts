@@ -22,7 +22,7 @@ describe('Compliance Requirements for NFTs', () => {
   let issuer: Identity;
   let blocked: Identity;
   let investor: Identity;
-  let ticker: string;
+  let collectionId: string;
   let signerTxBase: TxBase;
 
   beforeAll(async () => {
@@ -32,16 +32,14 @@ describe('Compliance Requirements for NFTs', () => {
     blocked = factory.getSignerIdentity(handles[1]);
     investor = factory.getSignerIdentity(handles[2]);
 
-    ticker = factory.nextTicker();
     signer = issuer.signer;
     signerTxBase = { options: { signer, processMode: ProcessMode.Submit } };
 
     const nftParams = createNftCollectionParams(
-      ticker,
       [{ type: 'Local', name: 'Test', spec: { description: 'test metadata' } }],
       signerTxBase
     );
-    await restClient.nfts.createNftCollection(nftParams);
+    collectionId = await restClient.nfts.createAndGetNftCollection(nftParams);
   });
 
   afterAll(async () => {
@@ -49,7 +47,7 @@ describe('Compliance Requirements for NFTs', () => {
   });
 
   it('method: getComplianceRequirements', async () => {
-    const result = await restClient.compliance.getComplianceRequirements(ticker);
+    const result = await restClient.compliance.getComplianceRequirements(collectionId);
 
     expect(result).toMatchObject({
       requirements: expect.any(Array),
@@ -59,17 +57,17 @@ describe('Compliance Requirements for NFTs', () => {
   it('method: setRequirements', async () => {
     const params = complianceRequirementsParams(
       [
-        bothConditionsRequirements(issuer.did, ticker, blocked.did, 'Us'),
+        bothConditionsRequirements(issuer.did, collectionId, blocked.did, 'Us'),
         senderConditionsRequirements(issuer.did),
         receiverConditionsRequirements(investor.did),
       ],
       signerTxBase
     );
-    const txData = await restClient.compliance.setRequirements(ticker, params);
+    const txData = await restClient.compliance.setRequirements(collectionId, params);
 
     expect(txData).toEqual(assertTagPresent(expect, 'complianceManager.replaceAssetCompliance'));
 
-    const requirements = await restClient.compliance.getComplianceRequirements(ticker);
+    const requirements = await restClient.compliance.getComplianceRequirements(collectionId);
 
     expect(requirements).toMatchObject({
       requirements: expect.arrayContaining([
@@ -79,37 +77,37 @@ describe('Compliance Requirements for NFTs', () => {
   });
 
   it('method: pauseRequirements', async () => {
-    const txData = await restClient.compliance.pauseRequirements(ticker, signerTxBase);
+    const txData = await restClient.compliance.pauseRequirements(collectionId, signerTxBase);
 
     expect(txData).toEqual(assertTagPresent(expect, 'complianceManager.pauseAssetCompliance'));
   });
 
   it('method: unpauseRequirements', async () => {
-    const txData = await restClient.compliance.unpauseRequirements(ticker, signerTxBase);
+    const txData = await restClient.compliance.unpauseRequirements(collectionId, signerTxBase);
 
     expect(txData).toEqual(assertTagPresent(expect, 'complianceManager.resumeAssetCompliance'));
   });
 
   it('method: deleteRequirement', async () => {
-    let requirements = await restClient.compliance.getComplianceRequirements(ticker);
+    let requirements = await restClient.compliance.getComplianceRequirements(collectionId);
     const id = requirements.requirements[0].id;
-    const txData = await restClient.compliance.deleteRequirement(id, ticker, signerTxBase);
+    const txData = await restClient.compliance.deleteRequirement(id, collectionId, signerTxBase);
 
     expect(txData).toEqual(
       assertTagPresent(expect, 'complianceManager.removeComplianceRequirement')
     );
 
-    requirements = await restClient.compliance.getComplianceRequirements(ticker);
+    requirements = await restClient.compliance.getComplianceRequirements(collectionId);
 
     expect(requirements.requirements).not.toContainEqual(expect.objectContaining({ id }));
   });
 
   it('method: deleteRequirements', async () => {
-    const txData = await restClient.compliance.deleteRequirements(ticker, signerTxBase);
+    const txData = await restClient.compliance.deleteRequirements(collectionId, signerTxBase);
 
     expect(txData).toEqual(assertTagPresent(expect, 'complianceManager.resetAssetCompliance'));
 
-    const requirements = await restClient.compliance.getComplianceRequirements(ticker);
+    const requirements = await restClient.compliance.getComplianceRequirements(collectionId);
 
     expect(requirements.requirements).toHaveLength(0);
   });
@@ -121,36 +119,40 @@ describe('Compliance Requirements for NFTs', () => {
       signerTxBase
     );
 
-    const txData = await restClient.compliance.addRequirement(ticker, params);
+    const txData = await restClient.compliance.addRequirement(collectionId, params);
 
     expect(txData).toEqual(assertTagPresent(expect, 'complianceManager.addComplianceRequirement'));
 
-    const requirements = await restClient.compliance.getComplianceRequirements(ticker);
+    const requirements = await restClient.compliance.getComplianceRequirements(collectionId);
 
     expect(requirements.requirements).toHaveLength(1);
   });
 
   it('method: modifyComplianceRequirement', async () => {
-    const requirements = await restClient.compliance.getComplianceRequirements(ticker);
+    const requirements = await restClient.compliance.getComplianceRequirements(collectionId);
     const id = requirements.requirements[0].id;
     const params = complianceRequirementParams(
-      bothConditionsRequirements(issuer.did, ticker, blocked.did, 'Us'),
+      bothConditionsRequirements(issuer.did, collectionId, blocked.did, 'Us'),
       signerTxBase
     );
 
-    const txData = await restClient.compliance.modifyComplianceRequirement(id, ticker, params);
+    const txData = await restClient.compliance.modifyComplianceRequirement(
+      id,
+      collectionId,
+      params
+    );
 
     expect(txData).toEqual(
       assertTagPresent(expect, 'complianceManager.changeComplianceRequirement')
     );
 
-    const updatedRequirements = await restClient.compliance.getComplianceRequirements(ticker);
+    const updatedRequirements = await restClient.compliance.getComplianceRequirements(collectionId);
 
     expect(updatedRequirements.requirements[0]).toMatchObject({ conditions: params.conditions });
   });
 
   it('method: areRequirementsPaused', async () => {
-    const result = await restClient.compliance.areRequirementsPaused(ticker);
+    const result = await restClient.compliance.areRequirementsPaused(collectionId);
 
     expect(result).toMatchObject({ arePaused: expect.any(Boolean) });
   });

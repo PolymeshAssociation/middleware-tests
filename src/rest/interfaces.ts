@@ -36,9 +36,9 @@ interface BatchResult {
   transactionTags: string[];
 }
 
-export interface RestSuccessResult {
+export type RestSuccessResult = Record<string, unknown> & {
   transactions: SingleResult[] | BatchResult[];
-}
+};
 
 export interface RestErrorResult {
   error: string;

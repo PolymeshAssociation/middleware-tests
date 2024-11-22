@@ -9,7 +9,7 @@ export const venueParams = (base: TxBase, extras: TxExtras = {}) =>
   } as const);
 
 export const fungibleInstructionParams = (
-  ticker: string,
+  assetId: string,
   from: string,
   to: string,
   base: TxBase,
@@ -28,7 +28,7 @@ export const fungibleInstructionParams = (
           did: to,
           id: 0,
         },
-        asset: ticker,
+        asset: assetId,
       },
     ],
     ...extras,
@@ -36,7 +36,7 @@ export const fungibleInstructionParams = (
   } as const);
 
 export const nftInstructionParams = (
-  ticker: string,
+  collectionId: string,
   from: string,
   to: string,
   nfts: string[],
@@ -56,7 +56,7 @@ export const nftInstructionParams = (
           did: to,
           id: 0,
         },
-        asset: ticker,
+        asset: collectionId,
       },
     ],
     ...extras,

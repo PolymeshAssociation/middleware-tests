@@ -11,10 +11,16 @@ import {
 } from '~/rest/assets/params';
 import { RestClient } from '~/rest/client';
 import { TxBase } from '~/rest/common';
-import { PostResult } from '~/rest/interfaces';
+import { PostResult, RestSuccessResult } from '~/rest/interfaces';
 
 export class Assets {
   constructor(private client: RestClient) {}
+
+  public async createAndGetAssetId(params: ReturnType<typeof createAssetParams>): Promise<string> {
+    const result = (await this.createAsset(params)) as RestSuccessResult;
+
+    return result.asset as string;
+  }
 
   public async createAsset(params: ReturnType<typeof createAssetParams>): Promise<PostResult> {
     return this.client.post('/assets/create', params);

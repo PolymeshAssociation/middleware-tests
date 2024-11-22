@@ -13,20 +13,19 @@ describe('Asset pre-approval', () => {
   let signer: string;
   let issuer: Identity;
   let assetParams: ReturnType<typeof createAssetParams>;
-  let asset: string;
+  let assetId: string;
 
   beforeAll(async () => {
     factory = await TestFactory.create({ handles });
     ({ restClient } = factory);
     issuer = factory.getSignerIdentity(handles[0]);
 
-    asset = factory.nextTicker();
     signer = issuer.signer;
 
-    assetParams = createAssetParams(asset, {
+    assetParams = createAssetParams({
       options: { processMode: ProcessMode.Submit, signer },
     });
-    await restClient.assets.createAsset(assetParams);
+    assetId = await restClient.assets.createAndGetAssetId(assetParams);
   });
 
   afterAll(async () => {
@@ -35,12 +34,12 @@ describe('Asset pre-approval', () => {
 
   it('should set asset pre-approval', async () => {
     const params = { options: { processMode: ProcessMode.Submit, signer } };
-    const txData = await restClient.assets.preApprove(asset, params);
+    const txData = await restClient.assets.preApprove(assetId, params);
 
     expect(txData).toMatchObject({
       transactions: expect.arrayContaining([
         {
-          transactionTag: 'asset.preApproveTicker',
+          transactionTag: 'asset.preApproveAsset',
           type: 'single',
           ...expectBasicTxInfo,
         },
@@ -49,9 +48,9 @@ describe('Asset pre-approval', () => {
   });
 
   it('should return the asset as pre-approved', async () => {
-    const result = await restClient.assets.getIsPreApproved(asset, issuer.did);
+    const result = await restClient.assets.getIsPreApproved(assetId, issuer.did);
 
-    expect(result).toEqual({ did: issuer.did, ticker: asset, isPreApproved: true });
+    expect(result).toEqual({ did: issuer.did, asset: assetId, isPreApproved: true });
   });
 
   it('should return a page of pre-approved assets', async () => {
@@ -60,7 +59,7 @@ describe('Asset pre-approval', () => {
     expect(results).toEqual({
       results: [
         {
-          ticker: asset,
+          asset: assetId,
           did: issuer.did,
           isPreApproved: true,
         },
@@ -69,7 +68,7 @@ describe('Asset pre-approval', () => {
   });
 
   it('should remove asset pre-approval', async () => {
-    const txData = await restClient.assets.removePreApproval(asset, {
+    const txData = await restClient.assets.removePreApproval(assetId, {
       options: { processMode: ProcessMode.Submit, signer },
     });
 
@@ -77,7 +76,7 @@ describe('Asset pre-approval', () => {
       transactions: expect.arrayContaining([
         {
           type: 'single',
-          transactionTag: 'asset.removeTickerPreApproval',
+          transactionTag: 'asset.removeAssetPreApproval',
           ...expectBasicTxInfo,
         },
       ]),

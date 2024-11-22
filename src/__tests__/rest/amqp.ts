@@ -19,7 +19,6 @@ describe('AMQP process mode', () => {
     ({ restClient } = factory);
     issuer = factory.getSignerIdentity(handles[0]);
 
-    ticker = factory.nextTicker();
     signer = issuer.signer;
   });
 
@@ -28,7 +27,7 @@ describe('AMQP process mode', () => {
   });
 
   it('should publish an event when transaction is finalized', async () => {
-    const assetParams = createAssetParams(ticker, {
+    const assetParams = createAssetParams({
       options: { processMode: ProcessMode.AMQP, signer },
     });
 

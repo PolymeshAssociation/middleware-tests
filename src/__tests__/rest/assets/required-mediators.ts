@@ -13,20 +13,19 @@ describe('AssetDocument', () => {
   let signer: string;
   let issuer: Identity;
   let assetParams: ReturnType<typeof createAssetParams>;
-  let asset: string;
+  let assetId: string;
 
   beforeAll(async () => {
     factory = await TestFactory.create({ handles });
     ({ restClient } = factory);
     issuer = factory.getSignerIdentity(handles[0]);
 
-    asset = factory.nextTicker();
     signer = issuer.signer;
 
-    assetParams = createAssetParams(asset, {
+    assetParams = createAssetParams({
       options: { processMode: ProcessMode.Submit, signer },
     });
-    await restClient.assets.createAsset(assetParams);
+    assetId = await restClient.assets.createAndGetAssetId(assetParams);
   });
 
   afterAll(async () => {
@@ -37,7 +36,7 @@ describe('AssetDocument', () => {
     const params = assetMediatorsParams([issuer.did], {
       options: { processMode: ProcessMode.Submit, signer },
     });
-    const txData = await restClient.assets.addAssetMediators(asset, params);
+    const txData = await restClient.assets.addAssetMediators(assetId, params);
 
     expect(txData).toMatchObject({
       transactions: expect.arrayContaining([
@@ -51,7 +50,7 @@ describe('AssetDocument', () => {
   });
 
   it('should get the asset mediators', async () => {
-    const result = await restClient.assets.getAssetMediators(asset);
+    const result = await restClient.assets.getAssetMediators(assetId);
 
     expect(result).toEqual(
       expect.objectContaining({
@@ -65,7 +64,7 @@ describe('AssetDocument', () => {
       options: { processMode: ProcessMode.Submit, signer },
     });
 
-    const txData = await restClient.assets.removeAssetMediators(asset, params);
+    const txData = await restClient.assets.removeAssetMediators(assetId, params);
 
     expect(txData).toMatchObject({
       transactions: expect.arrayContaining([
@@ -77,7 +76,7 @@ describe('AssetDocument', () => {
       ]),
     });
 
-    const result = await restClient.assets.getAssetMediators(asset);
+    const result = await restClient.assets.getAssetMediators(assetId);
 
     expect(result).toEqual({
       mediators: [],

@@ -20,13 +20,12 @@ describe('AssetDocument', () => {
     ({ restClient } = factory);
     issuer = factory.getSignerIdentity(handles[0]);
 
-    asset = factory.nextTicker();
     signer = issuer.signer;
 
-    assetParams = createAssetParams(asset, {
+    assetParams = createAssetParams({
       options: { processMode: ProcessMode.Submit, signer },
     });
-    await restClient.assets.createAsset(assetParams);
+    asset = await restClient.assets.createAndGetAssetId(assetParams);
   });
 
   afterAll(async () => {

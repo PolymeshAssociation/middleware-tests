@@ -14,20 +14,19 @@ describe('Redeem', () => {
   let signer: string;
   let issuer: Identity;
   let assetParams: ReturnType<typeof createAssetParams>;
-  let asset: string;
+  let assetId: string;
 
   beforeAll(async () => {
     factory = await TestFactory.create({ handles });
     ({ restClient } = factory);
     issuer = factory.getSignerIdentity(handles[0]);
 
-    asset = factory.nextTicker();
     signer = issuer.signer;
 
-    assetParams = createAssetParams(asset, {
+    assetParams = createAssetParams({
       options: { processMode: ProcessMode.Submit, signer },
     });
-    await restClient.assets.createAsset(assetParams);
+    assetId = await restClient.assets.createAndGetAssetId(assetParams);
   });
 
   afterAll(async () => {
@@ -36,7 +35,7 @@ describe('Redeem', () => {
 
   it('should redeem tokens from default Portfolio', async () => {
     const params = redeemTokenParams('0', { options: { processMode: ProcessMode.Submit, signer } });
-    const txData = await restClient.assets.redeem(asset, params);
+    const txData = await restClient.assets.redeem(assetId, params);
 
     expect(txData).toMatchObject({
       transactions: expect.arrayContaining([
@@ -57,7 +56,7 @@ describe('Redeem', () => {
     const result = await restClient.portfolios.createPortfolio(createPortfolioParams);
     const createdPortfolio = result.portfolio.id;
 
-    const moveFundParams = moveAssetParams(asset, '0', createdPortfolio, {
+    const moveFundParams = moveAssetParams(assetId, '0', createdPortfolio, {
       options: { processMode: ProcessMode.Submit, signer },
     });
     await restClient.portfolios.moveAssets(issuer.did, moveFundParams);
@@ -65,7 +64,7 @@ describe('Redeem', () => {
     const params = redeemTokenParams(createdPortfolio, {
       options: { processMode: ProcessMode.Submit, signer },
     });
-    const txData = await restClient.assets.redeem(asset, params);
+    const txData = await restClient.assets.redeem(assetId, params);
 
     expect(txData).toMatchObject({
       transactions: expect.arrayContaining([

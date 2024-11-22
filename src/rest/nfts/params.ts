@@ -21,14 +21,12 @@ const defaultCollectionParams = {
 };
 
 export const createNftCollectionParams = (
-  ticker: string,
   collectionKeys: Record<string, unknown>[],
   base: TxBase,
   extras: TxExtras = {}
 ) =>
   ({
-    name: `Test Collection - ${ticker}`,
-    ticker,
+    name: 'Test Collection',
     collectionKeys,
     ...defaultCollectionParams,
     ...extras,

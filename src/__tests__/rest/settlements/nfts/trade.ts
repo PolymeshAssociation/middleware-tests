@@ -15,7 +15,7 @@ describe('Create and trading an NFT', () => {
   let issuer: Identity;
   let collector: Identity;
   let nftParams: ReturnType<typeof createNftCollectionParams>;
-  let ticker: string;
+  let assetId: string;
   let instructionId: string;
 
   beforeAll(async () => {
@@ -24,20 +24,20 @@ describe('Create and trading an NFT', () => {
     issuer = factory.getSignerIdentity(handles[0]);
     collector = factory.getSignerIdentity(handles[1]);
 
-    ticker = factory.nextTicker();
     signer = issuer.signer;
 
     nftParams = createNftCollectionParams(
-      ticker,
       [{ type: 'Local', name: 'Test', spec: { description: 'test metadata' } }],
       { options: { processMode: ProcessMode.Submit, signer } }
     );
-    const params = issueNftParams(ticker, [{ type: 'Local', id: '1', value: 'test value' }], {
+
+    assetId = await restClient.nfts.createAndGetNftCollection(nftParams);
+
+    const params = issueNftParams(assetId, [{ type: 'Local', id: '1', value: 'test value' }], {
       options: { processMode: ProcessMode.Submit, signer },
     });
 
-    await restClient.nfts.createNftCollection(nftParams);
-    await restClient.nfts.issueNft(ticker, params);
+    await restClient.nfts.issueNft(assetId, params);
   });
 
   afterAll(async () => {
@@ -68,7 +68,7 @@ describe('Create and trading an NFT', () => {
   it('should allow NFT instruction to be created', async () => {
     const sender = issuer.did;
     const receiver = collector.did;
-    const params = nftInstructionParams(ticker, sender, receiver, ['1'], {
+    const params = nftInstructionParams(assetId, sender, receiver, ['1'], {
       options: { processMode: ProcessMode.Submit, signer },
     });
 
@@ -96,7 +96,7 @@ describe('Create and trading an NFT', () => {
     expect(result).toMatchObject({
       legs: expect.arrayContaining([
         expect.objectContaining({
-          asset: ticker,
+          asset: assetId,
           nfts: expect.arrayContaining(['1']),
         }),
       ]),
