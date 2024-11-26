@@ -3,7 +3,6 @@ import { RestClient } from '~/rest';
 import { createAssetParams } from '~/rest/assets/params';
 import { ProcessMode } from '~/rest/common';
 import { Identity } from '~/rest/identities/interfaces';
-import { RestSuccessResult } from '~/rest/interfaces';
 import { sleep } from '~/util';
 
 const handles = ['issuer', 'investor'];
@@ -13,13 +12,14 @@ describe('AMQP process mode', () => {
   let restClient: RestClient;
   let signer: string;
   let issuer: Identity;
-  let assetId: string;
+  let ticker: string;
 
   beforeAll(async () => {
     factory = await TestFactory.create({ handles });
     ({ restClient } = factory);
     issuer = factory.getSignerIdentity(handles[0]);
 
+    ticker = factory.nextTicker();
     signer = issuer.signer;
   });
 
@@ -28,9 +28,12 @@ describe('AMQP process mode', () => {
   });
 
   it('should publish an event when transaction is finalized', async () => {
-    const assetParams = createAssetParams({
-      options: { processMode: ProcessMode.AMQP, signer },
-    });
+    const assetParams = createAssetParams(
+      {
+        options: { processMode: ProcessMode.AMQP, signer },
+      },
+      { ticker }
+    );
 
     const txData = await restClient.assets.createAsset(assetParams);
 
@@ -43,11 +46,10 @@ describe('AMQP process mode', () => {
       },
     });
 
-    assetId = (txData as RestSuccessResult).asset as string;
     const pollInterval = 3000;
     let assetMade = false;
     for (let i = 0; i < 10; i++) {
-      const response = await restClient.assets.getAsset(assetId);
+      const response = await restClient.assets.getAsset(ticker);
 
       const statusCode = (response as { statusCode: number }).statusCode;
 

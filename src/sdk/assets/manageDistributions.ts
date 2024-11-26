@@ -1,5 +1,5 @@
 import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { FungibleAsset, TargetTreatment } from '@polymeshassociation/polymesh-sdk/types';
+import { TargetTreatment } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 import { wellKnown } from '~/consts';
@@ -17,7 +17,7 @@ import { wellKnown } from '~/consts';
 */
 export const manageDistributions = async (
   sdk: Polymesh,
-  asset: FungibleAsset,
+  ticker: string,
   distributionTicker: string
 ): Promise<void> => {
   const signingIdentity = await sdk.getSigningIdentity();
@@ -26,6 +26,7 @@ export const manageDistributions = async (
   const alice = await sdk.identities.getIdentity({ did: wellKnown.alice.did });
 
   // The signing identity should be an agent of the Asset and have appropriate permission
+  const asset = await sdk.assets.getFungibleAsset({ ticker });
 
   // fetch all current distributions for the Asset
   const allDistributions = await asset.corporateActions.distributions.get();
