@@ -3,6 +3,7 @@ import { RestClient } from '~/rest';
 import { createAssetParams } from '~/rest/assets/params';
 import { ProcessMode } from '~/rest/common';
 import { Identity } from '~/rest/identities/interfaces';
+import { RestSuccessResult } from '~/rest/interfaces';
 import { sleep } from '~/util';
 
 const handles = ['issuer', 'investor'];
@@ -12,7 +13,7 @@ describe('AMQP process mode', () => {
   let restClient: RestClient;
   let signer: string;
   let issuer: Identity;
-  let ticker: string;
+  let assetId: string;
 
   beforeAll(async () => {
     factory = await TestFactory.create({ handles });
@@ -42,10 +43,11 @@ describe('AMQP process mode', () => {
       },
     });
 
+    assetId = (txData as RestSuccessResult).asset as string;
     const pollInterval = 3000;
     let assetMade = false;
     for (let i = 0; i < 10; i++) {
-      const response = await restClient.assets.getAsset(ticker);
+      const response = await restClient.assets.getAsset(assetId);
 
       const statusCode = (response as { statusCode: number }).statusCode;
 

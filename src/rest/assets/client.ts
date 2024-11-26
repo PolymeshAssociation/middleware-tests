@@ -26,91 +26,91 @@ export class Assets {
     return this.client.post('/assets/create', params);
   }
 
-  public async getAsset(ticker: string): Promise<unknown> {
-    return this.client.get(`/assets/${ticker}`);
+  public async getAsset(asset: string): Promise<unknown> {
+    return this.client.get(`/assets/${asset}`);
   }
 
   public async getGlobalMetadata(): Promise<unknown> {
     return this.client.get('/assets/global-metadata');
   }
 
-  public async getMetadata(ticker: string): Promise<unknown> {
-    return this.client.get(`/assets/${ticker}/metadata`);
+  public async getMetadata(asset: string): Promise<unknown> {
+    return this.client.get(`/assets/${asset}/metadata`);
   }
 
-  public async getMetadataById(ticker: string, type: MetadataType, id: string): Promise<unknown> {
-    return this.client.get(`assets/${ticker}/metadata/${type}/${id}`);
+  public async getMetadataById(asset: string, type: MetadataType, id: string): Promise<unknown> {
+    return this.client.get(`assets/${asset}/metadata/${type}/${id}`);
   }
 
   public async createMetadata(
-    ticker: string,
+    asset: string,
     params: ReturnType<typeof createMetadataParams>
   ): Promise<PostResult> {
-    return this.client.post(`/assets/${ticker}/metadata/create`, params);
+    return this.client.post(`/assets/${asset}/metadata/create`, params);
   }
 
   public async setMetadataValue(
-    ticker: string,
+    asset: string,
     type: MetadataType,
     id: string,
     params: ReturnType<typeof setMetadataParams>
   ): Promise<PostResult> {
-    return this.client.post(`/assets/${ticker}/metadata/${type}/${id}/set`, params);
+    return this.client.post(`/assets/${asset}/metadata/${type}/${id}/set`, params);
   }
 
-  public async getDocuments(ticker: string): Promise<unknown> {
-    return this.client.get(`assets/${ticker}/documents`);
+  public async getDocuments(asset: string): Promise<unknown> {
+    return this.client.get(`assets/${asset}/documents`);
   }
 
-  public async getAssetMediators(ticker: string): Promise<unknown> {
-    return this.client.get(`assets/${ticker}/required-mediators`);
+  public async getAssetMediators(asset: string): Promise<unknown> {
+    return this.client.get(`assets/${asset}/required-mediators`);
   }
 
   public async setDocuments(
-    ticker: string,
+    asset: string,
     params: ReturnType<typeof setAssetDocumentParams>
   ): Promise<PostResult> {
-    return this.client.post(`assets/${ticker}/documents/set`, params);
+    return this.client.post(`assets/${asset}/documents/set`, params);
   }
 
   public async redeem(
-    ticker: string,
+    asset: string,
     params: ReturnType<typeof redeemTokenParams>
   ): Promise<PostResult> {
-    return this.client.post(`assets/${ticker}/redeem`, params);
+    return this.client.post(`assets/${asset}/redeem`, params);
   }
 
   public async addAssetMediators(
-    ticker: string,
+    asset: string,
     params: ReturnType<typeof assetMediatorsParams>
   ): Promise<PostResult> {
-    return this.client.post(`assets/${ticker}/add-required-mediators`, params);
+    return this.client.post(`assets/${asset}/add-required-mediators`, params);
   }
 
   public async removeAssetMediators(
-    ticker: string,
+    asset: string,
     params: ReturnType<typeof assetMediatorsParams>
   ): Promise<PostResult> {
-    return this.client.post(`assets/${ticker}/remove-required-mediators`, params);
+    return this.client.post(`assets/${asset}/remove-required-mediators`, params);
   }
 
   public async transferAssetOwnership(
-    ticker: string,
+    asset: string,
     params: ReturnType<typeof transferAssetOwnershipParams>
   ): Promise<Record<string, unknown>> {
-    return this.client.post(`assets/${ticker}/transfer-ownership`, params);
+    return this.client.post(`assets/${asset}/transfer-ownership`, params);
   }
 
-  public async preApprove(ticker: string, params: TxBase): Promise<PostResult> {
-    return this.client.post(`assets/${ticker}/pre-approve`, { ...params });
+  public async preApprove(asset: string, params: TxBase): Promise<PostResult> {
+    return this.client.post(`assets/${asset}/pre-approve`, { ...params });
   }
 
-  public async removePreApproval(ticker: string, params: TxBase): Promise<PostResult> {
-    return this.client.post(`assets/${ticker}/remove-pre-approval`, { ...params });
+  public async removePreApproval(asset: string, params: TxBase): Promise<PostResult> {
+    return this.client.post(`assets/${asset}/remove-pre-approval`, { ...params });
   }
 
-  public async getIsPreApproved(ticker: string, did: string): Promise<unknown> {
-    return this.client.get(`identities/${did}/is-pre-approved?ticker=${ticker}`);
+  public async getIsPreApproved(asset: string, did: string): Promise<unknown> {
+    return this.client.get(`identities/${did}/is-pre-approved?asset=${asset}`);
   }
 
   public async getPreApprovals(did: string): Promise<unknown> {
@@ -118,17 +118,17 @@ export class Assets {
   }
 
   public async issue(
-    ticker: string,
+    asset: string,
     params: ReturnType<typeof issueAssetParams>
   ): Promise<PostResult> {
-    return this.client.post(`assets/${ticker}/issue`, params);
+    return this.client.post(`assets/${asset}/issue`, params);
   }
 
-  public async freeze(ticker: string, params: TxBase): Promise<PostResult> {
-    return this.client.post(`assets/${ticker}/freeze`, { ...params });
+  public async freeze(asset: string, params: TxBase): Promise<PostResult> {
+    return this.client.post(`assets/${asset}/freeze`, { ...params });
   }
 
-  public async unfreeze(ticker: string, params: TxBase): Promise<PostResult> {
-    return this.client.post(`assets/${ticker}/unfreeze`, { ...params });
+  public async unfreeze(asset: string, params: TxBase): Promise<PostResult> {
+    return this.client.post(`assets/${asset}/unfreeze`, { ...params });
   }
 }

@@ -10,7 +10,7 @@ export class Nfts {
   ): Promise<string> {
     const result = (await this.createNftCollection(params)) as RestSuccessResult;
 
-    return result.asset as string;
+    return result.collection as string;
   }
 
   public async createNftCollection(
@@ -20,17 +20,17 @@ export class Nfts {
   }
 
   public async issueNft(
-    ticker: string,
+    collection: string,
     params: ReturnType<typeof issueNftParams>
   ): Promise<PostResult> {
-    return this.client.post(`/nfts/${ticker}/issue`, params);
+    return this.client.post(`/nfts/${collection}/issue`, params);
   }
 
-  public async getCollectionKeys(ticker: string): Promise<unknown> {
-    return this.client.get(`/nfts/${ticker}/collection-keys`);
+  public async getCollectionKeys(collection: string): Promise<unknown> {
+    return this.client.get(`/nfts/${collection}/collection-keys`);
   }
 
-  public async getNftDetails(ticker: string, id: string): Promise<unknown> {
-    return this.client.get(`/nfts/${ticker}/${id}`);
+  public async getNftDetails(collection: string, id: string): Promise<unknown> {
+    return this.client.get(`/nfts/${collection}/${id}`);
   }
 }

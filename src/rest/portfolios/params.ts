@@ -8,7 +8,7 @@ export const portfolioParams = (name: string, base: TxBase, extras: TxExtras = {
   } as const);
 
 export const moveAssetParams = (
-  ticker: string,
+  asset: string,
   from: string,
   to: string,
   base: TxBase,
@@ -19,7 +19,7 @@ export const moveAssetParams = (
     to,
     items: [
       {
-        ticker,
+        asset,
         amount: '1000',
         memo: 'Transferring to test redemption',
       },

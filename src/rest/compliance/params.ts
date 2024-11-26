@@ -20,7 +20,7 @@ export type ConditionParams = {
 
 export const bothConditionsRequirements = (
   issuer: string,
-  ticker: string,
+  asset: string,
   blockedIdentity: string,
   blockedJurisdiction: string
 ): ConditionParams[] => [
@@ -31,7 +31,7 @@ export const bothConditionsRequirements = (
       { type: 'Blocked', scope: { type: ScopeType.Identity, value: blockedIdentity } },
       {
         type: 'Jurisdiction',
-        scope: { type: ScopeType.Ticker, value: ticker },
+        scope: { type: ScopeType.Asset, value: asset },
         code: blockedJurisdiction,
       },
     ],
@@ -39,11 +39,11 @@ export const bothConditionsRequirements = (
   },
 ];
 
-export const kycRequirements = (ticker: string, trustedIdentity: string): ConditionParams[] => [
+export const kycRequirements = (asset: string, trustedIdentity: string): ConditionParams[] => [
   {
     target: ConditionTarget.Receiver,
     type: ConditionType.IsPresent,
-    claim: { type: 'KnowYourCustomer', scope: { type: ScopeType.Ticker, value: ticker } },
+    claim: { type: 'KnowYourCustomer', scope: { type: ScopeType.Asset, value: asset } },
     trustedClaimIssuers: [
       {
         trustedFor: ['KnowYourCustomer'],
@@ -54,14 +54,14 @@ export const kycRequirements = (ticker: string, trustedIdentity: string): Condit
 ];
 
 export const blockedJurisdictionRequirements = (
-  ticker: string,
+  asset: string,
   trustedIdentity: string,
   code: string
 ): ConditionParams[] => [
   {
     target: ConditionTarget.Receiver,
     type: ConditionType.IsAbsent,
-    claim: { type: 'Jurisdiction', scope: { type: ScopeType.Ticker, value: ticker }, code },
+    claim: { type: 'Jurisdiction', scope: { type: ScopeType.Asset, value: asset }, code },
     trustedClaimIssuers: [
       {
         trustedFor: ['Jurisdiction'],
@@ -72,13 +72,13 @@ export const blockedJurisdictionRequirements = (
 ];
 
 export const blockedIdentityRequirements = (
-  ticker: string,
+  asset: string,
   targetIdentity: string
 ): ConditionParams[] => [
   {
     target: ConditionTarget.Receiver,
     type: ConditionType.IsAbsent,
-    claim: { type: 'Blocked', scope: { type: ScopeType.Ticker, value: ticker } },
+    claim: { type: 'Blocked', scope: { type: ScopeType.Asset, value: asset } },
     trustedClaimIssuers: [
       {
         trustedFor: ['Blocked'],

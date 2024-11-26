@@ -41,7 +41,7 @@ describe('Ticker Reservations', () => {
 
     const result = await restClient.tickerReservations.reserve(params);
 
-    expect(result).toEqual(assertTagPresent(expect, 'asset.registerTicker'));
+    expect(result).toEqual(assertTagPresent(expect, 'asset.registerUniqueTicker'));
   });
 
   it('should get details about the reservation', async () => {
@@ -60,7 +60,7 @@ describe('Ticker Reservations', () => {
       options: { processMode: ProcessMode.Submit, signer },
     });
 
-    expect(result).toEqual(assertTagPresent(expect, 'asset.registerTicker'));
+    expect(result).toEqual(assertTagPresent(expect, 'asset.registerUniqueTicker'));
   });
 
   it('should transfer ownership', async () => {
