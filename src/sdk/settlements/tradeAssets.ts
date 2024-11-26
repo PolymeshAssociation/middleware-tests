@@ -89,6 +89,9 @@ export const tradeAssets = async (
     memo: 'Some message', // optional - passing a message with the instruction
   });
 
+  const middlewareSynced = () =>
+    new Promise((resolve) => addInstructionTx.onProcessedByMiddleware(resolve));
+
   const instruction = await addInstructionTx.run();
   assert(addInstructionTx.isSuccess, 'add instruction should succeed');
 
@@ -103,6 +106,8 @@ export const tradeAssets = async (
 
   const counterInstruction = pending.find(({ id }) => id.eq(instruction.id));
   assert(counterInstruction, 'the counter party should have the instruction as pending');
+
+  await middlewareSynced();
 
   // All legs of an Instruction should be inspected before before affirming
   const { data: legs } = await counterInstruction.getLegs();

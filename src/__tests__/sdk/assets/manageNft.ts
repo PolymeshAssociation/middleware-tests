@@ -164,7 +164,12 @@ describe('manageNft', () => {
       ],
     });
 
+    const middlewareSynced = () =>
+      new Promise((resolve) => instructionProc.onProcessedByMiddleware(resolve));
+
     instruction = await instructionProc.run();
+
+    await middlewareSynced();
   });
 
   it('should return legs for an instruction when they contain an NFT', async () => {

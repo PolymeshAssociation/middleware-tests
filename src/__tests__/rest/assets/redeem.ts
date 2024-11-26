@@ -69,7 +69,7 @@ describe('Redeem', () => {
     expect(txData).toMatchObject({
       transactions: expect.arrayContaining([
         expect.objectContaining({
-          transactionTag: 'asset.redeemFromPortfolio',
+          transactionTag: 'asset.redeem',
           type: 'single',
           ...expectBasicTxInfo,
         }),
