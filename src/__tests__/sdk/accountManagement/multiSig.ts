@@ -1,6 +1,6 @@
 import { LocalSigningManager } from '@polymeshassociation/local-signing-manager';
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { MultiSig, ProposalStatus } from '@polymeshassociation/polymesh-sdk/types';
+import { MultiSig } from '@polymeshassociation/polymesh-sdk/types';
 
 import { TestFactory } from '~/helpers';
 import { runMultiSigExamples } from '~/sdk/accountManagement/multiSig';

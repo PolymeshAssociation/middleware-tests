@@ -48,22 +48,22 @@ describe('tradeAssets', () => {
     await factory.close();
   });
 
-  // it('should transfer fungible assets', async () => {
-  //   const bid = { asset: bidAsset, amount: new BigNumber(10) };
-  //   const ask = { asset: askAsset, amount: new BigNumber(20) };
+  it('should transfer fungible assets', async () => {
+    const bid = { asset: bidAsset, amount: new BigNumber(10) };
+    const ask = { asset: askAsset, amount: new BigNumber(20) };
 
-  //   await tradeAssets(sdk, counterPartyDid, bid, ask);
-  // });
+    await tradeAssets(sdk, counterPartyDid, bid, ask);
+  });
 
-  // it('should check canTransfer without error', async () => {
-  //   const to = await sdk.identities.getIdentity({ did: counterPartyDid });
+  it('should check canTransfer without error', async () => {
+    const to = await sdk.identities.getIdentity({ did: counterPartyDid });
 
-  //   const { owner: from } = await askAsset.details();
+    const { owner: from } = await askAsset.details();
 
-  //   return expect(
-  //     askAsset.settlements.canTransfer({ from, to, amount: new BigNumber(10) })
-  //   ).resolves.not.toThrow();
-  // });
+    return expect(
+      askAsset.settlements.canTransfer({ from, to, amount: new BigNumber(10) })
+    ).resolves.not.toThrow();
+  });
 
   it('should transfer off chain assets', async () => {
     const bid = { ticker: bidOffChainTicker, offChainAmount: new BigNumber(10) };
