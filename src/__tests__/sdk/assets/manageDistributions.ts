@@ -32,14 +32,16 @@ describe('manageDividends', () => {
       ticker,
       ...assetParams,
     });
+
+    await createOne.run();
+
     const createTwo = await sdk.assets.createAsset({
       ticker: distributionTicker,
       ...assetParams,
       initialSupply: new BigNumber(1000),
     });
 
-    const batch = await sdk.createTransactionBatch({ transactions: [createOne, createTwo] });
-    await batch.run();
+    await createTwo.run();
   });
 
   afterAll(async () => {
