@@ -1,3 +1,4 @@
+import { BigNumber } from '@polymeshassociation/polymesh-sdk';
 import { ClaimType, InstructionStatus } from '@polymeshassociation/polymesh-sdk/types';
 
 import { assertTagPresent } from '~/assertions';
@@ -190,9 +191,6 @@ describe('Compliance Requirements for Fungible Assets', () => {
     expect(blockedReceiverInstruction).toEqual(
       assertTagPresent(expect, 'settlement.addAndAffirmWithMediators')
     );
-
-    await awaitMiddlewareSyncedForRestApi(investorInstruction, restClient);
-    await awaitMiddlewareSyncedForRestApi(blockedReceiverInstruction, restClient);
   });
 
   it('should be able to call affirm on instruction for both receivers', async () => {
@@ -227,6 +225,11 @@ describe('Compliance Requirements for Fungible Assets', () => {
     expect(blockedAffirmResult).toEqual(
       assertTagPresent(expect, 'settlement.affirmInstructionWithCount')
     );
+
+    // we add buffer of 1 block so that middleware can wait until InstructionExecuted event is processed ( which is done on next block where affirmations are received)
+    await awaitMiddlewareSyncedForRestApi(investorAffirmResult, restClient, new BigNumber(1));
+    // we add buffer of 1 block so that middleware can wait until FailedToExecuteInstruction event is processed ( which is done on next block where affirmations are received)
+    await awaitMiddlewareSyncedForRestApi(blockedAffirmResult, restClient, new BigNumber(1));
   });
 
   it('should have transferred asset to investor', async () => {

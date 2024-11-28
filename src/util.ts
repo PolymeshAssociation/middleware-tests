@@ -100,8 +100,9 @@ export const awaitMiddlewareSynced = async (
 export const awaitMiddlewareSyncedForRestApi = async (
   result: PostResult,
   restClient: RestClient,
+  bufferBlocks = new BigNumber(0),
   retries = 15,
-  delay = 2000
+  delay = 6000
 ): Promise<void> => {
   if (!('transactions' in result)) {
     throw new Error('Transaction was not successful or failed');
@@ -117,7 +118,10 @@ export const awaitMiddlewareSyncedForRestApi = async (
       const latestBlock = (metadata as { lastProcessedHeight: string })?.lastProcessedHeight;
 
       if (latestBlock && new BigNumber(latestBlock).gte(new BigNumber(txBlock))) {
-        return;
+        if (new BigNumber(latestBlock).gte(new BigNumber(txBlock).plus(bufferBlocks)) || i === 5) {
+          // this is a hacky way to get middleware to wait on syncing instruction execution event for SettleOnAffirmation type instruction
+          return;
+        }
       }
     } catch (err) {
       throw new Error(`Error checking middleware sync status: ${err}`);

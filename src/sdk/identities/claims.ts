@@ -41,7 +41,7 @@ export const manageClaims = async (
     { signingAccount }
   );
 
-  const middlewareSynced = () =>
+  let middlewareSynced = () =>
     new Promise((resolve) => addClaimTx.onProcessedByMiddleware(resolve));
 
   await addClaimTx.run();
@@ -66,8 +66,13 @@ export const manageClaims = async (
     },
     { signingAccount }
   );
+
+  middlewareSynced = () => new Promise((resolve) => revokeClaimTx.onProcessedByMiddleware(resolve));
+
   await revokeClaimTx.run();
   assert(revokeClaimTx.isSuccess);
+
+  await middlewareSynced();
 
   // This following portion demonstrates different ways to fetch claims
 
