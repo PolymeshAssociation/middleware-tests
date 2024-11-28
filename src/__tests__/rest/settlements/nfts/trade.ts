@@ -5,6 +5,7 @@ import { ProcessMode } from '~/rest/common';
 import { Identity } from '~/rest/identities/interfaces';
 import { createNftCollectionParams, issueNftParams } from '~/rest/nfts';
 import { nftInstructionParams, venueParams } from '~/rest/settlements';
+import { awaitMiddlewareSyncedForRestApi } from '~/util';
 
 const handles = ['issuer', 'collector'];
 let factory: TestFactory;
@@ -81,6 +82,8 @@ describe('Create and trading an NFT', () => {
         }),
       ]),
     });
+
+    await awaitMiddlewareSyncedForRestApi(result, restClient);
   });
 
   it('should allow instruction with NFT leg to be viewed', async () => {

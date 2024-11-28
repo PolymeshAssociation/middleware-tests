@@ -4,6 +4,9 @@ import {
   TransactionStatus,
 } from '@polymeshassociation/polymesh-sdk/types';
 
+import { RestClient } from '~/rest';
+import { PostResult } from '~/rest/interfaces';
+
 export const alphabet = [...Array(26)].map((val, i) => String.fromCharCode(i + 65));
 
 export const randomNonce = (digits: number): string => {
@@ -69,6 +72,51 @@ export const awaitMiddlewareSynced = async (
       const latestBlock = metadata?.lastProcessedHeight;
 
       if (latestBlock && latestBlock.gte(txBlock)) {
+        return;
+      }
+    } catch (err) {
+      throw new Error(`Error checking middleware sync status: ${err}`);
+    }
+
+    if (i === retries - 1) {
+      throw new Error(`Middleware has not synced after ${retries} attempts`);
+    }
+
+    await sleep(delay);
+  }
+};
+
+/**
+ * Waits for the middleware to sync up to the block upto the block number of last transaction received from REST API
+ *
+ * @param result - result containing list of transactions
+ * @param restClient - The Rest API Client
+ * @param retries - The number of times to retry checking the middleware
+ * @param delay - The delay in milliseconds between retries
+ * @throws {Error} If the transaction status is not Succeeded or Failed
+ * @throws {Error} If the middleware has not synced after the specified number of retries
+ * @returns {Promise<void>} Resolves when the middleware has synced up to the transaction's block
+ */
+export const awaitMiddlewareSyncedForRestApi = async (
+  result: PostResult,
+  restClient: RestClient,
+  retries = 15,
+  delay = 2000
+): Promise<void> => {
+  if (!('transactions' in result)) {
+    throw new Error('Transaction was not successful or failed');
+  }
+
+  const { transactions } = result;
+
+  const txBlock = transactions[transactions.length - 1].blockNumber;
+
+  for (let i = 0; i < retries; i++) {
+    try {
+      const metadata = await restClient.network.getMiddlewareMetadata();
+      const latestBlock = (metadata as { lastProcessedHeight: string })?.lastProcessedHeight;
+
+      if (latestBlock && new BigNumber(latestBlock).gte(new BigNumber(txBlock))) {
         return;
       }
     } catch (err) {
