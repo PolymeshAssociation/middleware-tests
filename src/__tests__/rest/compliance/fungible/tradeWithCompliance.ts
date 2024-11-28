@@ -9,6 +9,7 @@ import { ProcessMode, TxBase } from '~/rest/common';
 import { blockedIdentityRequirements, complianceRequirementsParams } from '~/rest/compliance';
 import { Identity } from '~/rest/identities/interfaces';
 import { fungibleInstructionParams, venueParams } from '~/rest/settlements/params';
+import { awaitMiddlewareSyncedForRestApi } from '~/util';
 
 const handles = ['issuer', 'blocked', 'investor'];
 let factory: TestFactory;
@@ -189,6 +190,9 @@ describe('Compliance Requirements for Fungible Assets', () => {
     expect(blockedReceiverInstruction).toEqual(
       assertTagPresent(expect, 'settlement.addAndAffirmWithMediators')
     );
+
+    await awaitMiddlewareSyncedForRestApi(investorInstruction, restClient);
+    await awaitMiddlewareSyncedForRestApi(blockedReceiverInstruction, restClient);
   });
 
   it('should be able to call affirm on instruction for both receivers', async () => {
@@ -249,8 +253,7 @@ describe('Compliance Requirements for Fungible Assets', () => {
     );
   });
 
-  // Failing due to historical settlements
-  it.skip('should have affirmed the instruction for investor', async () => {
+  it('should have affirmed the instruction for investor', async () => {
     const instruction = await restClient.settlements.getInstruction(investorInstructionId);
 
     expect(instruction).toEqual(
@@ -260,8 +263,7 @@ describe('Compliance Requirements for Fungible Assets', () => {
     );
   });
 
-  // Failing due to historical settlements
-  it.skip('should have failed the instruction for blocked did', async () => {
+  it('should have failed the instruction for blocked did', async () => {
     const instruction = await restClient.settlements.getInstruction(blockedInstructionId);
 
     expect(instruction).toEqual(

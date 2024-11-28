@@ -54,7 +54,7 @@ export const managePortfolios = async (sdk: Polymesh, asset: FungibleAsset): Pro
   assert(transferTx.isSuccess);
 
   const customPortfolioBalanceAfter = await examplePortfolio.getAssetBalances({
-    assets: [asset.id, 'TOKEN_2', 'TOKEN_3'],
+    assets: [asset.id],
   });
 
   const [{ total: tokensInCustomPortfolio }] = customPortfolioBalanceAfter;

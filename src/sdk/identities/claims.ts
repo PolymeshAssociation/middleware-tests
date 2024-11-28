@@ -12,7 +12,11 @@ import assert from 'node:assert';
     - Get claims targeting a given Identity
     - Get claims issued by given Identity
 */
-export const manageClaims = async (sdk: Polymesh, targetDid: string): Promise<void> => {
+export const manageClaims = async (
+  sdk: Polymesh,
+  targetDid: string,
+  assetId: string
+): Promise<void> => {
   const identity = await sdk.getSigningIdentity();
   assert(identity);
 
@@ -27,8 +31,8 @@ export const manageClaims = async (sdk: Polymesh, targetDid: string): Promise<vo
           claim: {
             type: ClaimType.Accredited,
             scope: {
-              type: ScopeType.Ticker,
-              value: 'TICKER',
+              type: ScopeType.Asset,
+              value: assetId,
             },
           },
         },

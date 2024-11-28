@@ -7,7 +7,7 @@ import { createAssetParams } from '~/rest/assets/params';
 import { ProcessMode, TxBase } from '~/rest/common';
 import { Identity } from '~/rest/identities/interfaces';
 import { moveAssetParams, portfolioParams, setCustodianParams } from '~/rest/portfolios';
-import { randomNonce } from '~/util';
+import { awaitMiddlewareSyncedForRestApi, randomNonce } from '~/util';
 
 const handles = ['issuer', 'custodian'];
 let factory: TestFactory;
@@ -128,6 +128,8 @@ describe('Portfolio Asset Transfers', () => {
 
     expect(result).toEqual(assertTagPresent(expect, 'portfolio.movePortfolioFunds'));
 
+    await awaitMiddlewareSyncedForRestApi(result, restClient);
+
     const portfolio = await restClient.portfolios.getPortfolio(issuer.did, custodyPortfolioId);
 
     expect(portfolio).toEqual(
@@ -148,23 +150,40 @@ describe('Portfolio Asset Transfers', () => {
     );
   });
 
-  // TODO: this throws an internal server error "Error: Error in middleware V2 query: more than one row returned by a subquery used as an expression"
-  it.skip("should have created transaction history for the asset's transfer", async () => {
+  it("should have created transaction history for the asset's transfer", async () => {
     const result = await restClient.portfolios.getTransactionHistory(issuer.did, '0');
 
     expect(result.results).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          asset: assetId,
-          amount: '1000',
-          from: custodyPortfolioId,
-          to: '0',
+          legs: [
+            expect.objectContaining({
+              asset: assetId,
+              amount: '1000',
+              from: {
+                did: issuer.did,
+              },
+              to: {
+                did: issuer.did,
+                id: '1',
+              },
+            }),
+          ],
         }),
         expect.objectContaining({
-          asset: assetId,
-          amount: '1000',
-          from: '0',
-          to: custodyPortfolioId,
+          legs: [
+            expect.objectContaining({
+              asset: assetId,
+              amount: '1000',
+              from: {
+                did: issuer.did,
+                id: '1',
+              },
+              to: {
+                did: issuer.did,
+              },
+            }),
+          ],
         }),
       ])
     );
