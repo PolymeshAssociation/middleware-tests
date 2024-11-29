@@ -120,7 +120,10 @@ export const tradeOffChainAssets = async (
   // Fetch and verify off chain affirmations
   const offChainAffirmations = await instruction.getOffChainAffirmations();
 
-  assert(offChainAffirmations.length === 2, 'off-chain affirmations for the instruction');
+  assert(
+    offChainAffirmations.length === 2,
+    `off-chain affirmations for the instruction. expected 2 received ${offChainAffirmations.length}`
+  );
 
   // we can not execute the instruction
   const executeInstructionTx = await instruction.executeManually({
