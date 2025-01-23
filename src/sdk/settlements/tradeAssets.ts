@@ -4,6 +4,7 @@ import { VenueType } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
 import { addIsNotBlocked } from '~/sdk/settlements/util';
+import { awaitMiddlewareSynced } from '~/util';
 
 interface Leg {
   asset: FungibleAsset;
@@ -89,13 +90,10 @@ export const tradeAssets = async (
     memo: 'Some message', // optional - passing a message with the instruction
   });
 
-  const middlewareSynced = () =>
-    new Promise((resolve) => addInstructionTx.onProcessedByMiddleware(resolve));
-
   const instruction = await addInstructionTx.run();
   assert(addInstructionTx.isSuccess, 'add instruction should succeed');
 
-  await middlewareSynced();
+  await awaitMiddlewareSynced(addInstructionTx, sdk, 15, 2000);
 
   const details = await instruction.details();
   assert(details.memo, 'the instruction should have a memo');
