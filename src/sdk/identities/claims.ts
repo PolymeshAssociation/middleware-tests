@@ -2,6 +2,8 @@ import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 import { ClaimType, ScopeType } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
+import { awaitMiddlewareSynced } from '~/util';
+
 /*
   This function showcases Claim related functionality. It:
     - Add a claim
@@ -41,13 +43,10 @@ export const manageClaims = async (
     { signingAccount }
   );
 
-  let middlewareSynced = () =>
-    new Promise((resolve) => addClaimTx.onProcessedByMiddleware(resolve));
-
   await addClaimTx.run();
   assert(addClaimTx.isSuccess);
 
-  await middlewareSynced();
+  await awaitMiddlewareSynced(addClaimTx, sdk, 15, 2000);
 
   // Get issued claims
   const issuedClaims = await sdk.claims.getIssuedClaims({
@@ -67,12 +66,10 @@ export const manageClaims = async (
     { signingAccount }
   );
 
-  middlewareSynced = () => new Promise((resolve) => revokeClaimTx.onProcessedByMiddleware(resolve));
-
   await revokeClaimTx.run();
   assert(revokeClaimTx.isSuccess);
 
-  await middlewareSynced();
+  await awaitMiddlewareSynced(revokeClaimTx, sdk, 15, 2000);
 
   // This following portion demonstrates different ways to fetch claims
 
