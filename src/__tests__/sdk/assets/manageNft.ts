@@ -15,6 +15,7 @@ import {
 
 import { TestFactory } from '~/helpers';
 import { createNftCollection } from '~/sdk/assets/createNftCollection';
+import { awaitMiddlewareSynced } from '~/util';
 
 let factory: TestFactory;
 
@@ -54,20 +55,20 @@ describe('manageNft', () => {
 
     receiver = await sdk.identities.getIdentity({ did: receiverDid });
 
-    const portfolioProc = await sdk.identities.createPortfolio({ name: 'NFT portfolio' });
+    const portfolioTx = await sdk.identities.createPortfolio({ name: 'NFT portfolio' });
 
-    const venueProc = await sdk.settlements.createVenue({
+    const venueTx = await sdk.settlements.createVenue({
       description: 'test exchange',
       type: VenueType.Exchange,
     });
 
-    const pauseProc = await collection.compliance.requirements.pause();
+    const pauseTx = await collection.compliance.requirements.pause();
 
-    const batchProc = await sdk.createTransactionBatch({
-      transactions: [portfolioProc, venueProc, pauseProc] as const,
+    const batchTx = await sdk.createTransactionBatch({
+      transactions: [portfolioTx, venueTx, pauseTx] as const,
     });
 
-    [portfolio, venue] = await batchProc.run();
+    [portfolio, venue] = await batchTx.run();
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     holder = (await sdk.getSigningIdentity())!;
@@ -96,7 +97,7 @@ describe('manageNft', () => {
   });
 
   it('should issue an Nft', async () => {
-    const issueProc = await collection.issue({
+    const issueTx = await collection.issue({
       metadata: [
         { type: MetadataType.Local, id: new BigNumber(1), value: 'https://example.com/nft/1' },
         {
@@ -107,13 +108,13 @@ describe('manageNft', () => {
       ],
     });
 
-    nft = await issueProc.run();
+    nft = await issueTx.run();
 
     expect(nft.id).toEqual(new BigNumber(1));
   });
 
   it('should allow holder to transfer NFTs between portfolios', async () => {
-    const moveProc = await defaultPortfolio.moveFunds({
+    const moveTx = await defaultPortfolio.moveFunds({
       to: portfolio,
       items: [
         {
@@ -123,7 +124,7 @@ describe('manageNft', () => {
       ],
     });
 
-    await moveProc.run();
+    await moveTx.run();
 
     const [defaultCollections, portfolioCollections] = await Promise.all([
       defaultPortfolio.getCollections(),
@@ -152,7 +153,7 @@ describe('manageNft', () => {
   });
 
   it('should let the holder send instructions with an NFT', async () => {
-    const instructionProc = await sdk.settlements.addInstruction({
+    const instructionTx = await sdk.settlements.addInstruction({
       venueId: venue.id,
       legs: [
         {
@@ -164,12 +165,9 @@ describe('manageNft', () => {
       ],
     });
 
-    const middlewareSynced = () =>
-      new Promise((resolve) => instructionProc.onProcessedByMiddleware(resolve));
+    instruction = await instructionTx.run();
 
-    instruction = await instructionProc.run();
-
-    await middlewareSynced();
+    await awaitMiddlewareSynced(instructionTx, sdk);
   });
 
   it('should return legs for an instruction when they contain an NFT', async () => {
@@ -188,8 +186,8 @@ describe('manageNft', () => {
   });
 
   it('should allow the receiver to accept an NFT settlement', async () => {
-    const affirmProc = await instruction.affirm({}, { signingAccount: receiverAddress });
-    await affirmProc.run();
+    const affirmTx = await instruction.affirm({}, { signingAccount: receiverAddress });
+    await affirmTx.run();
 
     const receiverPortfolio = await receiver.portfolios.getPortfolio();
 
@@ -209,7 +207,7 @@ describe('manageNft', () => {
   });
 
   it('should allow the issuer to redeem an NFT', async () => {
-    const createNftProc = await collection.issue({
+    const createNftTx = await collection.issue({
       metadata: [
         { type: MetadataType.Local, id: new BigNumber(1), value: 'https://example.com/nft/1' },
         {
@@ -220,10 +218,10 @@ describe('manageNft', () => {
       ],
     });
 
-    const redeemNft = await createNftProc.run();
+    const redeemNft = await createNftTx.run();
 
-    const redeemProc = await redeemNft.redeem();
+    const redeemTx = await redeemNft.redeem();
 
-    expect(redeemProc.run()).resolves.not.toThrow();
+    expect(redeemTx.run()).resolves.not.toThrow();
   });
 });

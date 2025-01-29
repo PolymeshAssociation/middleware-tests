@@ -7,7 +7,7 @@ import {
 } from '@polymeshassociation/polymesh-sdk/types';
 import assert from 'node:assert';
 
-import { randomString } from '~/util';
+import { awaitMiddlewareSynced, randomString } from '~/util';
 
 export const manageCustomClaims = async (
   sdk: Polymesh,
@@ -28,12 +28,9 @@ export const manageCustomClaims = async (
     { signingAccount }
   );
 
-  const middlewareSyncedOnClaimType = () =>
-    new Promise((resolve) => registerCustomClaimTypeTx.onProcessedByMiddleware(resolve));
-
   const customClaimTypeId = await registerCustomClaimTypeTx.run();
 
-  await middlewareSyncedOnClaimType();
+  await awaitMiddlewareSynced(registerCustomClaimTypeTx, sdk);
 
   const registeredCustomClaimTypes = await sdk.claims.getAllCustomClaimTypes();
 
@@ -71,14 +68,11 @@ export const manageCustomClaims = async (
     { signingAccount }
   );
 
-  const middlewareSyncedOnAddClaim = () =>
-    new Promise((resolve) => addClaimTx.onProcessedByMiddleware(resolve));
-
   await addClaimTx.run();
 
   assert(addClaimTx.isSuccess, 'Should be able to add a custom claim');
 
-  await middlewareSyncedOnAddClaim();
+  await awaitMiddlewareSynced(addClaimTx, sdk);
 
   const revokeClaimTx = await sdk.claims.revokeClaims(
     { claims: [customClaim] },

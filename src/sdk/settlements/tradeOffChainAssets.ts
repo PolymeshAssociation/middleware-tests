@@ -7,6 +7,7 @@ import {
 import assert from 'node:assert';
 
 import { createVenue } from '~/sdk/settlements/createVenue';
+import { awaitMiddlewareSynced } from '~/util';
 
 interface OffChainLegInfo {
   ticker: string;
@@ -71,13 +72,10 @@ export const tradeOffChainAssets = async (
     memo: 'Some message',
   });
 
-  const middlewareSynced = () =>
-    new Promise((resolve) => addInstructionTx.onProcessedByMiddleware(resolve));
-
   const instruction = await addInstructionTx.run();
   assert(addInstructionTx.isSuccess, 'add instruction should succeed');
 
-  await middlewareSynced();
+  await awaitMiddlewareSynced(addInstructionTx, sdk);
 
   const details = await instruction.details();
   assert(details.memo, 'the instruction should have a memo');
@@ -109,13 +107,10 @@ export const tradeOffChainAssets = async (
     receipts: offChainReceipts,
   });
 
-  const middlewareAffirmationsSynced = () =>
-    new Promise((resolve) => affirmWithReceiptTx.onProcessedByMiddleware(resolve));
-
   await affirmWithReceiptTx.run();
   assert(affirmWithReceiptTx.isSuccess);
 
-  await middlewareAffirmationsSynced();
+  await awaitMiddlewareSynced(affirmWithReceiptTx, sdk);
 
   // Fetch and verify off chain affirmations
   const offChainAffirmations = await instruction.getOffChainAffirmations();

@@ -31,6 +31,6 @@ if [ $ARCH = 'arm64' ]; then
   echo "Note: arm64 detected, chain repo from was set to ${REPO}. env file written to: ${WORK_ENV_FILE}"
 fi
 
-echo "starting polymesh test envrionment"
+echo "starting polymesh test environment"
 docker compose --env-file=$WORK_ENV_FILE up -d --force-recreate --renew-anon-volumes
 ./scripts/check-services.sh

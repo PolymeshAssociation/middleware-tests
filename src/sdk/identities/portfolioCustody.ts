@@ -1,6 +1,8 @@
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 import assert from 'node:assert';
 
+import { awaitMiddlewareSynced } from '~/util';
+
 /*
   This script showcases Portfolio's Custodian related functionality. It:
     - Creates a Portfolio
@@ -45,9 +47,6 @@ export const portfolioCustody = async (sdk: Polymesh, custodianDid: string): Pro
   // The custodian needs to accept the created authorization
   const acceptTx = await authRequest.accept({ signingAccount: custodianAccount });
 
-  const middlewareSynced = () =>
-    new Promise((resolve) => acceptTx.onProcessedByMiddleware(resolve));
-
   await acceptTx.run();
   assert(acceptTx.isSuccess);
 
@@ -62,7 +61,7 @@ export const portfolioCustody = async (sdk: Polymesh, custodianDid: string): Pro
   );
   assert(!isCustodiedByOwner, `DID ${identity.did} should no longer be be the custodian`);
 
-  await middlewareSynced();
+  await awaitMiddlewareSynced(acceptTx, sdk);
 
   // The custodian can get all non owned portfolios where they are the custodian - note there are pagination options
   const custodiedPortfolios = await custodian.portfolios.getCustodiedPortfolios();
