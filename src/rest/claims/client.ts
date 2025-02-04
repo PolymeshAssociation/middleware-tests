@@ -26,4 +26,8 @@ export class Claims {
   public async removeClaim(params: CreateClaimParams): Promise<PostResult> {
     return this.client.post('/claims/remove', params);
   }
+
+  public async editClaim(params: CreateClaimParams): Promise<PostResult> {
+    return this.client.post('/claims/edit', params);
+  }
 }
