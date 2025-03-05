@@ -135,14 +135,7 @@ describe('Portfolio Asset Transfers', () => {
     expect(portfolio).toEqual(
       expect.objectContaining({
         name: custodyPortfolioName,
-        assetBalances: [
-          {
-            asset: assetId,
-            free: '0',
-            locked: '0',
-            total: '0',
-          },
-        ],
+        assetBalances: [],
         id: custodyPortfolioId,
         owner: issuer.did,
         custodian: custodian.did,
