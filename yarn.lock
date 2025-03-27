@@ -1510,10 +1510,10 @@
   dependencies:
     "@polymeshassociation/signing-manager-types" "^3.2.0"
 
-"@polymeshassociation/polymesh-sdk@27.3.1-alpha.1":
-  version "27.3.1-alpha.1"
-  resolved "https://registry.yarnpkg.com/@polymeshassociation/polymesh-sdk/-/polymesh-sdk-27.3.1-alpha.1.tgz#f26dc483788ef21925419ff00ecb35a860351cec"
-  integrity sha512-mpx8Zlnq36Pcv4bskUJDWESgps+3xKC3rjwwsuXG0GWXXdur8RWi4vR5NWEGXPaOHtNLzqNDINyIztcNbUi86A==
+"@polymeshassociation/polymesh-sdk@27.5.0-alpha.1":
+  version "27.5.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@polymeshassociation/polymesh-sdk/-/polymesh-sdk-27.5.0-alpha.1.tgz#d3cf0f5130148b86a59e9fd5ba2d17e1e23b0a92"
+  integrity sha512-sK8GKxJHP1sOZpULIeY45wUp6oJ5r5mZXXJrB8V0/AabXbO5SyVeQ5REdxqCmdIf3yGzjhMzFncut9JeQZyoOw==
   dependencies:
     "@apollo/client" "^3.8.1"
     "@polkadot/api" "11.2.1"
