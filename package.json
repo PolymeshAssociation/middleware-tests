@@ -7,9 +7,9 @@
   "author": "Polymath Studios Inc.",
   "license": "ISC",
   "scripts": {
-    "test": "yarn test:setup && yarn test:run && yarn test:teardown",
-    "test:setup": "./scripts/setup.sh",
-    "test:run": "jest --maxWorkers=8",
+    "test": "./scripts/run-tests.sh $@",
+    "test:run": "./scripts/run-tests.sh --no-init $@",
+    "test:setup": "./scripts/setup.sh $@",
     "test:teardown": "./scripts/teardown.sh",
     "prebuild": "rimraf dist",
     "postinstall": "rimraf node_modules/@polymeshassociation/polymesh-sdk/node_modules/@polkadot/{util-crypto,wasm-crypto,util,wasm-bridge} && rimraf node_modules/@polymeshassociation/{hashicorp-vault-signing-manager,local-signing-manager}/node_modules/@polkadot/{util,util-crypto,wasm-bridge,was-crypto}",

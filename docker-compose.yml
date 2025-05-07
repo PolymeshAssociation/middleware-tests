@@ -2,6 +2,7 @@ services:
   postgres:
     image: postgres:12-alpine
     restart: unless-stopped
+    profiles: ["query", "all"]
     ports:
       - ${PG_PORT:-5432}:5432
     volumes:
@@ -12,6 +13,7 @@ services:
   vault:
     image: hashicorp/vault
     restart: unless-stopped
+    profiles: ["api", "all"]
     ports:
       - ${VAULT_PORT:-8200}:8200
     cap_add:
@@ -25,9 +27,11 @@ services:
     depends_on:
       - vault
     restart: 'no'
+    profiles: ["api", "all"]
 
   artemis:
     image: apache/activemq-artemis:2.31.2
+    profiles: ["api", "all"]
     ports:
       - 8161:8161 # Web Server
       - 5672:5672 # AMQP
@@ -45,6 +49,7 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
+    profiles: ["chain", "all"]
     image: ${CHAIN_IMAGE}
     init: true # Faster shutdown by container process not be PID 1
     restart: unless-stopped
@@ -60,6 +65,7 @@ services:
   subquery:
     image: ${SUBQUERY_INDEXER_IMAGE}
     platform: linux/amd64
+    profiles: ["query", "all"]
     init: true
     healthcheck:
       test: curl --fail http://localhost:3000/meta || exit 1
@@ -71,13 +77,11 @@ services:
     depends_on:
       postgres:
         condition: service_started
-      alice:
-        condition: service_healthy
     ports:
       - 3002:3000
     environment:
       START_BLOCK: 1
-      NETWORK_ENDPOINT: ws://alice:9944
+      NETWORK_ENDPOINT: ${CHAIN_URL:-ws://alice:9944}
       NETWORK_HTTP_ENDPOINT: http://alice:9933
       DB_USER: '${PG_USER:-postgres}'
       DB_PASS: '${PG_PASSWORD:-postgres}'
@@ -85,6 +89,7 @@ services:
       DB_PORT: '${PG_PORT:-5432}'
       DB_HOST: '${PG_HOST:-postgres}'
       NODE_ENV: local
+      NETWORK_CHAIN_ID: ${CHAIN_ID:-}
     command:
       - --batch-size=500
       - -f=/app
@@ -92,6 +97,7 @@ services:
 
   graphql:
     image: onfinality/subql-query:v2.8.0
+    profiles: ["query", "all"]
     ports:
       - ${SQ_PORT:-3001}:3000
     depends_on:
@@ -114,11 +120,10 @@ services:
   rest-api:
     image: ${REST_IMAGE}
     platform: linux/amd64
+    profiles: ["api", "all"]
     init: true
     restart: unless-stopped
     depends_on:
-      alice:
-        condition: service_started
       vault:
         condition: service_started
       graphql:
@@ -130,7 +135,7 @@ services:
     ports:
       - ${REST_PORT:-3004}:3000
     environment:
-      POLYMESH_NODE_URL: 'ws://alice:9944'
+      POLYMESH_NODE_URL: ${CHAIN_URL:-ws://alice:9944}
       POLYMESH_MIDDLEWARE_V2_URL: 'http://graphql:3000'
       VAULT_URL: 'http://vault:8200/v1/transit'
       VAULT_TOKEN: 'root'

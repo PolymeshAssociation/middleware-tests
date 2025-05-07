@@ -7,5 +7,5 @@ VERSION='6.3.0'
 # Note: for teardown the specifics don't matter to much, as long as the compose file can be properly templated
 ENV_FILE="$SCRIPT_DIR/../envs/$VERSION.env"
 
-docker compose --env-file $ENV_FILE down
+docker compose --profile all --env-file $ENV_FILE down
 
