@@ -8,12 +8,12 @@ const { nodeUrl } = env;
 let sdk: Polymesh;
 
 /**
- * This function shows how to create a Polymesh SDK instance configured with `//Alice` as the default signing key
+ * This function shows how to create a Polymesh SDK instance configured with `//Bob` as the default signing key
  */
 export async function getPolymeshSdk(): Promise<Polymesh> {
   // Note, different signing managers can be found [here](https://github.com/PolymeshAssociation/signing-managers#projects)
   const signingManager = await LocalSigningManager.create({
-    accounts: [{ uri: '//Alice' }],
+    accounts: [{ uri: '//Bob' }],
   });
 
   if (!sdk) {

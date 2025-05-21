@@ -38,7 +38,7 @@ services:
       ARTEMIS_PASSWORD: artemis
       AMQ_EXTRA_ARGS: '--nio' # "aio" offers better performance, but less platforms support it
 
-  alice:
+  bob:
     healthcheck:
       test: "timeout 5 bash -c 'cat < /dev/null > /dev/tcp/localhost/9933' && exit 0 || exit 1"
       interval: 10s
@@ -55,7 +55,7 @@ services:
     volumes:
       - './docker/chain-entry.sh:/chain-entry.sh'
     entrypoint: '/chain-entry.sh'
-    command: ['--alice --chain dev']
+    command: ['--bob --chain dev']
 
   subquery:
     image: ${SUBQUERY_INDEXER_IMAGE}
@@ -71,14 +71,14 @@ services:
     depends_on:
       postgres:
         condition: service_started
-      alice:
+      bob:
         condition: service_healthy
     ports:
       - 3002:3000
     environment:
       START_BLOCK: 1
-      NETWORK_ENDPOINT: ws://alice:9944
-      NETWORK_HTTP_ENDPOINT: http://alice:9933
+      NETWORK_ENDPOINT: ws://bob:9944
+      NETWORK_HTTP_ENDPOINT: http://bob:9933
       DB_USER: '${PG_USER:-postgres}'
       DB_PASS: '${PG_PASSWORD:-postgres}'
       DB_DATABASE: '${PG_DB:-postgres}'
@@ -117,7 +117,7 @@ services:
     init: true
     restart: unless-stopped
     depends_on:
-      alice:
+      bob:
         condition: service_started
       vault:
         condition: service_started
@@ -130,7 +130,7 @@ services:
     ports:
       - ${REST_PORT:-3004}:3000
     environment:
-      POLYMESH_NODE_URL: 'ws://alice:9944'
+      POLYMESH_NODE_URL: 'ws://bob:9944'
       POLYMESH_MIDDLEWARE_V2_URL: 'http://graphql:3000'
       VAULT_URL: 'http://vault:8200/v1/transit'
       VAULT_TOKEN: 'root'

@@ -35,11 +35,11 @@ export const manageTrustedClaimIssuers = async (
   await addClaimIssuerTx.run();
   assert(addClaimIssuerTx.isSuccess);
 
-  // Make Alice the only trusted issuer for certain claims
+  // Make Bob the only trusted issuer for certain claims
   const setTrustedClaimIssuersTx = await compliance.trustedClaimIssuers.set({
     claimIssuers: [
       {
-        identity: wellKnown.alice.did,
+        identity: wellKnown.bob.did,
         trustedFor: [ClaimType.Accredited, ClaimType.Affiliate],
       },
     ],
@@ -52,7 +52,7 @@ export const manageTrustedClaimIssuers = async (
 
   // Remove a trusted issuers. Identities no longer compliant will be able to send, but not receive the Asset
   const removeClaimIssuerTx = await compliance.trustedClaimIssuers.remove({
-    claimIssuers: [wellKnown.alice.did],
+    claimIssuers: [wellKnown.bob.did],
   });
   await removeClaimIssuerTx.run();
   assert(removeClaimIssuerTx.isSuccess);

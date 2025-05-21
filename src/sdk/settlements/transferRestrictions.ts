@@ -73,7 +73,7 @@ export const transferRestrictions = async (sdk: Polymesh, asset: FungibleAsset):
   // Create a restriction to limit the Asset to have at most 10 holders
   const addCountRestrictionTx = await asset.transferRestrictions.count.addRestriction({
     count: new BigNumber(10),
-    exemptedIdentities: [wellKnown.alice.did, identity],
+    exemptedIdentities: [wellKnown.bob.did, identity],
   });
   await addCountRestrictionTx.run();
   assert(addCountRestrictionTx.isSuccess);

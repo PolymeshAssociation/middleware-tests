@@ -23,7 +23,7 @@ export const manageDistributions = async (
   const signingIdentity = await sdk.getSigningIdentity();
   assert(signingIdentity);
 
-  const alice = await sdk.identities.getIdentity({ did: wellKnown.alice.did });
+  const bob = await sdk.identities.getIdentity({ did: wellKnown.bob.did });
 
   // The signing identity should be an agent of the Asset and have appropriate permission
   const asset = await sdk.assets.getFungibleAsset({ ticker });
@@ -58,7 +58,7 @@ export const manageDistributions = async (
       // (optional) individuals can be excluded from distributions
       targets: {
         // identities can be specified with an Identity object or DID string
-        identities: [alice, '0x0200000000000000000000000000000000000000000000000000000000000000'],
+        identities: [bob, '0x0200000000000000000000000000000000000000000000000000000000000000'],
         treatment: TargetTreatment.Exclude,
       },
       // (optional) individual holders can be targeted with a different rate

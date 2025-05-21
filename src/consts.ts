@@ -1,9 +1,9 @@
 const prefixedDidLength = 66; // 64 bytes + 2 for `0x`
 
 export const wellKnown = {
-  alice: {
-    did: '0x01'.padEnd(prefixedDidLength, '0'),
-    mnemonic: '//Alice',
+  bob: {
+    did: '0x04'.padEnd(prefixedDidLength, '0'),
+    mnemonic: '//Bob',
   },
 } as const;
 
