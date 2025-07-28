@@ -1,6 +1,10 @@
 [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/standard/semistandard)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
+## Deprecated
+
+This repository is deprecated. Integration tests are now in the [polymesh-dev-env](https://github.com/PolymeshAssociation/polymesh-dev-env/tree/main/tests) project
+
 # Polymesh Integration Tests
 
 Here is a collection of integration tests to help ensure the various Polymesh services work together correctly.
